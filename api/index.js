@@ -1,8 +1,3 @@
-const path = require('path');
-
-// Ensure server dependencies resolve from root node_modules
-process.chdir(path.resolve(__dirname, '..'));
-
 const { getApp } = require('../server/src/createApp');
 
 let appCache = null;

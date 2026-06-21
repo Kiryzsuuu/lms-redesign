@@ -3,7 +3,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
 const fs = require('fs');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const { connectDb } = require('./db');
 const { getEnv } = require('./utils/env');
 const { notFound, errorHandler } = require('./utils/errors');
@@ -118,6 +117,7 @@ async function createApp() {
 
   // Dev: proxy non-API traffic to Vite dev server
   if (process.env.NODE_ENV !== 'production' && env.CLIENT_ORIGIN) {
+    const { createProxyMiddleware } = require('http-proxy-middleware');
     app.use(
       '/',
       createProxyMiddleware({
