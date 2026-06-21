@@ -131,7 +131,7 @@ export default function CertificateView() {
         <Container>
           <div className="flex items-center justify-between py-4 gap-3">
             <div className="flex items-center gap-3">
-              <img src="/logo-putih.png" alt="InspiraLearn" style={{ height: 28 }} />
+              <img src="/logo-putih.png" alt="EduPoint" style={{ height: 28 }} />
               <span className="text-white font-semibold text-sm hidden sm:block">Sertifikat Penyelesaian</span>
             </div>
             <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function CertificateView() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3.5%' }}>
                   <img
                     src="/logo-inspira.png"
-                    alt="InspiraLearn"
+                    alt="EduPoint"
                     style={{ height: 40, width: 'auto', objectFit: 'contain', display: 'block' }}
                   />
                   <div style={{ textAlign: 'right' }}>
@@ -298,7 +298,7 @@ export default function CertificateView() {
                         {issueDate}
                       </div>
                       <div style={{ fontSize: '0.52em', color: '#9CA3AF', marginTop: 5 }}>
-                        Platform: InspiraLearn
+                        Platform: EduPoint
                       </div>
                     </div>
 
@@ -315,7 +315,7 @@ export default function CertificateView() {
                         <div style={{ width: 120, height: 1, background: '#D1D5DB', margin: '0 auto 6px' }} />
                       )}
                       <div style={{ fontSize: '0.66em', fontWeight: 600, color: '#374151' }}>
-                        {certificate.metadata?.instructorName || 'InspiraLearn'}
+                        {certificate.metadata?.instructorName || 'EduPoint'}
                       </div>
                       <div style={{ fontSize: '0.5em', letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginTop: 2 }}>
                         Instruktur / Authorized

@@ -27,7 +27,7 @@ const DEFAULTS = {
   alumniPartners: ['Tokopedia', 'Gojek', 'Traveloka', 'Bukalapak', 'Telkom', 'BCA Digital', 'Shopee', 'Halodoc', 'Akseleran', 'Blibli'],
   testimonialStat: '50K+',
   testimonialStatLabel: 'Pelajar bergabung',
-  testimonialQuote: 'Lulusan InspiraLearn 3× lebih cepat mendapat pekerjaan dibanding rata-rata fresh graduate Indonesia.',
+  testimonialQuote: 'Lulusan EduPoint 3× lebih cepat mendapat pekerjaan dibanding rata-rata fresh graduate Indonesia.',
   ratingNum: '4.9',
   ratingLabel: 'dari 28.000+ ulasan',
   footerTagline: 'Platform belajar online untuk profesional Indonesia yang ingin naik level karir dengan skill nyata dari industri.',
@@ -50,7 +50,7 @@ const DEFAULTS = {
     ]},
     { title: 'Bantuan', links: [
       { label: 'FAQ', href: '/faq' },
-      { label: 'Hubungi Kami', href: 'mailto:support@inspiratekno.com' },
+      { label: 'Hubungi Kami', href: 'mailto:support@edupoint.id' },
       { label: 'Kebijakan Privasi', href: '/kebijakan-privasi' },
       { label: 'Syarat & Ketentuan', href: '/' },
     ]},
@@ -60,7 +60,7 @@ const DEFAULTS = {
     { label: 'Syarat', href: '#' },
     { label: 'Cookie', href: '#' },
   ],
-  footerCopyright: 'InspiraLearn by Inspiratekno. All rights reserved.',
+  footerCopyright: 'EduPoint by Inspiratekno. All rights reserved.',
 };
 
 function TagList({ items, onRemove, input, setInput, onAdd, placeholder }) {
@@ -403,7 +403,7 @@ export default function SiteSettingsManager() {
                   </div>
                   <div>
                     <label className="text-xs text-gray-400 block mb-1">Username / Email</label>
-                    <Input type="email" value={smtpForm.user} onChange={e => setSmtpForm(f => ({ ...f, user: e.target.value }))} placeholder="noreply@inspiralearn.id" />
+                    <Input type="email" value={smtpForm.user} onChange={e => setSmtpForm(f => ({ ...f, user: e.target.value }))} placeholder="noreply@edupoint.id" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-400 block mb-1">
@@ -423,7 +423,7 @@ export default function SiteSettingsManager() {
                   </div>
                   <div>
                     <label className="text-xs text-gray-400 block mb-1">From (nama & email)</label>
-                    <Input value={smtpForm.from} onChange={e => setSmtpForm(f => ({ ...f, from: e.target.value }))} placeholder='InspiraLearn <noreply@inspiralearn.id>' />
+                    <Input value={smtpForm.from} onChange={e => setSmtpForm(f => ({ ...f, from: e.target.value }))} placeholder='EduPoint <noreply@edupoint.id>' />
                   </div>
                 </div>
               </div>

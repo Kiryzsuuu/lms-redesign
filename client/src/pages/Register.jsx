@@ -83,7 +83,7 @@ export default function Register() {
       <div className="w-full max-w-[600px]">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <img src="/logo-color.png" alt="Inspira Innovation" className="h-[40px] w-auto object-contain" />
+          <img src="/logo-color.png" alt="EduPoint" className="h-[40px] w-auto object-contain" />
         </div>
 
         {/* Card */}

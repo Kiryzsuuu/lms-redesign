@@ -78,7 +78,7 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
               {stats.pendingContracts} kontrak menunggu respons teacher
             </div>
             <button onClick={() => navigate('/dashboard/contracts')} style={{ padding: '5px 12px', border: '1px solid #D1D5DB', borderRadius: 8, background: '#fff', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', color: '#4B5563', fontFamily: 'inherit' }}>
-              Tinjau →
+              Tinjau
             </button>
           </div>
         )}
@@ -97,7 +97,7 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
             {/* Recent contracts needing action */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Kontrak Perlu Tindakan</div>
-              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Semua kontrak →</Link>
+              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Semua kontrak</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
               {recentContracts.length === 0 ? (
@@ -138,7 +138,7 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
             {/* Pending royalties */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Royalti Perlu Dibayar</div>
-              <Link to="/dashboard/royalties" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Bayar semua →</Link>
+              <Link to="/dashboard/royalties" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Bayar semua</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
               {pendingRoyalties.length === 0 ? (
@@ -171,7 +171,7 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
             {/* Recent activity */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Aktivitas Terbaru</div>
-              <Link to="/dashboard/activity-log" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Log lengkap →</Link>
+              <Link to="/dashboard/activity-log" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Log lengkap</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
               {recentActivity.length === 0 ? (
@@ -241,7 +241,7 @@ function TeacherDashboard({ api, user, stats }) {
               <div style={{ fontSize: 12, color: '#92400E', marginTop: 2 }}>Kamu perlu menyetujui kontrak sebelum bisa mengisi materi kursus dari perusahaan mitra.</div>
             </div>
             <button onClick={() => navigate('/dashboard/contracts')} style={{ padding: '6px 14px', background: '#0C628D', border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
-              Tinjau Kontrak →
+              Tinjau Kontrak
             </button>
           </div>
         )}
@@ -257,7 +257,7 @@ function TeacherDashboard({ api, user, stats }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Kursus Saya</div>
-              <Link to="/dashboard/courses" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Semua →</Link>
+              <Link to="/dashboard/courses" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Semua</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 14 }}>
               {myCourses.length === 0 ? (
@@ -296,7 +296,7 @@ function TeacherDashboard({ api, user, stats }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Kontrak Terbaru</div>
-              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Lihat semua →</Link>
+              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Lihat semua</Link>
             </div>
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 14 }}>
               {myContracts.length === 0 ? (

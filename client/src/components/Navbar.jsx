@@ -7,7 +7,7 @@ function LogoMark() {
   return (
     <img
       src="/logo-color.png"
-      alt="Inspira Innovation"
+      alt="EduPoint"
       className="h-[36px] w-auto object-contain flex-shrink-0"
     />
   );
