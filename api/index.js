@@ -1,3 +1,15 @@
-module.exports = (req, res) => {
-  res.status(200).json({ ok: true, env: !!process.env.MONGO_URI });
+const { getApp } = require('../server/src/createApp');
+
+let appCache = null;
+
+module.exports = async (req, res) => {
+  try {
+    if (!appCache) {
+      appCache = await getApp();
+    }
+    appCache(req, res);
+  } catch (err) {
+    console.error('[serverless] startup error:', err);
+    res.status(500).json({ error: 'Server initialization failed', detail: err.message });
+  }
 };
