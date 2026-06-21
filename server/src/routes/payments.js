@@ -61,7 +61,6 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
       if (!midtrans.serverKey || !midtrans.clientKey) {
         throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key/client key)');
       }
-      }
 
       const { couponCode } = req.body;
       const cart = await Cart.findOne({ userId: req.user.sub }).lean();
