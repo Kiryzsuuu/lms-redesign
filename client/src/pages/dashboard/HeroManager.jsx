@@ -103,7 +103,7 @@ export default function HeroManager() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div style={{ height: '100%', overflowY: 'auto' }}><div className="flex flex-col">
       {/* Header */}
       <div className="flex shrink-0 flex-col gap-4 border-b border-slate-200 px-4 py-6 sm:px-6">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-start">
@@ -243,6 +243,6 @@ export default function HeroManager() {
           </Card>
         </div>
       </div>
-    </div>
+    </div></div>
   );
 }

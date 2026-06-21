@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { DashboardLayout } from './components/DashboardLayout';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
@@ -40,6 +41,7 @@ import { Container } from './components/ui';
 export default function App() {
   const { pathname } = useLocation();
   const isLessonPage = /^\/courses\/[^/]+\/lessons\/[^/]+$/.test(pathname);
+  const isDashboard = pathname.startsWith('/dashboard');
 
   const routes = (
     <Routes>
@@ -247,6 +249,14 @@ export default function App() {
   );
 
   if (isLessonPage) return routes;
+
+  if (isDashboard) {
+    return (
+      <RequireAuth>
+        <DashboardLayout>{routes}</DashboardLayout>
+      </RequireAuth>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">

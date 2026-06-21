@@ -60,7 +60,7 @@ export default function CourseStats() {
   const completionRate = stats.enrolledCount > 0 ? Math.round((stats.completedCount / stats.enrolledCount) * 100) : 0;
 
   return (
-    <section className="py-8 sm:py-10" style={{ background: '#F7F8FA' }}>
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-8 sm:py-10" style={{ background: '#F7F8FA' }}>
       <Container className="space-y-6">
         <Card className="overflow-hidden">
           <div className="px-6 py-8 text-white sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 60%, #0C628D 100%)' }}>
@@ -149,6 +149,6 @@ export default function CourseStats() {
           )}
         </Card>
       </Container>
-    </section>
+    </section></div>
   );
 }

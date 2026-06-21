@@ -364,7 +364,7 @@ export default function QuestionBankManager() {
   };
 
   return (
-    <section className="py-10">
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
       <Container>
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -796,6 +796,6 @@ export default function QuestionBankManager() {
         </div>
       )}
       </Container>
-    </section>
+    </section></div>
   );
 }

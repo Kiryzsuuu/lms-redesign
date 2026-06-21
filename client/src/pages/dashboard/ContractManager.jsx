@@ -369,7 +369,7 @@ export default function ContractManager() {
         onConfirm={async () => { if (confirmCancel) await handleCancel(confirmCancel); }}
       />
 
-      <div style={{ padding: 24 }}>
+      <div style={{ height: '100%', overflowY: 'auto' }}><div style={{ padding: 24 }}>
         {/* Page header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
@@ -512,7 +512,7 @@ export default function ContractManager() {
             ))}
           </div>
         )}
-      </div>
+      </div></div>
     </>
   );
 }

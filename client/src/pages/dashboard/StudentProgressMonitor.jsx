@@ -97,7 +97,7 @@ export default function StudentProgressMonitor() {
   };
 
   return (
-    <section className="py-10">
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
       <Container>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
           <div>
@@ -390,6 +390,6 @@ export default function StudentProgressMonitor() {
           </div>
         </div>
       </Container>
-    </section>
+    </section></div>
   );
 }

@@ -34,17 +34,16 @@ export function SidebarShell({
   const sbPx = SB_PX[sidebarWidth] || 288;
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#F5F6F8', padding: '1.25rem' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#F5F6F8' }}>
       <div style={{
         flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column',
-        borderRadius: 12, border: '1px solid #E5E7EB', background: '#fff',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.06)', overflow: 'hidden',
+        background: '#fff', overflow: 'hidden',
       }}>
         {/* Page header */}
-        <div style={{ flexShrink: 0, borderBottom: '1px solid #E5E7EB', padding: '1rem 1.5rem' }}>
+        <div style={{ flexShrink: 0, borderBottom: '1px solid #E5E7EB', padding: '14px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
             <div>
-              <h1 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+              <h1 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111827', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                 {title}
               </h1>
               {description && <p style={{ marginTop: 3, fontSize: '0.78rem', color: '#9CA3AF' }}>{description}</p>}
@@ -133,7 +132,7 @@ export function SidebarShell({
 
       {/* Mobile drawer */}
       {sidebarOpen && (
-        <div className="lg:hidden" style={{ position: 'fixed', inset: 0, zIndex: 50 }}>
+        <div className="lg:hidden" style={{ position: 'fixed', inset: 0, zIndex: 300 }}>
           <div
             style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.35)' }}
             onClick={() => setSidebarOpen(false)}

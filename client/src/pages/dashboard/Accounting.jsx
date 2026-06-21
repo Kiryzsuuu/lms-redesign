@@ -137,7 +137,7 @@ export default function Accounting() {
   }
 
   return (
-    <section className="py-10">
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
       <Container>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -401,6 +401,6 @@ export default function Accounting() {
           </>
         )}
       </Container>
-    </section>
+    </section></div>
   );
 }
