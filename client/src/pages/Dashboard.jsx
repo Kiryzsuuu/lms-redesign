@@ -42,7 +42,7 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-function AdminDashboard({ api, user, stats, pendingContracts }) {
+function AdminDashboard({ api, user, stats }) {
   const navigate = useNavigate();
   const [recentContracts, setRecentContracts] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
@@ -51,142 +51,182 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
   useEffect(() => {
     api.get('/contracts?status=sent&limit=3').catch(() => ({ data: { contracts: [] } }))
       .then(r => setRecentContracts((r.data.contracts || []).slice(0, 3)));
-
-    api.get('/audit-logs?limit=4').catch(() => ({ data: { logs: [] } }))
+    api.get('/audit-logs?limit=5').catch(() => ({ data: { logs: [] } }))
       .then(r => setRecentActivity(r.data.logs || []));
-
     api.get('/royalties?status=pending&limit=3').catch(() => ({ data: { royalties: [] } }))
       .then(r => setPendingRoyalties(r.data.royalties || []));
   }, [api]);
 
   const dotColors = { create: '#0C628D', update: '#0FADA8', delete: '#B91C1C', upload: '#15803D', payment: '#F3921B' };
 
+  const menuItems = [
+    { to: '/dashboard/courses',    icon: 'ti-book-2',        label: 'Kelola Kursus',    color: '#0C628D', bg: '#EBF5FF' },
+    { to: '/dashboard/contracts',  icon: 'ti-file-contract', label: 'Kontrak',          color: '#B45309', bg: '#FEF3C7', badge: stats.pendingContracts },
+    { to: '/dashboard/users',      icon: 'ti-users',         label: 'Pengguna',         color: '#7C3AED', bg: '#F5F3FF' },
+    { to: '/dashboard/royalties',  icon: 'ti-coin',          label: 'Royalti',          color: '#B45309', bg: '#FEF9C3' },
+    { to: '/dashboard/accounting', icon: 'ti-chart-bar',     label: 'Pembukuan',        color: '#15803D', bg: '#DCFCE7' },
+    { to: '/dashboard/coupons',    icon: 'ti-tag',           label: 'Kupon Diskon',     color: '#0FADA8', bg: '#CCFBF1' },
+    { to: '/dashboard/categories', icon: 'ti-category',      label: 'Kategori',         color: '#6B7280', bg: '#F3F4F6' },
+    { to: '/dashboard/heroes',     icon: 'ti-photo',         label: 'Hero Carousel',    color: '#EC4899', bg: '#FCE7F3' },
+    { to: '/dashboard/testimonials',icon:'ti-message-star',  label: 'Testimoni',        color: '#F59E0B', bg: '#FEF3C7' },
+    { to: '/dashboard/about',      icon: 'ti-info-circle',   label: 'Tentang Kami',     color: '#6B7280', bg: '#F3F4F6' },
+    { to: '/dashboard/site-settings',icon:'ti-settings',     label: 'Pengaturan Situs', color: '#374151', bg: '#F9FAFB' },
+    { to: '/dashboard/activity-log',icon:'ti-history',       label: 'Log Aktivitas',    color: '#6B7280', bg: '#F3F4F6' },
+  ];
+
   return (
     <div style={{ height: '100%', overflowY: 'auto' }}>
-      <div style={{ padding: 22 }}>
-        {/* Title */}
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 3 }}>Dashboard Admin</div>
-        <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 18 }}>
-          Ringkasan platform dan hal-hal yang butuh perhatian hari ini
+      <div style={{ padding: '20px 20px 32px', maxWidth: 1100, margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>Selamat datang, {user?.name?.split(' ')[0]} 👋</div>
+          <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>Ringkasan platform hari ini</div>
         </div>
 
         {/* Alert */}
         {stats.pendingContracts > 0 && (
-          <div style={{ background: '#FEF3C7', border: '1px solid #FCD34D', borderRadius: 12, padding: '12px 16px', marginBottom: 18, display: 'flex', gap: 12, alignItems: 'center' }}>
-            <i className="ti ti-alert-triangle" style={{ fontSize: 20, color: '#B45309', flexShrink: 0 }} />
-            <div style={{ flex: 1, fontSize: 12, fontWeight: 700, color: '#B45309' }}>
+          <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 10, padding: '11px 16px', marginBottom: 18, display: 'flex', gap: 10, alignItems: 'center' }}>
+            <i className="ti ti-alert-triangle" style={{ fontSize: 16, color: '#B45309', flexShrink: 0 }} />
+            <div style={{ flex: 1, fontSize: 12, fontWeight: 600, color: '#92400E' }}>
               {stats.pendingContracts} kontrak menunggu respons teacher
             </div>
-            <button onClick={() => navigate('/dashboard/contracts')} style={{ padding: '5px 12px', border: '1px solid #D1D5DB', borderRadius: 8, background: '#fff', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', color: '#4B5563', fontFamily: 'inherit' }}>
+            <button onClick={() => navigate('/dashboard/contracts')} style={{ padding: '4px 12px', border: 'none', borderRadius: 7, background: '#B45309', color: '#fff', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
               Tinjau
             </button>
           </div>
         )}
 
-        {/* Stats Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 20 }}>
-          <StatCard label="Total Kursus" value={stats.courses} sub="Di platform" color="#0C628D" />
-          <StatCard label="Kontrak Pending" value={stats.pendingContracts} sub="Menunggu teacher" color={stats.pendingContracts > 0 ? '#B45309' : '#111827'} />
-          <StatCard label="Status Sistem" value="Aktif" sub="Semua layanan berjalan" color="#15803D" />
-        </div>
-
-        {/* Two-column layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          {/* Left column */}
-          <div>
-            {/* Recent contracts needing action */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Kontrak Perlu Tindakan</div>
-              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Semua kontrak</Link>
+        {/* Stat cards */}
+        <div className="dash-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 22 }}>
+          <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 18px', display: 'flex', gap: 14, alignItems: 'center' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: '#EBF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <i className="ti ti-book-2" style={{ fontSize: 18, color: '#0C628D' }} />
             </div>
-            <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
-              {recentContracts.length === 0 ? (
-                <div style={{ padding: '20px 16px', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
-                  <i className="ti ti-circle-check" style={{ fontSize: 20, display: 'block', marginBottom: 6, color: '#15803D' }} />
-                  Tidak ada kontrak pending
-                </div>
-              ) : recentContracts.map((c, i) => (
-                <div key={c._id} style={{ padding: '11px 14px', borderBottom: i < recentContracts.length - 1 ? '1px solid #F9FAFB' : 'none', display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 7, background: '#0C628D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-                    {(c.companyName || '?').slice(0, 2).toUpperCase()}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.courseId?.title || 'Kursus tidak diketahui'}</div>
-                    <div style={{ fontSize: 11, color: '#9CA3AF' }}>{c.companyName} · Dikirim {fmtDate(c.createdAt)}</div>
-                  </div>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: '#FEF3C7', color: '#B45309', whiteSpace: 'nowrap' }}>
-                    <i className="ti ti-clock" style={{ fontSize: 9 }} /> Menunggu
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Admin quick links */}
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 10 }}>Administrasi Platform</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <NavCard to="/dashboard/users" icon="ti-users" label="Kelola Pengguna" desc="Atur role & royalti" />
-              <NavCard to="/dashboard/accounting" icon="ti-chart-bar" label="Pembukuan" desc="Laporan keuangan" />
-              <NavCard to="/dashboard/coupons" icon="ti-tag" label="Kupon Diskon" desc="Buat kode diskon" />
-              <NavCard to="/dashboard/testimonials" icon="ti-message-star" label="Testimoni" desc="Moderasi ulasan" />
-              <NavCard to="/dashboard/heroes" icon="ti-photo" label="Hero Carousel" desc="Kelola slide" />
-              <NavCard to="/dashboard/site-settings" icon="ti-settings" label="Pengaturan Situs" desc="Config platform" />
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#0C628D', lineHeight: 1 }}>{stats.courses}</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>Total Kursus</div>
             </div>
           </div>
-
-          {/* Right column */}
-          <div>
-            {/* Pending royalties */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Royalti Perlu Dibayar</div>
-              <Link to="/dashboard/royalties" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Bayar semua</Link>
+          <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 18px', display: 'flex', gap: 14, alignItems: 'center' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: stats.pendingContracts > 0 ? '#FEF3C7' : '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <i className="ti ti-file-contract" style={{ fontSize: 18, color: stats.pendingContracts > 0 ? '#B45309' : '#9CA3AF' }} />
             </div>
-            <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
-              {pendingRoyalties.length === 0 ? (
-                <div style={{ padding: '20px 16px', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
-                  <i className="ti ti-circle-check" style={{ fontSize: 20, display: 'block', marginBottom: 6, color: '#15803D' }} />
-                  Tidak ada royalti pending
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: stats.pendingContracts > 0 ? '#B45309' : '#111827', lineHeight: 1 }}>{stats.pendingContracts}</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>Kontrak Pending</div>
+            </div>
+          </div>
+          <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 18px', display: 'flex', gap: 14, alignItems: 'center' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <i className="ti ti-circle-check" style={{ fontSize: 18, color: '#15803D' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#15803D', lineHeight: 1 }}>Aktif</div>
+              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>Status Sistem</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu akses cepat */}
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 12 }}>Akses Cepat</div>
+        <div className="dash-menu-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
+          {menuItems.map(item => (
+            <Link key={item.to} to={item.to} style={{ textDecoration: 'none' }}>
+              <div
+                style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', transition: 'border-color .15s, box-shadow .15s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = item.color; e.currentTarget.style.boxShadow = `0 2px 8px ${item.color}22`; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                <div style={{ width: 34, height: 34, borderRadius: 8, background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <i className={`ti ${item.icon}`} style={{ fontSize: 15, color: item.color }} />
                 </div>
-              ) : pendingRoyalties.map((r, i) => {
-                const initials = (r.teacherId?.name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                return (
-                  <div key={r._id} style={{ padding: '10px 14px', borderBottom: i < pendingRoyalties.length - 1 ? '1px solid #F9FAFB' : 'none', display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1B3A5C', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      {initials}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#111827' }}>{r.teacherId?.name || 'Teacher'}</div>
-                      <div style={{ fontSize: 11, color: '#9CA3AF' }}>{r.courseId?.title || 'Kursus'}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>
-                        {r.amount ? `Rp ${r.amount.toLocaleString('id-ID')}` : '—'}
-                      </div>
-                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 99, background: '#FEF3C7', color: '#B45309' }}>Pending</span>
-                    </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {item.label}
+                    {item.badge > 0 && (
+                      <span style={{ marginLeft: 5, fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 99, background: '#FEF3C7', color: '#B45309' }}>{item.badge}</span>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
 
-            {/* Recent activity */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Aktivitas Terbaru</div>
-              <Link to="/dashboard/activity-log" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none' }}>Log lengkap</Link>
+        {/* Bottom 2-col: kontrak + aktivitas */}
+        <div className="dash-bottom-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+
+          {/* Kontrak pending */}
+          <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Kontrak Pending</div>
+              <Link to="/dashboard/contracts" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none', fontWeight: 500 }}>Lihat semua</Link>
             </div>
-            <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, padding: '14px 16px' }}>
+            {recentContracts.length === 0 ? (
+              <div style={{ padding: '28px 16px', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
+                <i className="ti ti-circle-check" style={{ fontSize: 24, display: 'block', marginBottom: 6, color: '#15803D' }} />
+                Tidak ada kontrak pending
+              </div>
+            ) : recentContracts.map((c, i) => (
+              <div key={c._id} style={{ padding: '11px 16px', borderBottom: i < recentContracts.length - 1 ? '1px solid #F9FAFB' : 'none', display: 'flex', gap: 10, alignItems: 'center' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: '#1B3A5C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                  {(c.companyName || '?').slice(0, 2).toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.courseId?.title || 'Kursus'}</div>
+                  <div style={{ fontSize: 10, color: '#9CA3AF' }}>{c.companyName} · {fmtDate(c.createdAt)}</div>
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, background: '#FEF3C7', color: '#B45309', whiteSpace: 'nowrap' }}>Menunggu</span>
+              </div>
+            ))}
+
+            {/* Royalti pending */}
+            <div style={{ padding: '14px 16px', borderTop: '1px solid #F3F4F6', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: recentContracts.length === 0 ? 0 : 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Royalti Pending</div>
+              <Link to="/dashboard/royalties" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none', fontWeight: 500 }}>Bayar semua</Link>
+            </div>
+            {pendingRoyalties.length === 0 ? (
+              <div style={{ padding: '20px 16px', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>
+                <i className="ti ti-circle-check" style={{ fontSize: 20, display: 'block', marginBottom: 4, color: '#15803D' }} />
+                Tidak ada royalti pending
+              </div>
+            ) : pendingRoyalties.map((r, i) => {
+              const ini = (r.teacherId?.name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+              return (
+                <div key={r._id} style={{ padding: '10px 16px', borderBottom: i < pendingRoyalties.length - 1 ? '1px solid #F9FAFB' : 'none', display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1B3A5C', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{ini}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{r.teacherId?.name || 'Teacher'}</div>
+                    <div style={{ fontSize: 10, color: '#9CA3AF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.courseId?.title || 'Kursus'}</div>
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>{r.amount ? `Rp ${r.amount.toLocaleString('id-ID')}` : '—'}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Aktivitas terbaru */}
+          <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Aktivitas Terbaru</div>
+              <Link to="/dashboard/activity-log" style={{ fontSize: 11, color: '#0C628D', textDecoration: 'none', fontWeight: 500 }}>Log lengkap</Link>
+            </div>
+            <div style={{ padding: '8px 16px' }}>
               {recentActivity.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 12, padding: '10px 0' }}>Belum ada aktivitas</div>
+                <div style={{ padding: '24px 0', textAlign: 'center', color: '#9CA3AF', fontSize: 12 }}>Belum ada aktivitas</div>
               ) : recentActivity.map((log, i) => {
                 const color = dotColors[log.action] || '#9CA3AF';
                 return (
-                  <div key={log._id || i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', paddingBottom: i < recentActivity.length - 1 ? 10 : 0, marginBottom: i < recentActivity.length - 1 ? 10 : 0, borderBottom: i < recentActivity.length - 1 ? '1px solid #F9FAFB' : 'none' }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 4 }} />
+                  <div key={log._id || i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '9px 0', borderBottom: i < recentActivity.length - 1 ? '1px solid #F9FAFB' : 'none' }}>
+                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 5 }} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.4 }}>
-                        <strong style={{ color: '#111827' }}>{log.actorId?.name || 'User'}</strong> {log.action} {log.resource}
-                        {log.resourceTitle && <span style={{ color: '#9CA3AF' }}> — {log.resourceTitle}</span>}
+                      <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.5 }}>
+                        <strong style={{ color: '#111827' }}>{log.actorId?.name || 'User'}</strong>
+                        {' '}<span style={{ color: color, fontWeight: 600 }}>{log.action}</span>{' '}{log.resource}
+                        {log.resourceTitle && <span style={{ color: '#9CA3AF' }}> "{log.resourceTitle}"</span>}
                       </div>
-                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
+                      <div style={{ fontSize: 10, color: '#D1D5DB', marginTop: 1 }}>
                         {log.createdAt ? new Date(log.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
                       </div>
                     </div>
@@ -194,18 +234,21 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
                 );
               })}
             </div>
-
-            {/* Content management */}
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 10, marginTop: 16 }}>Manajemen Konten</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <NavCard to="/dashboard/courses" icon="ti-book-2" label="Kelola Kursus" desc="Buat & edit kursus" />
-              <NavCard to="/dashboard/contracts" icon="ti-file-contract" label="Kontrak" desc="Kelola kontrak" badge={stats.pendingContracts} />
-              <NavCard to="/dashboard/categories" icon="ti-category" label="Kategori" desc="Kelola kategori" />
-              <NavCard to="/dashboard/royalties" icon="ti-coin" label="Royalti" desc="Pembayaran royalti" />
-            </div>
           </div>
+
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .dash-menu-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+        @media (max-width: 640px) {
+          .dash-stat-grid { grid-template-columns: 1fr !important; }
+          .dash-menu-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .dash-bottom-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -396,7 +439,7 @@ export default function Dashboard() {
     load();
   }, [api, role]);
 
-  if (role === 'admin') return <AdminDashboard api={api} user={user} stats={stats} pendingContracts={stats.pendingContracts} />;
+  if (role === 'admin') return <AdminDashboard api={api} user={user} stats={stats} />;
   if (role === 'teacher') return <TeacherDashboard api={api} user={user} stats={stats} />;
   return <StudentDashboard user={user} stats={stats} />;
 }
