@@ -1,3 +1,4 @@
+import { Toggle } from '../../components/Toggle';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Container, Button, Input, Label, Textarea } from '../../components/ui';
 import { SidebarShell } from '../../components/SidebarShell';
@@ -11,15 +12,13 @@ function LessonCard({ l, onEdit, onToggle, onDelete }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-semibold leading-snug line-clamp-2 break-words">{l.title}</div>
-          <div className="mt-1 text-xs text-slate-500">
-            <span className="whitespace-nowrap">Order: {l.order}</span>
-            <span className="px-1">·</span>
+          <div className="mt-1 text-xs">
             <span className={l.isPublished ? 'text-emerald-600' : 'text-rose-500'}>{l.isPublished ? 'Published' : 'Draft'}</span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <Toggle checked={l.isPublished} onChange={() => onToggle(l)} />
           <Button variant="outline" className="px-3 text-xs" onClick={() => onEdit(l)}>Edit</Button>
-          <Button variant="outline" className="px-3 text-xs" onClick={() => onToggle(l)}>Toggle</Button>
           <Button variant="danger" className="px-3 text-xs" onClick={() => onDelete(l)}>Hapus</Button>
         </div>
       </div>
@@ -28,7 +27,7 @@ function LessonCard({ l, onEdit, onToggle, onDelete }) {
 }
 
 export default function CourseManager() {
-  const { api } = useAuth();
+  const { api, role } = useAuth();
 
   const [courses, setCourses] = useState([]);
   const [selectedId, setSelectedId] = useState('');
@@ -937,16 +936,11 @@ export default function CourseManager() {
                         </div>
                       </div>
                     )}
-                    <div className="flex items-center gap-2">
-                      <input
-                        id="coursePublished"
-                        type="checkbox"
-                        className="h-4 w-4"
-                        checked={courseForm.isPublished}
-                        onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                      />
-                      <Label htmlFor="coursePublished">Publish</Label>
-                    </div>
+                    <Toggle
+                      checked={courseForm.isPublished}
+                      onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
+                      label="Publish"
+                    />
                     <div className="flex gap-2">
                       <Button type="submit">Tambah Course</Button>
                       <Button type="button" variant="outline" onClick={() => setActiveTab('settings')}>Batal</Button>
@@ -958,18 +952,27 @@ export default function CourseManager() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="text-lg font-bold">{selected.title}</div>
-                    <div className="mt-1 text-sm text-slate-600">Published: {String(selected.isPublished)}</div>
+                    <div className="mt-2">
+                      <Toggle
+                        checked={selected.isPublished}
+                        onChange={() => updateSelectedCourse({ isPublished: !selected.isPublished })}
+                        label={selected.isPublished ? 'Published' : 'Draft'}
+                        disabled={role === 'teacher' && selected.contractId}
+                      />
+                      {role === 'teacher' && selected.contractId && (
+                        <div className="text-xs text-slate-400 mt-1">Publish dikontrol admin</div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => window.open(`/dashboard/courses/${selected._id}/stats`, '_blank')}>
                       Lihat Statistik
                     </Button>
-                    <Button variant="outline" onClick={() => updateSelectedCourse({ isPublished: !selected.isPublished })}>
-                      Toggle Publish
-                    </Button>
-                    <Button variant="danger" onClick={deleteSelectedCourse}>
-                      Hapus
-                    </Button>
+                    {role === 'admin' && (
+                      <Button variant="danger" onClick={deleteSelectedCourse}>
+                        Hapus
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -1108,16 +1111,11 @@ export default function CourseManager() {
                           </div>
                         </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <input
-                          id="coursePublished"
-                          type="checkbox"
-                          className="h-4 w-4"
-                          checked={courseForm.isPublished}
-                          onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                        />
-                        <Label htmlFor="coursePublished">Publish</Label>
-                      </div>
+                      <Toggle
+                        checked={courseForm.isPublished}
+                        onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
+                        label="Publish"
+                      />
                       <div className="flex gap-2">
                         <Button onClick={() => updateSelectedCourse(courseForm)}>Simpan Perubahan</Button>
                       </div>
@@ -1199,26 +1197,14 @@ export default function CourseManager() {
                     <div>
                       <div className="font-bold mb-4">Modul Kursus</div>
                       <form className="grid gap-3 mb-6 border-b border-slate-200 pb-6" onSubmit={createOrUpdateModule}>
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div>
-                            <Label>Nama Modul</Label>
-                            <div className="mt-1">
-                              <Input
-                                value={moduleForm.title}
-                                onChange={(e) => setModuleForm((f) => ({ ...f, title: e.target.value }))}
-                                placeholder="mis: Pendahuluan"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <Label>Order</Label>
-                            <div className="mt-1">
-                              <Input
-                                type="number"
-                                value={moduleForm.order}
-                                onChange={(e) => setModuleForm((f) => ({ ...f, order: Number(e.target.value) }))}
-                              />
-                            </div>
+                        <div>
+                          <Label>Nama Modul</Label>
+                          <div className="mt-1">
+                            <Input
+                              value={moduleForm.title}
+                              onChange={(e) => setModuleForm((f) => ({ ...f, title: e.target.value }))}
+                              placeholder="mis: Pendahuluan"
+                            />
                           </div>
                         </div>
                         <div>
@@ -1231,16 +1217,11 @@ export default function CourseManager() {
                             />
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            id="modPublished"
-                            type="checkbox"
-                            className="h-4 w-4"
-                            checked={moduleForm.isPublished}
-                            onChange={(e) => setModuleForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                          />
-                          <Label htmlFor="modPublished">Publish</Label>
-                        </div>
+                        <Toggle
+                          checked={moduleForm.isPublished}
+                          onChange={(e) => setModuleForm((f) => ({ ...f, isPublished: e.target.checked }))}
+                          label="Publish"
+                        />
                         <div className="flex gap-2">
                           <Button type="submit">{editingModuleId ? 'Simpan Modul' : 'Tambah Modul'}</Button>
                           {editingModuleId && (
@@ -1264,7 +1245,7 @@ export default function CourseManager() {
                                   <div className="font-semibold text-slate-900">{mod.title}</div>
                                   {mod.description && <div className="text-xs text-slate-500 mt-0.5">{mod.description}</div>}
                                   <div className="text-xs text-slate-400 mt-1">
-                                    Order: {mod.order} · {modLessons.length} materi · {mod.isPublished ? 'Published' : 'Draft'}
+                                    {modLessons.length} materi · {mod.isPublished ? 'Published' : 'Draft'}
                                   </div>
                                   {modLessons.length > 0 && (
                                     <div className="mt-1 text-xs text-slate-500">
@@ -1505,24 +1486,11 @@ export default function CourseManager() {
                           ) : null}
                         </div>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <Label>Order</Label>
-                          <div className="mt-1">
-                            <Input type="number" value={lessonForm.order} onChange={(e) => setLessonForm((f) => ({ ...f, order: Number(e.target.value) }))} />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 pt-6">
-                          <input
-                            id="lessonPublished"
-                            type="checkbox"
-                            className="h-4 w-4"
-                            checked={lessonForm.isPublished}
-                            onChange={(e) => setLessonForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                          />
-                          <Label htmlFor="lessonPublished">Publish</Label>
-                        </div>
-                      </div>
+                      <Toggle
+                        checked={lessonForm.isPublished}
+                        onChange={(e) => setLessonForm((f) => ({ ...f, isPublished: e.target.checked }))}
+                        label="Publish"
+                      />
                       <div className="flex flex-wrap gap-2">
                         <Button type="submit">{isEditingLesson ? 'Simpan Perubahan' : 'Tambah Materi'}</Button>
                         {isEditingLesson ? (
@@ -1602,24 +1570,13 @@ export default function CourseManager() {
                           <Textarea rows={3} value={quizForm.description} onChange={(e) => setQuizForm((f) => ({ ...f, description: e.target.value }))} />
                         </div>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <Label>Time Limit (sec)</Label>
-                          <div className="mt-1">
-                            <Input type="number" value={quizForm.timeLimitSec} onChange={(e) => setQuizForm((f) => ({ ...f, timeLimitSec: Number(e.target.value) }))} />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 pt-6">
-                          <input
-                            id="quizPublished"
-                            type="checkbox"
-                            className="h-4 w-4"
-                            checked={quizForm.isPublished}
-                            onChange={(e) => setQuizForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                          />
-                          <Label htmlFor="quizPublished">Publish</Label>
+                      <div>
+                        <Label>Time Limit (sec)</Label>
+                        <div className="mt-1">
+                          <Input type="number" value={quizForm.timeLimitSec} onChange={(e) => setQuizForm((f) => ({ ...f, timeLimitSec: Number(e.target.value) }))} />
                         </div>
                       </div>
+                      <Toggle checked={quizForm.isPublished} onChange={(e) => setQuizForm((f) => ({ ...f, isPublished: e.target.checked }))} label="Publish" />
                       <Button type="submit">Tambah Quiz</Button>
                     </form>
 
@@ -1635,21 +1592,10 @@ export default function CourseManager() {
                               >
                                 {q.title}
                               </button>
-                              <div className="text-xs text-slate-500">Published: {String(q.isPublished)}</div>
+                              <div className="text-xs text-slate-500">{q.isPublished ? 'Published' : 'Draft'}</div>
                             </div>
-                            <div className="flex gap-2">
-                              <div className="flex items-center gap-2 pt-6">
-                                <input
-                                  id="quizRandom"
-                                  type="checkbox"
-                                  checked={quizForm.randomizeQuestions}
-                                  onChange={(e) => setQuizForm((f) => ({ ...f, randomizeQuestions: e.target.checked }))}
-                                />
-                                <Label htmlFor="quizRandom">Random urutan soal</Label>
-                              </div>
-                              <Button variant="outline" className="px-3" onClick={() => toggleQuizPublish(q)}>
-                                Toggle
-                              </Button>
+                            <div className="flex items-center gap-3">
+                              <Toggle checked={q.isPublished} onChange={() => toggleQuizPublish(q)} />
                               <Button variant="danger" className="px-3" onClick={() => deleteQuiz(q)}>
                                 Hapus
                               </Button>

@@ -1,4 +1,5 @@
 import { PageSpinner } from '../../components/PageSpinner';
+import { Toggle } from '../../components/Toggle';
 import { useEffect, useRef, useState } from 'react';
 import { Card, Container, Button, Input, Label, Textarea } from '../../components/ui';
 import { SidebarShell } from '../../components/SidebarShell';
@@ -205,9 +206,9 @@ export default function CouponManager() {
                     <Input
                       type="number"
                       min="0"
-                      step="1000"
+                      step={couponForm.discountType === 'percentage' ? '1' : '1000'}
                       value={couponForm.discountValue}
-                      onChange={(e) => setCouponForm((f) => ({ ...f, discountValue: e.target.value }))}
+                      onChange={(e) => setCouponForm((f) => ({ ...f, discountValue: Number(e.target.value) }))}
                       placeholder={couponForm.discountType === 'percentage' ? '50' : '100000'}
                       required
                     />
@@ -353,14 +354,8 @@ export default function CouponManager() {
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-2">
-                          <Button
-                            variant={coupon.isActive ? 'outline' : 'primary'}
-                            size="sm"
-                            onClick={() => toggleCouponStatus(coupon)}
-                          >
-                            {coupon.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                          </Button>
+                        <div className="flex flex-col gap-2 items-center">
+                          <Toggle checked={coupon.isActive} onChange={() => toggleCouponStatus(coupon)} label={coupon.isActive ? 'Aktif' : 'Nonaktif'} />
                           <Button
                             variant="ghost"
                             size="sm"

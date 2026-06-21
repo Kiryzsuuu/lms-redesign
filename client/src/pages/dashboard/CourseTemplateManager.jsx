@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Toggle } from '../../components/Toggle';
 import { Button, Card, Input, Label } from '../../components/ui';
 import { SidebarShell } from '../../components/SidebarShell';
 import { useAuth } from '../../lib/auth';
@@ -205,15 +206,8 @@ export default function CourseTemplateManager() {
                 />
               </div>
               <div className="flex items-end gap-2">
-                <div className="flex items-center gap-2 mt-4">
-                  <input
-                    id="tplActive"
-                    type="checkbox"
-                    checked={form.isActive}
-                    onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                    className="h-4 w-4"
-                  />
-                  <Label htmlFor="tplActive">Aktif (dapat dipilih teacher)</Label>
+                <div className="mt-4">
+                  <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif (dapat dipilih teacher)" />
                 </div>
               </div>
             </div>

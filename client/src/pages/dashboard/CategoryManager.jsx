@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Toggle } from '../../components/Toggle';
 import { SidebarShell } from '../../components/SidebarShell';
 import { Button, Input, Label } from '../../components/ui';
 import { useAuth } from '../../lib/auth';
@@ -219,15 +220,7 @@ export default function CategoryManager() {
               />
             </div>
             <div className="flex items-end gap-3 pb-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={form.isActive}
-                  onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                  className="w-4 h-4 accent-[#0C628D]"
-                />
-                Aktif (tampil di halaman utama)
-              </label>
+              <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif (tampil di halaman utama)" />
             </div>
           </div>
 

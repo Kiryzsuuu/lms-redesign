@@ -1,4 +1,5 @@
 import { PageSpinner } from '../../components/PageSpinner';
+import { Toggle } from '../../components/Toggle';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../lib/auth';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -203,7 +204,7 @@ function CreateContractModal({ onClose, onCreated, api }) {
           <button className="modal-close" onClick={onClose}><i className="ti ti-x" style={{ fontSize: 13 }} /></button>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
+          <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
             {error && (
               <div style={{ background: 'var(--red-100)', border: '1px solid #FECACA', borderRadius: 'var(--r-md)', padding: '8px 12px', fontSize: 12, color: 'var(--red)', marginBottom: 14 }}>{error}</div>
             )}
@@ -259,9 +260,8 @@ function CreateContractModal({ onClose, onCreated, api }) {
               <div className="form-label">Bonus & Klausul Tambahan</div>
               <input className="form-input" type="text" value={form.bonusClause} onChange={e => set('bonusClause', e.target.value)} placeholder="mis: Bonus Rp 5jt jika rating ≥ 4.5" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <input type="checkbox" id="ndaActive" checked={form.ndaActive} onChange={e => set('ndaActive', e.target.checked)} />
-              <label htmlFor="ndaActive" style={{ fontSize: 12, color: 'var(--gray-600)', cursor: 'pointer' }}>Kontrak ini mencakup NDA (Non-Disclosure Agreement)</label>
+            <div style={{ marginBottom: 10 }}>
+              <Toggle checked={form.ndaActive} onChange={e => set('ndaActive', e.target.checked)} label="Kontrak mencakup NDA (Non-Disclosure Agreement)" />
             </div>
           </div>
           <div className="modal-footer">

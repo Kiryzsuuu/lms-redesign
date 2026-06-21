@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Toggle } from '../../components/Toggle';
 import { Card, Button, Input, Label } from '../../components/ui';
 import { useAuth } from '../../lib/auth';
 import { SidebarShell } from '../../components/SidebarShell';
@@ -355,18 +356,7 @@ export default function AboutManager() {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                id="isActive"
-                type="checkbox"
-                className="h-4 w-4"
-                checked={form.isActive}
-                onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-              />
-              <Label htmlFor="isActive" className="!mb-0">
-                Aktif (Tampilkan di halaman publik)
-              </Label>
-            </div>
+            <Toggle checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} label="Aktif (Tampilkan di halaman publik)" />
 
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={saving} className="bg-primary text-white flex-1">

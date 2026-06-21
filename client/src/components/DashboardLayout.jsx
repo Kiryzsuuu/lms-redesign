@@ -64,11 +64,6 @@ const TEACHER_NAV = [
     items: [
       { to: '/dashboard/contracts', icon: 'ti-file-contract', label: 'Kontrak Kerjasama', badgeKey: 'contracts' },
       { to: '/dashboard/royalties', icon: 'ti-coin', label: 'Royalti' },
-    ],
-  },
-  {
-    section: 'Lainnya',
-    items: [
       { to: '/dashboard/activity-log', icon: 'ti-history', label: 'Log Aktivitas' },
     ],
   },

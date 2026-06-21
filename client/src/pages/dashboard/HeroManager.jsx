@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Toggle } from '../../components/Toggle';
 import { Card, Button, Input, Label } from '../../components/ui';
 import { useAuth } from '../../lib/auth';
 
@@ -147,16 +148,7 @@ export default function HeroManager() {
                   onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) }))}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <input
-                  id="isActive"
-                  type="checkbox"
-                  className="h-4 w-4"
-                  checked={form.isActive}
-                  onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))}
-                />
-                <Label htmlFor="isActive" className="text-xs sm:text-sm">Active</Label>
-              </div>
+              <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif" />
               <Button type="submit" className="bg-[#F3921B] text-white hover:bg-[#D97C0D] mt-2">
                 Tambah Slide
               </Button>
@@ -215,18 +207,12 @@ export default function HeroManager() {
                         </div>
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-slate-900">{s.imageUrl || '(tanpa image url)'}</div>
-                          <div className="mt-2 text-xs text-slate-500">Order: {s.order} • Active: {String(s.isActive)}</div>
+                          <div className="mt-2 text-xs text-slate-500">Order: {s.order}</div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex shrink-0 flex-row gap-2 sm:flex-col">
-                      <Button 
-                        variant="outline" 
-                        className="px-3 text-xs sm:text-sm" 
-                        onClick={() => updateSlide(s._id, { isActive: !s.isActive })}
-                      >
-                        {s.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                      </Button>
+                    <div className="flex shrink-0 flex-row items-center gap-3 sm:flex-col">
+                      <Toggle checked={s.isActive} onChange={() => updateSlide(s._id, { isActive: !s.isActive })} />
                       <Button 
                         variant="outline" 
                         className="px-3 text-xs sm:text-sm hover:bg-rose-50 hover:text-rose-700" 
