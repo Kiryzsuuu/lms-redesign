@@ -1,3 +1,4 @@
+import { PageSpinner } from '../../components/PageSpinner';
 import { useEffect, useRef, useState } from 'react';
 import { Card, Container, Button, Input, Label, Textarea } from '../../components/ui';
 import { SidebarShell } from '../../components/SidebarShell';
@@ -287,7 +288,7 @@ export default function CouponManager() {
             {/* Coupons List */}
             <div>
               {loading ? (
-                <Card className="p-6 text-center text-slate-600">Memuat...</Card>
+                <PageSpinner />
               ) : coupons.length === 0 ? (
                 <Card className="p-6 text-center text-slate-600">Belum ada kupon. Buat yang pertama!</Card>
               ) : (

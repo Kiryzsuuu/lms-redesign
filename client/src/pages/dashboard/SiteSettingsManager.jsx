@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Input } from '../../components/ui';
+import { PageSpinner } from '../../components/PageSpinner';
 import { useAuth } from '../../lib/auth';
 import { SidebarShell } from '../../components/SidebarShell';
 
@@ -233,7 +234,7 @@ export default function SiteSettingsManager() {
     clearFn('');
   }
 
-  if (loading) return <SidebarShell title="Pengaturan Situs"><div className="p-8 text-sm text-gray-500">Memuat...</div></SidebarShell>;
+  if (loading) return <SidebarShell title="Pengaturan Situs"><PageSpinner /></SidebarShell>;
 
   return (
     <SidebarShell title="Pengaturan Situs" description="Konfigurasi Midtrans, SMTP, dan konten halaman utama">
@@ -264,7 +265,7 @@ export default function SiteSettingsManager() {
       {activeTab === 'midtrans' && (
         <div className="space-y-6 max-w-2xl">
           {mtLoading ? (
-            <div className="text-sm text-gray-400 py-8 text-center">Memuat konfigurasi Midtrans…</div>
+            <PageSpinner />
           ) : (
             <>
               {/* Status */}
@@ -385,7 +386,7 @@ export default function SiteSettingsManager() {
       {activeTab === 'smtp' && (
         <div className="space-y-6 max-w-2xl">
           {smtpLoading ? (
-            <div className="text-sm text-gray-400 py-8 text-center">Memuat konfigurasi SMTP…</div>
+            <PageSpinner />
           ) : (
             <>
               <div>

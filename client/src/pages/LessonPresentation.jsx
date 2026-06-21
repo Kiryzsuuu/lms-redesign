@@ -1,3 +1,5 @@
+import { PageSpinner } from '../components/PageSpinner';
+import { PageSpinner } from '../components/PageSpinner';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
@@ -239,7 +241,7 @@ export default function LessonPresentation() {
             <a href="/courses" style={{ color: C.blue, fontSize: '0.85rem', fontWeight: 600 }}>Kembali ke Daftar Course</a>
           </div>
         ) : (
-          <div style={{ color: C.n500, fontSize: '0.9rem' }}>Memuat kursus...</div>
+          <PageSpinner />
         )}
       </div>
     );

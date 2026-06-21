@@ -1,3 +1,4 @@
+import { PageSpinner } from '../../components/PageSpinner';
 import { useEffect, useState, useCallback } from 'react';
 import { SidebarShell } from '../../components/SidebarShell';
 import { useAuth } from '../../lib/auth';
@@ -97,7 +98,7 @@ export default function ActivityLog() {
       </div>
 
       {loading ? (
-        <div className="py-12 text-center text-sm text-gray-400">Memuat...</div>
+        <PageSpinner />
       ) : logs.length === 0 ? (
         <div className="py-12 text-center text-sm text-gray-400">Belum ada aktivitas tercatat.</div>
       ) : (

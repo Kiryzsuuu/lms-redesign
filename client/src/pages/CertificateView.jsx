@@ -1,3 +1,5 @@
+import { PageSpinner } from '../components/PageSpinner';
+import { PageSpinner } from '../components/PageSpinner';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Container } from '../components/ui';
@@ -90,7 +92,7 @@ export default function CertificateView() {
     return (
       <section className="py-20">
         <Container>
-          <div className="text-center text-slate-600">Memuat sertifikat...</div>
+          <PageSpinner />
         </Container>
       </section>
     );

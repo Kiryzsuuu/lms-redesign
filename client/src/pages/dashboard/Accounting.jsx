@@ -1,3 +1,4 @@
+import { PageSpinner } from '../../components/PageSpinner';
 import { useEffect, useMemo, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, Container, Button, Input, Label } from '../../components/ui';
@@ -268,7 +269,7 @@ export default function Accounting() {
         {tab === 'courses' && (
           <>
             {loadingCourses ? (
-              <div className="mt-6 text-center py-8 text-slate-600">Memuat data per-course...</div>
+              <PageSpinner />
             ) : (
               <>
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -358,7 +359,7 @@ export default function Accounting() {
                 </div>
 
                 {loading ? (
-                  <div className="py-6 text-sm text-slate-600">Memuat...</div>
+                  <PageSpinner />
                 ) : orders.length ? (
                   <div className="divide-y divide-slate-100">
                     {orders.map((o) => (

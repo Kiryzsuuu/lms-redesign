@@ -1,3 +1,5 @@
+import { PageSpinner } from '../components/PageSpinner';
+import { PageSpinner } from '../components/PageSpinner';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Card, Container } from '../components/ui';
@@ -212,7 +214,7 @@ export default function Cart() {
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="grid gap-4">
           {loading ? (
-            <Card className="p-6 text-sm text-slate-600">Memuat...</Card>
+            <PageSpinner />
           ) : items.length === 0 ? (
             <Card className="p-6">
               <div className="text-sm text-slate-600">Cart masih kosong.</div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Card, Button } from '../components/ui';
+import { PageSpinner } from '../components/PageSpinner';
 import { useAuth } from '../lib/auth';
 import { Link } from 'react-router-dom';
 
@@ -36,13 +37,7 @@ export default function AboutUs() {
     load();
   }, [api]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-slate-600">Memuat...</p>
-      </div>
-    );
-  }
+  if (loading) return <PageSpinner fullPage />;
 
   return (
     <div>

@@ -1,3 +1,4 @@
+import { PageSpinner } from '../../components/PageSpinner';
 import React, { useState, useEffect } from 'react';
 import { Card, Container, Button } from '../../components/ui';
 import { useAuth } from '../../lib/auth';
@@ -183,7 +184,7 @@ export default function StudentProgressMonitor() {
                       {loading ? (
                         <tr>
                           <td colSpan="5" className="text-center py-8 text-slate-500">
-                            Memuat data...
+                            Loading...
                           </td>
                         </tr>
                       ) : students.length === 0 ? (
@@ -248,7 +249,7 @@ export default function StudentProgressMonitor() {
 
                 {loading ? (
                   <Card className="p-12 text-center">
-                    <p className="text-slate-500">Memuat detail...</p>
+                    <PageSpinner />
                   </Card>
                 ) : studentDetail ? (
                   <>

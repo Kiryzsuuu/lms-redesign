@@ -1,3 +1,4 @@
+import { PageSpinner } from '../../components/PageSpinner';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../lib/auth';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -452,7 +453,7 @@ export default function ContractManager() {
 
         {/* Contract list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 32, color: 'var(--gray-400)', fontSize: 13 }}>Memuat kontrak…</div>
+          <PageSpinner />
         ) : contracts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 32, color: 'var(--gray-400)', fontSize: 13 }}>
             <i className="ti ti-file-contract" style={{ fontSize: 28, display: 'block', marginBottom: 8 }} />

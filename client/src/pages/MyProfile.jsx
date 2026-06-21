@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, Button, Input, Label } from '../components/ui';
+import { PageSpinner } from '../components/PageSpinner';
 import { SidebarShell } from '../components/SidebarShell';
 import { useAuth } from '../lib/auth';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -283,7 +284,7 @@ export default function MyProfile() {
     handleLogout();
   }
 
-  if (loading) return <div className="py-10 text-center text-slate-600">Memuat data...</div>;
+  if (loading) return <PageSpinner fullPage />;
 
   if (error || !user) {
     return (
