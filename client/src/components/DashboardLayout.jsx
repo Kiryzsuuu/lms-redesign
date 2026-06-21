@@ -139,15 +139,30 @@ export function DashboardLayout({ children }) {
 
   const SidebarContent = () => (
     <>
-      {/* Logo */}
-      <div style={{ padding: '14px 14px 10px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: '1px solid rgba(255,255,255,.1)' }}>
-        <div style={{ width: 30, height: 30, borderRadius: 7, background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <i className="ti ti-school" style={{ color: '#fff', fontSize: 16 }} />
+      {/* Logo — klik kembali ke beranda */}
+      <Link
+        to="/"
+        style={{ padding: '12px 14px 10px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: '1px solid rgba(255,255,255,.1)', textDecoration: 'none', flexShrink: 0 }}
+        title="Kembali ke Beranda"
+      >
+        <img
+          src="/logo-putih.png"
+          alt="InspiraLearn"
+          style={{ height: 28, width: 'auto', objectFit: 'contain', maxWidth: 140 }}
+          onError={e => {
+            e.currentTarget.style.display = 'none';
+            e.currentTarget.nextSibling.style.display = 'flex';
+          }}
+        />
+        <div style={{ display: 'none', alignItems: 'center', gap: 9 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <i className="ti ti-school" style={{ color: '#fff', fontSize: 15 }} />
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+            <span style={{ color: '#7EC8F5' }}>Inspira</span>Learn
+          </div>
         </div>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-          <span style={{ color: '#7EC8F5' }}>Inspira</span>Learn
-        </div>
-      </div>
+      </Link>
 
       {/* User */}
       <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: '1px solid rgba(255,255,255,.1)' }}>
@@ -205,6 +220,15 @@ export function DashboardLayout({ children }) {
 
       {/* Bottom */}
       <div style={{ padding: 8, borderTop: '1px solid rgba(255,255,255,.1)', flexShrink: 0 }}>
+        <Link
+          to="/my-profile"
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.65)', textDecoration: 'none', marginBottom: 2 }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.1)'; e.currentTarget.style.color = '#fff'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,.65)'; }}
+        >
+          <i className="ti ti-user-circle" style={{ fontSize: 14, width: 16, textAlign: 'center' }} />
+          Profil Saya
+        </Link>
         <button
           onClick={() => { logout(); navigate('/login'); }}
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.5)', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}
@@ -266,12 +290,26 @@ export function DashboardLayout({ children }) {
 
           {/* Right */}
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Link
+              to="/"
+              style={{ fontSize: 11, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none', padding: '4px 8px', borderRadius: 6, border: '1px solid #E5E7EB' }}
+              title="Kembali ke Beranda"
+              onMouseEnter={e => { e.currentTarget.style.background = '#F3F4F6'; e.currentTarget.style.color = '#111827'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6B7280'; }}
+            >
+              <i className="ti ti-home" style={{ fontSize: 13 }} />
+              <span className="dash-beranda-label">Beranda</span>
+            </Link>
             <div style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: role === 'admin' ? '#FEE2E2' : role === 'teacher' ? '#FEF3E2' : '#EBF5FF', color: role === 'admin' ? '#B91C1C' : role === 'teacher' ? '#F3921B' : '#0C628D' }}>
               {roleLabel}
             </div>
-            <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#1B3A5C', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Link
+              to="/my-profile"
+              style={{ width: 30, height: 30, borderRadius: '50%', background: '#1B3A5C', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+              title="Profil Saya"
+            >
               {initials}
-            </div>
+            </Link>
           </div>
         </header>
 
@@ -285,6 +323,7 @@ export function DashboardLayout({ children }) {
         @media (max-width: 768px) {
           .dash-sidebar-desktop { display: none !important; }
           .dash-mobile-menu-btn { display: flex !important; }
+          .dash-beranda-label { display: none; }
         }
       `}</style>
     </div>
