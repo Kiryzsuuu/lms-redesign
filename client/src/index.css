@@ -379,6 +379,33 @@
   .reveal-delay-2 { transition-delay: .16s; }
   .reveal-delay-3 { transition-delay: .24s; }
   .reveal-delay-4 { transition-delay: .32s; }
+
+  /* ── DASHBOARD LAYOUT RESPONSIVE ── */
+  .dash-sidebar-desktop {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .dash-mobile-menu-btn {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .dash-sidebar-desktop { display: none !important; }
+    .dash-mobile-menu-btn { display: flex !important; }
+  }
+
+  /* ── RESPONSIVE TABLE ── */
+  @media (max-width: 640px) {
+    .data-table { font-size: 11px; }
+    .data-table th, .data-table td { padding: 7px 8px; }
+  }
+
+  /* ── RESPONSIVE STATS GRID ── */
+  @media (max-width: 480px) {
+    .stat-grid-responsive {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
 }
 
 @keyframes ticker-scroll {
