@@ -52,7 +52,7 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
     api.get('/contracts?status=sent&limit=3').catch(() => ({ data: { contracts: [] } }))
       .then(r => setRecentContracts((r.data.contracts || []).slice(0, 3)));
 
-    api.get('/activity-logs?limit=4').catch(() => ({ data: { logs: [] } }))
+    api.get('/audit-logs?limit=4').catch(() => ({ data: { logs: [] } }))
       .then(r => setRecentActivity(r.data.logs || []));
 
     api.get('/royalties?status=pending&limit=3').catch(() => ({ data: { royalties: [] } }))
@@ -183,8 +183,8 @@ function AdminDashboard({ api, user, stats, pendingContracts }) {
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 4 }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.4 }}>
-                        <strong style={{ color: '#111827' }}>{log.userId?.name || 'User'}</strong> {log.action} {log.resourceType}
-                        {log.resourceId?.title && <span style={{ color: '#9CA3AF' }}> — {log.resourceId.title}</span>}
+                        <strong style={{ color: '#111827' }}>{log.actorId?.name || 'User'}</strong> {log.action} {log.resource}
+                        {log.resourceTitle && <span style={{ color: '#9CA3AF' }}> — {log.resourceTitle}</span>}
                       </div>
                       <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
                         {log.createdAt ? new Date(log.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
