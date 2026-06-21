@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS InspiraLearn — Teacher Portal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0C628D;--blue-light:#EBF5FF;
+  --orange:#F3921B;--orange-light:#FEF3E2;
+  --teal:#0FADA8;--teal-light:#E0F5F5;
+  --green:#15803D;--green-light:#DCFCE7;
+  --red:#B91C1C;--red-light:#FEE2E2;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --amber:#B45309;--amber-light:#FEF3C7;
+  --pink:#BE185D;--pink-light:#FCE7F3;
+  --indigo:#3730A3;--indigo-light:#E0E7FF;
+  --bg:#F5F6F8;--surface:#fff;
+  --border:#E5E7EB;--border-mid:#D1D5DB;
+  --text:#111827;--text-2:#4B5563;--text-3:#9CA3AF;
+  --r:8px;--r-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;flex-shrink:0;background:#1B3A5C;display:flex;flex-direction:column;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:50px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px}
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* SIDEBAR */
+.sb-logo{padding:14px 14px 10px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-icon{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-icon i{color:#fff;font-size:16px}
+.sb-logo-text{font-size:13px;font-weight:700;color:#fff}
+.sb-user{padding:10px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.sb-name{font-size:11px;font-weight:600;color:#fff}
+.sb-role-tag{font-size:9px;background:rgba(243,146,27,.3);color:#FBBF6A;padding:1px 6px;border-radius:99px;font-weight:700;margin-top:2px;display:inline-block}
+.sb-nav{padding:8px 8px;flex:1}
+.sb-sec{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;padding:0 8px;margin:12px 0 3px}
+.nl{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r);font-size:12px;color:rgba(255,255,255,.65);cursor:pointer;transition:.12s;margin-bottom:1px}
+.nl:hover{background:rgba(255,255,255,.1);color:#fff}
+.nl.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+.nl i{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.nl .nb{margin-left:auto;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px}
+.nb-red{background:rgba(248,113,113,.25);color:#FCA5A5}
+.nb-orange{background:rgba(243,146,27,.3);color:#FBBF6A}
+.nb-blue{background:rgba(255,255,255,.15);color:#fff}
+.sb-bottom{padding:8px;border-top:1px solid rgba(255,255,255,.1)}
+
+/* TOPBAR */
+.tb-search{display:flex;align-items:center;gap:7px;background:#F3F4F6;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;height:30px;max-width:240px;flex:1}
+.tb-search i{font-size:13px;color:var(--text-3)}
+.tb-search input{border:none;background:none;font-size:12px;color:var(--text);outline:none;width:100%}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ib{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);position:relative}
+.ib i{font-size:14px}
+.ndot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid #fff}
+.tb-av{width:30px;height:30px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tb-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--orange-light);color:var(--orange)}
+
+/* SCREENS */
+.screen{display:none}
+.screen.active{display:block}
+
+/* BASE COMPONENTS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px}
+.card-flush{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.page-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text-3);margin-bottom:20px}
+.breadcrumb{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-3);margin-bottom:14px}
+.breadcrumb span{cursor:pointer}.breadcrumb span:hover{color:#0C628D}
+.breadcrumb .curr{color:var(--text);cursor:default}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-size:13px;font-weight:700;color:var(--text)}
+.sec-link{font-size:11px;color:#0C628D;cursor:pointer}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
+.stat-sub{font-size:11px;color:var(--text-3)}
+.pbar{height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;gap:3px;white-space:nowrap}
+.b-published{background:var(--green-light);color:var(--green)}
+.b-draft{background:#F3F4F6;color:var(--text-3)}
+.b-pending-contract{background:var(--amber-light);color:var(--amber)}
+.b-active{background:var(--blue-light);color:#0C628D}
+.b-rejected{background:var(--red-light);color:var(--red)}
+.b-locked{background:#F3F4F6;color:var(--text-3)}
+/* Question type badges */
+.b-mcq{background:var(--blue-light);color:#0C628D}
+.b-mcq-multi{background:var(--indigo-light);color:var(--indigo)}
+.b-essay{background:var(--purple-light);color:var(--purple)}
+.b-short{background:var(--teal-light);color:var(--teal)}
+.b-matching{background:var(--amber-light);color:var(--amber)}
+.b-ordering{background:var(--orange-light);color:var(--orange)}
+.b-truefalse{background:var(--green-light);color:var(--green)}
+.b-fillblank{background:var(--pink-light);color:var(--pink)}
+.b-hotspot{background:#FDF2F8;color:#9D174D}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:7px 14px;font-size:12px;cursor:pointer;color:var(--text-2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s;font-weight:500}
+.tab:hover{color:var(--text)}.tab.active{color:#0C628D;border-bottom-color:#0C628D;font-weight:700}
+
+/* FORMS */
+.fg{margin-bottom:12px}
+.fl{font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;display:block}
+.fi{width:100%;height:32px;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--text);background:#fff;outline:none}
+.fi:focus{border-color:#0C628D;box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.fta{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-size:12px;color:var(--text);background:#fff;outline:none;resize:vertical;min-height:70px}
+.fta:focus{border-color:#0C628D;box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.fsel{width:100%;height:32px;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--text);background:#fff;outline:none}
+.fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.inline-check{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer}
+
+/* BUTTONS */
+.btn{padding:6px 12px;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer}
+.btn-p{background:#0C628D;color:#fff}.btn-p:hover{background:#0A527A}
+.btn-o{background:none;color:#0C628D;border:1px solid #0C628D}.btn-o:hover{background:var(--blue-light)}
+.btn-g{background:none;color:var(--text-2);border:1px solid var(--border)}.btn-g:hover{background:#F3F4F6}
+.btn-d{background:none;color:var(--red);border:1px solid #FECACA}.btn-d:hover{background:var(--red-light)}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#166534}
+.btn-sm{padding:4px 9px;font-size:11px;font-weight:600;border:none;border-radius:6px;cursor:pointer}
+.bs-p{background:#0C628D;color:#fff}
+.bs-o{background:none;color:var(--text-2);border:1px solid var(--border)}
+.bs-d{background:none;color:var(--red);border:1px solid #FECACA}
+.bs-s{background:var(--green);color:#fff}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* CONTRACT CARDS */
+.contract-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px}
+.contract-header{padding:14px 16px;display:flex;align-items:flex-start;gap:14px}
+.contract-company-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.contract-info{flex:1;min-width:0}
+.contract-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.contract-company{font-size:12px;color:var(--text-2)}
+.contract-meta{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.contract-meta-item{font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:3px}
+.contract-actions{display:flex;gap:6px;flex-shrink:0;align-items:flex-start}
+.contract-body{padding:0 16px 14px}
+.contract-preview{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--r);padding:12px;font-size:12px;color:var(--text-2);line-height:1.7;max-height:120px;overflow:hidden;position:relative}
+.contract-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,#FAFAFA)}
+.contract-expand-btn{font-size:11px;color:#0C628D;cursor:pointer;display:flex;align-items:center;gap:3px;margin-top:8px}
+.contract-terms{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.contract-term{font-size:11px;background:#F3F4F6;padding:3px 9px;border-radius:99px;color:var(--text-2)}
+
+/* CONTRACT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-box{background:var(--surface);border-radius:var(--r-lg);width:100%;max-width:620px;max-height:85vh;display:flex;flex-direction:column}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:700;color:var(--text)}
+.modal-close{width:28px;height:28px;border-radius:var(--r);border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:16px}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.contract-full-text{font-size:12px;color:var(--text-2);line-height:1.8;white-space:pre-wrap}
+.contract-section-title{font-size:12px;font-weight:700;color:var(--text);margin:14px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+
+/* QUESTION TYPE GRID */
+.qtype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.qtype-card{border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;cursor:pointer;transition:.12s;display:flex;align-items:flex-start;gap:8px}
+.qtype-card:hover{border-color:#0C628D;background:var(--blue-light)}
+.qtype-card.selected{border-color:#0C628D;background:var(--blue-light)}
+.qtype-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qtype-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:1px}
+.qtype-desc{font-size:10px;color:var(--text-3);line-height:1.3}
+
+/* QUESTION ROWS */
+.q-row{border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px;display:flex;gap:10px;background:var(--surface)}
+.q-row:hover{border-color:var(--border-mid)}
+.q-num{width:22px;height:22px;border-radius:50%;background:#F3F4F6;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--text-3);flex-shrink:0;margin-top:1px}
+.q-body{flex:1;min-width:0}
+.q-prompt{font-size:12px;color:var(--text);margin-bottom:5px;line-height:1.4}
+.q-choices{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.q-choice{font-size:11px;color:var(--text-2);padding:3px 8px;border-radius:5px;display:flex;align-items:center;gap:5px}
+.q-choice.correct{background:var(--green-light);color:var(--green);font-weight:600}
+.q-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--border-mid);flex-shrink:0}
+.q-choice.correct .q-dot{border-color:var(--green);background:var(--green)}
+.q-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+
+/* BANK IMPORT/EXPORT */
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.format-card{border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:.12s;text-align:center}
+.format-card:hover{border-color:#0C628D;background:var(--blue-light)}
+.format-card.selected{border-color:#0C628D;background:var(--blue-light)}
+.format-icon{font-size:24px;margin-bottom:6px}
+.format-name{font-size:12px;font-weight:700;color:var(--text)}
+.format-ext{font-size:10px;color:var(--text-3)}
+.upload-drop{border:2px dashed var(--border-mid);border-radius:var(--r-lg);padding:28px;text-align:center;cursor:pointer;transition:.12s}
+.upload-drop:hover{border-color:#0C628D;background:var(--blue-light)}
+.upload-drop i{font-size:28px;color:var(--text-3);margin-bottom:8px;display:block}
+.upload-drop .ud-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.upload-drop .ud-sub{font-size:11px;color:var(--text-3)}
+
+/* RICHTEXT MOCK */
+.rt{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rt-tb{padding:5px 8px;background:#F9FAFB;border-bottom:1px solid var(--border);display:flex;gap:3px;flex-wrap:wrap}
+.rt-btn{padding:2px 6px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer;border-radius:3px}
+.rt-btn:hover{background:#E5E7EB}
+.rt-body{padding:10px;min-height:70px;font-size:12px;color:var(--text);line-height:1.6;outline:none}
+
+/* FILL IN BLANK */
+.blank-preview{font-size:13px;color:var(--text);line-height:2;margin:8px 0}
+.blank{display:inline-block;min-width:80px;border-bottom:2px solid #0C628D;padding:0 4px;color:#0C628D;font-weight:600}
+
+/* HOTSPOT */
+.hotspot-area{position:relative;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:#F9FAFB}
+.hotspot-img{width:100%;height:160px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a3e,#0f1929)}
+.hotspot-marker{position:absolute;width:24px;height:24px;border-radius:50%;background:var(--orange);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;cursor:pointer}
+
+/* ORDERING */
+.order-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:5px;background:#fff;cursor:move}
+.order-handle{color:var(--text-3);font-size:14px}
+.order-num{width:20px;height:20px;border-radius:50%;background:#0C628D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.order-text{font-size:12px;color:var(--text);flex:1}
+
+/* MATCHING */
+.match-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:5px}
+.match-side{padding:6px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--text);background:#fff}
+.match-side.left{border-color:#0C628D;background:var(--blue-light)}
+.match-arrow{font-size:14px;color:var(--text-3)}
+
+/* COURSE LIST (for contract) */
+.course-contract-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:10px}
+.cci-header{padding:14px 16px;display:flex;gap:14px;align-items:center}
+.cci-thumb{width:52px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cci-info{flex:1;min-width:0}
+.cci-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.cci-meta{font-size:11px;color:var(--text-3)}
+.cci-status{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.locked-overlay{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)}
+
+/* NAV */
+.nav-demo{padding:8px 14px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.nav-demo span{font-size:10px;color:var(--text-3);margin-right:3px}
+.nav-demo button{padding:3px 10px;font-size:11px;border:1px solid var(--border);border-radius:99px;background:var(--surface);cursor:pointer;color:var(--text-2);font-family:inherit}
+.nav-demo button:hover{background:#F3F4F6}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon"><i class="ti ti-school"></i></div>
+    <div><div class="sb-logo-text"><span style="color:#7EC8F5">Inspira</span>Learn</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">SW</div>
+    <div>
+      <div class="sb-name">Dr. Sarah Wulandari</div>
+      <div class="sb-role-tag">Teacher / Instruktur</div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Utama</div>
+    <div class="nl active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nl" onclick="go('contracts')"><i class="ti ti-file-contract"></i> Kontrak Kursus <span class="nb nb-red">2</span></div>
+    <div class="nl" onclick="go('my-courses')"><i class="ti ti-book-2"></i> Kursus Saya <span class="nb nb-blue">3</span></div>
+
+    <div class="sb-sec">Konten</div>
+    <div class="nl" onclick="go('course-editor')"><i class="ti ti-edit"></i> Editor Materi</div>
+    <div class="nl" onclick="go('question-bank')"><i class="ti ti-database"></i> Bank Soal</div>
+
+    <div class="sb-sec">Analitik</div>
+    <div class="nl" onclick="go('student-progress')"><i class="ti ti-users"></i> Progress Siswa</div>
+    <div class="nl" onclick="go('royalty')"><i class="ti ti-coin"></i> Royalti <span class="nb nb-orange">Baru</span></div>
+
+    <div class="sb-sec">Akun</div>
+    <div class="nl" onclick="go('profile')"><i class="ti ti-user-circle"></i> Profil</div>
+  </div>
+  <div class="sb-bottom">
+    <div class="nl" style="color:rgba(255,255,255,.5)"><i class="ti ti-logout"></i> Keluar</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-search"><i class="ti ti-search"></i><input type="text" placeholder="Cari kursus, materi…"></div>
+    <div class="tb-right">
+      <div class="tb-badge"><i class="ti ti-school" style="font-size:10px"></i> Teacher</div>
+      <div class="ib" onclick="go('contracts')"><i class="ti ti-bell"></i><div class="ndot"></div></div>
+      <div class="tb-av">SW</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+  <!-- ═══════════════════════════════════
+       1. DASHBOARD
+  ═══════════════════════════════════ -->
+  <div class="screen active" id="s-dashboard">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Selamat datang, Sarah. Ada 2 kontrak baru menunggu persetujuanmu.</div>
+
+    <!-- Contract alert banner -->
+    <div style="background:var(--amber-light);border:1px solid #FCD34D;border-radius:var(--r-lg);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#FCD34D;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-file-contract" style="font-size:18px;color:var(--amber)"></i></div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--amber)">2 Kontrak Kerjasama Menunggu Persetujuan</div>
+        <div style="font-size:12px;color:#92400E;margin-top:2px">Kamu perlu menyetujui kontrak sebelum bisa mengisi materi kursus dari perusahaan mitra.</div>
+      </div>
+      <button class="btn btn-p" onclick="go('contracts')" style="white-space:nowrap">Tinjau Kontrak →</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-lbl">Kursus Aktif</div><div class="stat-val" style="color:#0C628D">2</div><div class="stat-sub">1 locked (belum setuju kontrak)</div></div>
+      <div class="stat-card"><div class="stat-lbl">Total Siswa</div><div class="stat-val" style="color:var(--teal)">1.240</div><div class="stat-sub">+48 bulan ini</div></div>
+      <div class="stat-card"><div class="stat-lbl">Royalti Pending</div><div class="stat-val" style="color:var(--orange)">Rp 2,4jt</div><div class="stat-sub">3 invoice</div></div>
+      <div class="stat-card"><div class="stat-lbl">Rating Rata-rata</div><div class="stat-val" style="color:var(--amber)">4.8 ★</div><div class="stat-sub">1.240 ulasan</div></div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="sec-hdr"><div class="sec-title">Kursus Saya</div><div class="sec-link" onclick="go('my-courses')">Semua →</div></div>
+        <div class="card-flush">
+          <!-- Course with active contract -->
+          <div style="padding:12px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="go('course-editor')">
+            <div style="width:40px;height:36px;border-radius:8px;background:#1a0f2e;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-chart-scatter-plot" style="font-size:18px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Machine Learning A–Z</div>
+              <div style="display:flex;gap:5px"><span class="badge b-published">Aktif</span><span style="font-size:10px;color:var(--text-3)">Tokopedia · 820 siswa</span></div>
+            </div>
+            <button class="btn-sm bs-p">Edit Materi</button>
+          </div>
+          <!-- Course locked -->
+          <div style="padding:12px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:12px;align-items:center;opacity:.7">
+            <div style="width:40px;height:36px;border-radius:8px;background:#1a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-robot" style="font-size:18px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Deep Learning with TensorFlow</div>
+              <div style="display:flex;gap:5px"><span class="badge b-pending-contract"><i class="ti ti-lock" style="font-size:9px"></i> Kontrak Pending</span><span style="font-size:10px;color:var(--text-3)">Gojek</span></div>
+            </div>
+            <button class="btn-sm bs-o" onclick="go('contracts')" style="white-space:nowrap">Tinjau →</button>
+          </div>
+          <div style="padding:12px 14px;display:flex;gap:12px;align-items:center;cursor:pointer">
+            <div style="width:40px;height:36px;border-radius:8px;background:#0a2010;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-code" style="font-size:18px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Python untuk Pemula</div>
+              <div style="display:flex;gap:5px"><span class="badge b-published">Aktif</span><span style="font-size:10px;color:var(--text-3)">Traveloka · 380 siswa</span></div>
+            </div>
+            <button class="btn-sm bs-p">Edit Materi</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-hdr"><div class="sec-title">Kontrak Terbaru</div><div class="sec-link" onclick="go('contracts')">Lihat semua →</div></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:center">
+            <div style="width:34px;height:34px;border-radius:8px;background:#E53935;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;color:#fff">GO</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Deep Learning TensorFlow</div>
+              <div style="font-size:11px;color:var(--text-3)">Gojek · Diterima 2 hari lalu</div>
+            </div>
+            <span class="badge b-pending-contract">Menunggu</span>
+          </div>
+          <div style="padding:12px 14px;display:flex;gap:10px;align-items:center">
+            <div style="width:34px;height:34px;border-radius:8px;background:#1565C0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;color:#fff">BK</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Data Analytics for Business</div>
+              <div style="font-size:11px;color:var(--text-3)">BCA Digital · Diterima 5 hari lalu</div>
+            </div>
+            <span class="badge b-pending-contract">Menunggu</span>
+          </div>
+        </div>
+        <div class="sec-hdr" style="margin-top:14px"><div class="sec-title">Royalti Bulan Ini</div><div class="sec-link" onclick="go('royalty')">Detail →</div></div>
+        <div class="card">
+          <div style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:3px">Rp 4.820.000</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">2 kursus · Juni 2026</div>
+          <div class="pbar"><div class="pfill" style="width:65%;background:var(--green)"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:4px"><span>Dibayar: Rp 2,4jt</span><span>Pending: Rp 2,4jt</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       2. KONTRAK KERJASAMA (list)
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-contracts">
+    <div class="page-title">Kontrak Kerjasama</div>
+    <div class="page-sub">Kamu harus menyetujui kontrak dari perusahaan mitra sebelum bisa mengisi materi kursus.</div>
+
+    <!-- HOW IT WORKS -->
+    <div class="card" style="margin-bottom:20px;background:#F0F8FD;border-color:#BEE3F8">
+      <div style="font-size:12px;font-weight:700;color:#0C628D;margin-bottom:10px">Alur Kerjasama</div>
+      <div style="display:flex;align-items:flex-start;gap:0">
+        <div style="text-align:center;flex:1">
+          <div style="width:32px;height:32px;border-radius:50%;background:#0C628D;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">1</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Admin Perusahaan</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Buat kursus + isi kontrak kerjasama + tunjuk kamu sebagai instruktur</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;margin-top:10px"><i class="ti ti-arrow-right" style="font-size:16px;color:var(--text-3)"></i></div>
+        <div style="text-align:center;flex:1">
+          <div style="width:32px;height:32px;border-radius:50%;background:#F3921B;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">2</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Kamu Terima Notifikasi</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Baca isi kontrak dengan teliti, termasuk lingkup kerja, royalti, dan syarat</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;margin-top:10px"><i class="ti ti-arrow-right" style="font-size:16px;color:var(--text-3)"></i></div>
+        <div style="text-align:center;flex:1">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">3</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Setuju → Bisa Isi Materi</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Setelah menyetujui, kursus terbuka dan kamu bisa mulai upload konten</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;margin-top:10px"><i class="ti ti-arrow-right" style="font-size:16px;color:var(--text-3)"></i></div>
+        <div style="text-align:center;flex:1">
+          <div style="width:32px;height:32px;border-radius:50%;background:#7C3AED;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">4</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Kursus Live & Royalti</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">Admin publish kursus, siswa beli, royaltimu otomatis tercatat</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'ct-pending')">Menunggu Persetujuan (2)</div>
+      <div class="tab" onclick="setTab(this,'ct-active')">Aktif (2)</div>
+      <div class="tab" onclick="setTab(this,'ct-history')">Riwayat</div>
+    </div>
+
+    <!-- PENDING CONTRACTS -->
+    <div id="ct-pending">
+      <!-- Contract 1: Gojek -->
+      <div class="contract-card">
+        <div class="contract-header">
+          <div class="contract-company-logo" style="background:#E53935">GO</div>
+          <div class="contract-info">
+            <div class="contract-title">Deep Learning with TensorFlow 2025</div>
+            <div class="contract-company">PT Gojek Indonesia (GoTo Group)</div>
+            <div class="contract-meta">
+              <div class="contract-meta-item"><i class="ti ti-calendar" style="font-size:11px"></i> Berlaku: 1 Jul 2026 – 30 Jun 2027</div>
+              <div class="contract-meta-item"><i class="ti ti-coin" style="font-size:11px"></i> Royalti: 70% dari penjualan kursus</div>
+              <div class="contract-meta-item"><i class="ti ti-clock" style="font-size:11px"></i> Diterima: 18 Jun 2026</div>
+              <div class="contract-meta-item"><i class="ti ti-alert-triangle" style="font-size:11px;color:var(--red)"></i> <span style="color:var(--red)">Batas setuju: 25 Jun 2026</span></div>
+            </div>
+          </div>
+          <div class="contract-actions">
+            <span class="badge b-pending-contract"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu</span>
+          </div>
+        </div>
+        <div class="contract-body">
+          <div class="contract-preview">
+            <strong>PERJANJIAN KERJASAMA PEMBUATAN KONTEN KURSUS</strong>
+
+Antara PT Gojek Indonesia dan Dr. Sarah Wulandari selaku Instruktur.
+
+Pasal 1 — Lingkup Pekerjaan
+Instruktur setuju untuk menyiapkan dan mengisi konten kursus "Deep Learning with TensorFlow 2025" yang mencakup minimal 20 sesi materi, 5 kuis per modul, dan 2 proyek capstone...
+          </div>
+          <div class="contract-expand-btn" onclick="openModal('modal-gojek')">
+            <i class="ti ti-eye" style="font-size:11px"></i> Baca kontrak lengkap
+          </div>
+          <div class="contract-terms">
+            <div class="contract-term">Min. 20 sesi materi</div>
+            <div class="contract-term">5 quiz per modul</div>
+            <div class="contract-term">2 capstone project</div>
+            <div class="contract-term">Deadline konten: 15 Agt 2026</div>
+            <div class="contract-term">NDA berlaku</div>
+          </div>
+          <div style="margin-top:12px;padding:10px 12px;background:#FEF9E7;border:1px solid #FCD34D;border-radius:var(--r);font-size:11px;color:#92400E">
+            <i class="ti ti-info-circle" style="font-size:12px"></i> Setelah menyetujui kontrak, kamu tidak bisa membatalkan kecuali dengan persetujuan tertulis Gojek. Baca seluruh kontrak sebelum menekan "Setuju".
+          </div>
+          <div style="margin-top:10px" class="btn-row">
+            <button class="btn btn-success" onclick="openModal('modal-gojek')"><i class="ti ti-eye" style="font-size:12px"></i> Baca & Setujui Kontrak</button>
+            <button class="btn btn-d" onclick="openModal('modal-reject')">Tolak</button>
+            <button class="btn btn-g">Tunda</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract 2: BCA Digital -->
+      <div class="contract-card">
+        <div class="contract-header">
+          <div class="contract-company-logo" style="background:#1565C0">BK</div>
+          <div class="contract-info">
+            <div class="contract-title">Data Analytics for Business Decision Making</div>
+            <div class="contract-company">PT BCA Digital (BCA Group)</div>
+            <div class="contract-meta">
+              <div class="contract-meta-item"><i class="ti ti-calendar" style="font-size:11px"></i> Berlaku: 1 Agt 2026 – 31 Jul 2027</div>
+              <div class="contract-meta-item"><i class="ti ti-coin" style="font-size:11px"></i> Royalti: 65% + bonus Rp 5jt jika rating ≥ 4.5</div>
+              <div class="contract-meta-item"><i class="ti ti-clock" style="font-size:11px"></i> Diterima: 15 Jun 2026</div>
+            </div>
+          </div>
+          <div class="contract-actions">
+            <span class="badge b-pending-contract"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu</span>
+          </div>
+        </div>
+        <div class="contract-body">
+          <div class="contract-preview">Perjanjian ini dibuat antara PT BCA Digital dan Dr. Sarah Wulandari untuk pengembangan konten kursus analitik data bisnis yang akan digunakan pada platform InspiraLearn. Kursus ini ditujukan bagi karyawan dan masyarakat umum yang ingin memahami pengambilan keputusan berbasis data...</div>
+          <div class="contract-expand-btn" onclick="openModal('modal-bca')">
+            <i class="ti ti-eye" style="font-size:11px"></i> Baca kontrak lengkap
+          </div>
+          <div class="contract-terms">
+            <div class="contract-term">Min. 15 sesi</div>
+            <div class="contract-term">Eksklusif 6 bulan</div>
+            <div class="contract-term">Revisi 2x gratis</div>
+            <div class="contract-term">Deadline: 1 Okt 2026</div>
+          </div>
+          <div style="margin-top:10px" class="btn-row">
+            <button class="btn btn-success" onclick="openModal('modal-bca')"><i class="ti ti-eye" style="font-size:12px"></i> Baca & Setujui Kontrak</button>
+            <button class="btn btn-d" onclick="openModal('modal-reject')">Tolak</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE CONTRACTS -->
+    <div id="ct-active" style="display:none">
+      <div class="contract-card" style="border-color:#BBF7D0">
+        <div class="contract-header">
+          <div class="contract-company-logo" style="background:#FF6D00">TO</div>
+          <div class="contract-info">
+            <div class="contract-title">Machine Learning A–Z: Python & R</div>
+            <div class="contract-company">PT Tokopedia (GoTo Group)</div>
+            <div class="contract-meta">
+              <div class="contract-meta-item"><i class="ti ti-calendar" style="font-size:11px"></i> Berlaku: 1 Jan 2026 – 31 Des 2026</div>
+              <div class="contract-meta-item"><i class="ti ti-coin" style="font-size:11px"></i> Royalti: 70% · Total diterima: Rp 171jt</div>
+              <div class="contract-meta-item"><i class="ti ti-users" style="font-size:11px"></i> 820 siswa terdaftar</div>
+            </div>
+          </div>
+          <div class="contract-actions">
+            <span class="badge b-published"><i class="ti ti-circle-check" style="font-size:9px"></i> Aktif</span>
+          </div>
+        </div>
+        <div class="contract-body">
+          <div class="contract-terms">
+            <div class="contract-term">Disetujui: 15 Des 2025</div>
+            <div class="contract-term">48 materi selesai</div>
+            <div class="contract-term">6 quiz aktif</div>
+            <div class="contract-term">Rating: 4.9 ★</div>
+          </div>
+          <div style="margin-top:10px" class="btn-row">
+            <button class="btn btn-g"><i class="ti ti-file-text" style="font-size:11px"></i> Lihat Kontrak</button>
+            <button class="btn btn-p" onclick="go('course-editor')">Kelola Materi →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="ct-history" style="display:none">
+      <div class="card" style="color:var(--text-3);text-align:center;padding:32px">
+        <i class="ti ti-history" style="font-size:28px;display:block;margin-bottom:8px"></i>
+        <div style="font-size:12px">Kontrak yang sudah berakhir atau ditolak akan muncul di sini.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       3. MY COURSES (after contract)
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-my-courses">
+    <div class="page-title">Kursus Saya</div>
+    <div class="page-sub">Kursus yang kamu tangani berdasarkan kontrak yang sudah disetujui</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <!-- Unlocked course -->
+      <div class="course-contract-item">
+        <div class="cci-header">
+          <div class="cci-thumb" style="background:#1a0f2e"><i class="ti ti-chart-scatter-plot" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+          <div class="cci-info">
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px">
+              <div class="cci-title">Machine Learning A–Z: Python & R</div>
+              <span class="badge b-published">Aktif</span>
+            </div>
+            <div class="cci-meta">Tokopedia · 820 siswa · 48 materi · 6 quiz · ★ 4.9 · Royalti 70%</div>
+          </div>
+          <div class="cci-status">
+            <button class="btn btn-p" onclick="go('course-editor')">Edit Materi</button>
+            <div style="font-size:10px;color:var(--green);text-align:right;margin-top:4px"><i class="ti ti-circle-check" style="font-size:10px"></i> Kontrak aktif</div>
+          </div>
+        </div>
+      </div>
+      <!-- Locked course -->
+      <div class="course-contract-item" style="opacity:.75">
+        <div class="cci-header">
+          <div class="cci-thumb" style="background:#1a0a0a"><i class="ti ti-robot" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+          <div class="cci-info">
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px">
+              <div class="cci-title">Deep Learning with TensorFlow 2025</div>
+              <span class="badge b-pending-contract"><i class="ti ti-lock" style="font-size:9px"></i> Terkunci</span>
+            </div>
+            <div class="cci-meta">Gojek · 0 materi · Kontrak belum disetujui</div>
+          </div>
+          <div class="cci-status">
+            <button class="btn btn-o" onclick="go('contracts')">Tinjau Kontrak</button>
+            <div class="locked-overlay" style="margin-top:4px"><i class="ti ti-lock" style="font-size:10px"></i> Editor terkunci</div>
+          </div>
+        </div>
+        <div style="padding:0 16px 12px">
+          <div style="background:var(--amber-light);border-radius:var(--r);padding:8px 12px;font-size:11px;color:#92400E;display:flex;align-items:center;gap:8px">
+            <i class="ti ti-info-circle" style="font-size:13px;flex-shrink:0"></i>
+            Kamu belum menyetujui kontrak kerjasama dengan Gojek untuk kursus ini. Setujui kontrak terlebih dahulu untuk mulai mengisi materi.
+            <button class="btn-sm bs-p" onclick="go('contracts')" style="margin-left:auto;white-space:nowrap">Setuju Sekarang</button>
+          </div>
+        </div>
+      </div>
+      <!-- Active course 2 -->
+      <div class="course-contract-item">
+        <div class="cci-header">
+          <div class="cci-thumb" style="background:#0a2010"><i class="ti ti-code" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+          <div class="cci-info">
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px">
+              <div class="cci-title">Python untuk Pemula</div>
+              <span class="badge b-published">Aktif</span>
+            </div>
+            <div class="cci-meta">Traveloka · 380 siswa · 30 materi · 4 quiz · ★ 4.8 · Royalti 70%</div>
+          </div>
+          <div class="cci-status">
+            <button class="btn btn-p" onclick="go('course-editor')">Edit Materi</button>
+            <div style="font-size:10px;color:var(--green);text-align:right;margin-top:4px"><i class="ti ti-circle-check" style="font-size:10px"></i> Kontrak aktif</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       4. BANK SOAL (with import/export)
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-question-bank">
+    <div class="page-title">Bank Soal</div>
+    <div class="page-sub">Kelola koleksi soal, import dari file, dan export untuk backup atau sharing</div>
+
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <!-- Sidebar koleksi -->
+      <div style="width:190px;flex-shrink:0">
+        <div style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;margin-bottom:6px">Koleksi</div>
+        <div class="card-flush" style="margin-bottom:8px">
+          <div style="padding:8px 10px;background:var(--blue-light);border-left:3px solid #0C628D;cursor:pointer">
+            <div style="font-size:11px;font-weight:700;color:#0C628D">ML Fundamentals</div>
+            <div style="font-size:10px;color:var(--text-3)">48 soal · MCQ, Essay</div>
+          </div>
+          <div style="padding:8px 10px;border-bottom:1px solid #F9FAFB;cursor:pointer">
+            <div style="font-size:11px;font-weight:600;color:var(--text)">Python Basics</div>
+            <div style="font-size:10px;color:var(--text-3)">30 soal · semua tipe</div>
+          </div>
+          <div style="padding:8px 10px;cursor:pointer">
+            <div style="font-size:11px;font-weight:600;color:var(--text)">Deep Learning</div>
+            <div style="font-size:10px;color:var(--text-3)">22 soal</div>
+          </div>
+        </div>
+        <button class="btn btn-p" style="width:100%;font-size:11px"><i class="ti ti-plus" style="font-size:11px"></i> Koleksi Baru</button>
+        <div style="margin-top:10px">
+          <button class="btn btn-g" style="width:100%;font-size:11px;margin-bottom:6px" onclick="go('bank-import')"><i class="ti ti-upload" style="font-size:11px"></i> Import Soal</button>
+          <button class="btn btn-g" style="width:100%;font-size:11px"><i class="ti ti-download" style="font-size:11px"></i> Export Koleksi</button>
+        </div>
+      </div>
+
+      <!-- Main panel -->
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">ML Fundamentals — 48 Soal</div>
+          <div class="btn-row">
+            <select class="fsel" style="width:140px;height:30px;font-size:11px"><option>Semua Tipe</option><option>MCQ</option><option>Essay</option><option>Short Answer</option></select>
+            <button class="btn btn-p" style="font-size:11px" onclick="go('add-question')"><i class="ti ti-plus" style="font-size:11px"></i> Tambah Soal</button>
+          </div>
+        </div>
+
+        <div class="q-row">
+          <div class="q-num">1</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge b-mcq">MCQ</span></div>
+            <div class="q-prompt">Apa tujuan utama dari algoritma regresi linier?</div>
+            <div class="q-choices">
+              <div class="q-choice"><div class="q-dot"></div> Klasifikasi data ke dalam kategori</div>
+              <div class="q-choice correct"><div class="q-dot"></div> Memprediksi nilai kontinu berdasarkan fitur ✓</div>
+              <div class="q-choice"><div class="q-dot"></div> Mengelompokkan data tanpa label</div>
+              <div class="q-choice"><div class="q-dot"></div> Mereduksi dimensi dataset</div>
+            </div>
+          </div>
+          <div class="q-actions"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-d">Hapus</button></div>
+        </div>
+
+        <div class="q-row">
+          <div class="q-num">2</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge b-fillblank">Isi Kosong</span></div>
+            <div class="q-prompt">Lengkapi kalimat berikut:</div>
+            <div class="blank-preview">
+              Algoritma <span class="blank">gradient descent</span> bekerja dengan mengiterasi bobot ke arah <span class="blank">negatif gradien</span> untuk meminimalkan fungsi biaya.
+            </div>
+          </div>
+          <div class="q-actions"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-d">Hapus</button></div>
+        </div>
+
+        <div class="q-row">
+          <div class="q-num">3</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge b-ordering">Urutan</span></div>
+            <div class="q-prompt">Urutkan tahapan machine learning pipeline berikut dengan benar:</div>
+            <div style="margin-top:6px">
+              <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">1</div><div class="order-text">Data Collection</div></div>
+              <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">2</div><div class="order-text">Data Preprocessing</div></div>
+              <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">3</div><div class="order-text">Model Training</div></div>
+            </div>
+          </div>
+          <div class="q-actions"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-d">Hapus</button></div>
+        </div>
+
+        <div class="q-row">
+          <div class="q-num">4</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge b-truefalse">Benar/Salah</span></div>
+            <div class="q-prompt">Overfitting terjadi ketika model terlalu sederhana untuk menangkap pola dalam data.</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <div style="padding:4px 14px;border-radius:99px;background:#F9FAFB;border:1px solid var(--border);font-size:11px;color:var(--text-2)">Benar</div>
+              <div style="padding:4px 14px;border-radius:99px;background:var(--green-light);border:1px solid var(--green);font-size:11px;color:var(--green);font-weight:700">Salah ✓</div>
+            </div>
+          </div>
+          <div class="q-actions"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-d">Hapus</button></div>
+        </div>
+
+        <div class="q-row">
+          <div class="q-num">5</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge b-short">Jawaban Singkat</span></div>
+            <div class="q-prompt">Sebutkan kepanjangan dari istilah "SVM" dalam machine learning!</div>
+            <div style="margin-top:5px;font-size:11px;background:var(--green-light);padding:5px 8px;border-radius:5px;color:var(--green)"><i class="ti ti-check" style="font-size:10px"></i> Jawaban: Support Vector Machine</div>
+          </div>
+          <div class="q-actions"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-d">Hapus</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       5. TAMBAH SOAL (semua tipe)
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-add-question">
+    <div class="breadcrumb"><span onclick="go('question-bank')">Bank Soal</span><i class="ti ti-chevron-right"></i><span class="curr">Tambah Soal</span></div>
+    <div class="page-title">Tambah Soal Baru</div>
+
+    <div class="two-col" style="gap:14px;align-items:flex-start">
+      <!-- Left: type selector + form -->
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Pilih Tipe Soal</div>
+          <div class="qtype-grid">
+            <div class="qtype-card selected" onclick="selectQtype(this,'qf-mcq')">
+              <div class="qtype-icon" style="background:var(--blue-light)"><i class="ti ti-list-check" style="font-size:15px;color:#0C628D"></i></div>
+              <div><div class="qtype-name">Pilihan Ganda</div><div class="qtype-desc">Satu jawaban benar</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-mcqmulti')">
+              <div class="qtype-icon" style="background:var(--indigo-light)"><i class="ti ti-checks" style="font-size:15px;color:var(--indigo)"></i></div>
+              <div><div class="qtype-name">MCQ Multi</div><div class="qtype-desc">Beberapa jawaban benar</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-truefalse')">
+              <div class="qtype-icon" style="background:var(--green-light)"><i class="ti ti-toggle-left" style="font-size:15px;color:var(--green)"></i></div>
+              <div><div class="qtype-name">Benar / Salah</div><div class="qtype-desc">Binary choice</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-short')">
+              <div class="qtype-icon" style="background:var(--teal-light)"><i class="ti ti-cursor-text" style="font-size:15px;color:var(--teal)"></i></div>
+              <div><div class="qtype-name">Jawaban Singkat</div><div class="qtype-desc">Teks pendek, kunci jawaban</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-essay')">
+              <div class="qtype-icon" style="background:var(--purple-light)"><i class="ti ti-writing" style="font-size:15px;color:var(--purple)"></i></div>
+              <div><div class="qtype-name">Essay</div><div class="qtype-desc">Uraian panjang + rubrik</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-fillblank')">
+              <div class="qtype-icon" style="background:var(--pink-light)"><i class="ti ti-forms" style="font-size:15px;color:var(--pink)"></i></div>
+              <div><div class="qtype-name">Isi Kosong</div><div class="qtype-desc">Lengkapi kalimat/teks</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-matching')">
+              <div class="qtype-icon" style="background:var(--amber-light)"><i class="ti ti-arrows-exchange" style="font-size:15px;color:var(--amber)"></i></div>
+              <div><div class="qtype-name">Mencocokkan</div><div class="qtype-desc">Pasangkan kiri–kanan</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-ordering')">
+              <div class="qtype-icon" style="background:var(--orange-light)"><i class="ti ti-sort-ascending" style="font-size:15px;color:var(--orange)"></i></div>
+              <div><div class="qtype-name">Pengurutan</div><div class="qtype-desc">Drag & drop urutan</div></div>
+            </div>
+            <div class="qtype-card" onclick="selectQtype(this,'qf-hotspot')">
+              <div class="qtype-icon" style="background:#FDF2F8"><i class="ti ti-map-pin" style="font-size:15px;color:#9D174D"></i></div>
+              <div><div class="qtype-name">Hotspot</div><div class="qtype-desc">Klik area pada gambar</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM: MCQ -->
+        <div id="qf-mcq" class="card">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-mcq">MCQ</span> Pilihan Ganda</div>
+          <div class="fg"><label class="fl">Pertanyaan</label>
+            <div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button><button class="rt-btn"><i>I</i></button><button class="rt-btn">H2</button><button class="rt-btn">• List</button><button class="rt-btn"><i class="ti ti-photo" style="font-size:11px"></i></button></div><div class="rt-body" contenteditable="true">Apa tujuan utama dari algoritma regresi linier?</div></div>
+          </div>
+          <div class="fg"><label class="fl">Pilihan Jawaban</label>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><div style="width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text-3)">A</div><input class="fi" type="text" value="Klasifikasi data"><button class="btn-sm bs-d">×</button></div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><div class="choice-label" style="width:20px;height:20px;border-radius:50%;background:var(--green-light);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--green)">B</div><input class="fi" type="text" value="Prediksi nilai kontinu"><button class="btn-sm bs-d">×</button></div>
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><div style="width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text-3)">C</div><input class="fi" type="text" value="Clustering tanpa label"><button class="btn-sm bs-d">×</button></div>
+            <button class="btn btn-g" style="font-size:11px;margin-top:4px"><i class="ti ti-plus" style="font-size:11px"></i> Tambah pilihan</button>
+          </div>
+          <div class="fg"><label class="fl">Jawaban Benar</label><select class="fsel"><option value="b">B — Prediksi nilai kontinu</option><option>A</option><option>C</option></select></div>
+          <div class="fg"><label class="fl">Order</label><input class="fi" type="number" value="1" style="width:80px"></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: True/False -->
+        <div id="qf-truefalse" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-truefalse">Benar/Salah</span></div>
+          <div class="fg"><label class="fl">Pernyataan</label><div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button><button class="rt-btn"><i>I</i></button></div><div class="rt-body" contenteditable="true">Overfitting terjadi ketika model terlalu sederhana.</div></div></div>
+          <div class="fg"><label class="fl">Jawaban Benar</label>
+            <div style="display:flex;gap:10px">
+              <label class="inline-check"><input type="radio" name="tf" value="true"> Benar</label>
+              <label class="inline-check"><input type="radio" name="tf" value="false" checked> Salah</label>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Penjelasan (opsional)</label><textarea class="fta" placeholder="Jelaskan mengapa jawabannya benar/salah..."></textarea></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Short Answer -->
+        <div id="qf-short" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-short">Jawaban Singkat</span></div>
+          <div class="fg"><label class="fl">Pertanyaan</label><div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button><button class="rt-btn"><i>I</i></button></div><div class="rt-body" contenteditable="true">Sebutkan kepanjangan dari SVM!</div></div></div>
+          <div class="fg"><label class="fl">Kunci Jawaban (bisa beberapa variasi)</label>
+            <input class="fi" type="text" value="Support Vector Machine" style="margin-bottom:5px">
+            <input class="fi" type="text" placeholder="Variasi jawaban lain yang diterima...">
+            <div style="font-size:10px;color:var(--text-3);margin-top:3px">Sistem akan membandingkan jawaban siswa (case-insensitive)</div>
+          </div>
+          <div class="fg"><label class="fl">Toleransi Typo</label><select class="fsel"><option>Harus persis sama</option><option>Toleransi 1 karakter</option><option>Toleransi 2 karakter</option></select></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Fill in the blank -->
+        <div id="qf-fillblank" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-fillblank">Isi Kosong</span></div>
+          <div class="fg"><label class="fl">Teks dengan Blank (gunakan [_] untuk titik kosong)</label>
+            <textarea class="fta">Algoritma [_] bekerja dengan mengiterasi bobot ke arah [_] untuk meminimalkan fungsi biaya.</textarea>
+            <div style="font-size:10px;color:var(--text-3);margin-top:4px">Preview: <span class="blank-preview" style="font-size:11px">Algoritma <span class="blank">____</span> bekerja dengan mengiterasi bobot ke arah <span class="blank">____</span></span></div>
+          </div>
+          <div class="fg"><label class="fl">Kunci Jawaban per Blank</label>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="font-size:11px;font-weight:700;color:var(--text-3);width:50px">Blank 1</div><input class="fi" type="text" value="gradient descent"></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="font-size:11px;font-weight:700;color:var(--text-3);width:50px">Blank 2</div><input class="fi" type="text" value="negatif gradien"></div>
+          </div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Matching -->
+        <div id="qf-matching" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-matching">Mencocokkan</span></div>
+          <div class="fg"><label class="fl">Instruksi</label><div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button></div><div class="rt-body" contenteditable="true">Cocokkan nama algoritma dengan kategorinya!</div></div></div>
+          <div class="fg"><label class="fl">Pasangan (Kiri ↔ Kanan)</label>
+            <div class="match-pair"><div class="match-side left"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="Linear Regression"></div><div class="match-arrow">↔</div><div class="match-side"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="Supervised Learning"></div></div>
+            <div class="match-pair"><div class="match-side left"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="K-Means"></div><div class="match-arrow">↔</div><div class="match-side"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="Unsupervised Learning"></div></div>
+            <div class="match-pair"><div class="match-side left"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="Random Forest"></div><div class="match-arrow">↔</div><div class="match-side"><input style="border:none;background:none;width:100%;font-size:11px;outline:none" value="Ensemble Method"></div></div>
+            <button class="btn btn-g" style="font-size:11px;margin-top:6px"><i class="ti ti-plus" style="font-size:11px"></i> Tambah pasangan</button>
+          </div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Ordering -->
+        <div id="qf-ordering" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-ordering">Pengurutan</span></div>
+          <div class="fg"><label class="fl">Pertanyaan</label><textarea class="fta">Urutkan tahapan machine learning pipeline dari awal hingga akhir!</textarea></div>
+          <div class="fg"><label class="fl">Item (urutan benar dari atas ke bawah)</label>
+            <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">1</div><input class="fi" style="flex:1" value="Data Collection"></div>
+            <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">2</div><input class="fi" style="flex:1" value="Data Preprocessing"></div>
+            <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">3</div><input class="fi" style="flex:1" value="Feature Engineering"></div>
+            <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">4</div><input class="fi" style="flex:1" value="Model Training"></div>
+            <div class="order-item"><i class="ti ti-grip-vertical order-handle"></i><div class="order-num">5</div><input class="fi" style="flex:1" value="Evaluation & Deployment"></div>
+            <button class="btn btn-g" style="font-size:11px;margin-top:6px"><i class="ti ti-plus" style="font-size:11px"></i> Tambah item</button>
+          </div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Hotspot -->
+        <div id="qf-hotspot" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge" style="background:#FDF2F8;color:#9D174D">Hotspot</span></div>
+          <div class="fg"><label class="fl">Pertanyaan</label><textarea class="fta">Klik pada area diagram yang menunjukkan lapisan "Hidden Layer" pada neural network berikut!</textarea></div>
+          <div class="fg"><label class="fl">Gambar + Area Jawaban</label>
+            <div class="hotspot-area">
+              <div class="hotspot-img">
+                <div style="text-align:center;color:rgba(255,255,255,.4);font-size:12px"><i class="ti ti-photo" style="font-size:28px;display:block;margin-bottom:6px"></i>Upload gambar untuk hotspot</div>
+              </div>
+              <div class="hotspot-marker" style="top:40%;left:45%">1</div>
+            </div>
+            <div style="margin-top:8px" class="btn-row">
+              <button class="btn btn-g" style="font-size:11px"><i class="ti ti-upload" style="font-size:11px"></i> Upload Gambar</button>
+              <div style="font-size:11px;color:var(--text-3);align-self:center">Lalu klik area gambar untuk tandai jawaban</div>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Toleransi Klik (radius px)</label><input class="fi" type="number" value="30" style="width:100px"></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: Essay -->
+        <div id="qf-essay" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-essay">Essay</span></div>
+          <div class="fg"><label class="fl">Pertanyaan</label><div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button><button class="rt-btn"><i>I</i></button><button class="rt-btn"><i class="ti ti-photo" style="font-size:11px"></i></button></div><div class="rt-body" contenteditable="true">Jelaskan perbedaan overfitting dan underfitting beserta cara mengatasinya!</div></div></div>
+          <div class="fg"><label class="fl">Rubrik Penilaian</label><textarea class="fta" placeholder="Contoh: Sebutkan 3 poin utama; sertakan contoh; min. 100 kata; nilai maks 100">- Definisi overfitting yang tepat: 25 poin&#10;- Definisi underfitting yang tepat: 25 poin&#10;- Cara mengatasi keduanya: 30 poin&#10;- Contoh nyata dari dunia industri: 20 poin</textarea></div>
+          <div class="fg"><label class="fl">Panjang Jawaban Minimum</label><input class="fi" type="number" value="100" style="width:100px"> <span style="font-size:11px;color:var(--text-3)"> kata</span></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+
+        <!-- FORM: MCQ Multi -->
+        <div id="qf-mcqmulti" class="card" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><span class="badge b-mcq-multi">MCQ Multi</span></div>
+          <div class="fg"><label class="fl">Pertanyaan (beberapa jawaban bisa benar)</label><div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button></div><div class="rt-body" contenteditable="true">Manakah dari berikut yang termasuk algoritma supervised learning? (pilih semua yang benar)</div></div></div>
+          <div class="fg"><label class="fl">Pilihan (centang semua yang benar)</label>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><input type="checkbox" checked><input class="fi" style="flex:1" value="Linear Regression"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><input type="checkbox"><input class="fi" style="flex:1" value="K-Means Clustering"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><input type="checkbox" checked><input class="fi" style="flex:1" value="Decision Tree"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><input type="checkbox" checked><input class="fi" style="flex:1" value="SVM"></div>
+            <button class="btn btn-g" style="font-size:11px;margin-top:4px"><i class="ti ti-plus" style="font-size:11px"></i> Tambah pilihan</button>
+          </div>
+          <div class="fg"><label class="fl">Penilaian</label><select class="fsel"><option>Semua benar = nilai penuh</option><option>Per pilihan yang benar</option><option>Minus poin untuk salah pilih</option></select></div>
+          <div class="btn-row"><button class="btn btn-p">Simpan Soal</button><button class="btn btn-g" onclick="go('question-bank')">Batal</button></div>
+        </div>
+      </div>
+
+      <!-- Right: tips -->
+      <div style="width:220px;flex-shrink:0">
+        <div class="card" style="background:#F0F8FD;border-color:#BEE3F8">
+          <div style="font-size:11px;font-weight:700;color:#0C628D;margin-bottom:8px">Tips Pemilihan Tipe</div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--text-2)">
+            <div><span class="badge b-mcq" style="margin-right:4px">MCQ</span> Cocok untuk konsep dan fakta</div>
+            <div><span class="badge b-mcq-multi" style="margin-right:4px">Multi</span> Untuk topik yang punya beberapa aspek benar</div>
+            <div><span class="badge b-truefalse" style="margin-right:4px">B/S</span> Pernyataan yang bisa dikonfirmasi</div>
+            <div><span class="badge b-short" style="margin-right:4px">Singkat</span> Istilah, definisi, rumus pendek</div>
+            <div><span class="badge b-fillblank" style="margin-right:4px">Isi</span> Pemahaman teks/konteks</div>
+            <div><span class="badge b-matching" style="margin-right:4px">Cocok</span> Asosiasi konsep berpasangan</div>
+            <div><span class="badge b-ordering" style="margin-right:4px">Urut</span> Proses, langkah, timeline</div>
+            <div><span class="badge b-essay" style="margin-right:4px">Essay</span> Analisis mendalam, argumentasi</div>
+            <div><span class="badge" style="background:#FDF2F8;color:#9D174D;margin-right:4px">Hotspot</span> Identifikasi visual/diagram</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       6. IMPORT / EXPORT BANK SOAL
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-bank-import">
+    <div class="breadcrumb"><span onclick="go('question-bank')">Bank Soal</span><i class="ti ti-chevron-right"></i><span class="curr">Import & Export</span></div>
+    <div class="page-title">Import & Export Bank Soal</div>
+
+    <div class="two-col" style="gap:16px;align-items:flex-start">
+      <!-- Import -->
+      <div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px"><i class="ti ti-upload" style="font-size:13px;color:#0C628D"></i> Import Soal</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:14px">Upload file dari berbagai format untuk ditambahkan ke koleksi bank soal</div>
+
+          <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Format yang Didukung</div>
+          <div class="format-grid" style="margin-bottom:14px">
+            <div class="format-card selected" onclick="selFmt(this)">
+              <div class="format-icon">📊</div>
+              <div class="format-name">Excel</div>
+              <div class="format-ext">.xlsx · .xls</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">📄</div>
+              <div class="format-name">CSV</div>
+              <div class="format-ext">.csv</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🧩</div>
+              <div class="format-name">QTI</div>
+              <div class="format-ext">IMS QTI 2.1</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🌐</div>
+              <div class="format-name">Moodle XML</div>
+              <div class="format-ext">.xml</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">📝</div>
+              <div class="format-name">GIFT</div>
+              <div class="format-ext">Moodle GIFT</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🗂</div>
+              <div class="format-name">JSON</div>
+              <div class="format-ext">.json (InspiraLearn)</div>
+            </div>
+          </div>
+
+          <!-- Excel template note -->
+          <div style="background:var(--blue-light);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:11px;color:#0C628D">
+            <i class="ti ti-info-circle" style="font-size:12px"></i> Format Excel: kolom A = tipe soal, B = pertanyaan, C–F = pilihan, G = jawaban benar, H = rubrik/penjelasan.
+            <a href="#" style="display:block;margin-top:4px;font-weight:700">Download template Excel →</a>
+          </div>
+
+          <div class="upload-drop">
+            <i class="ti ti-upload"></i>
+            <div class="ud-title">Drag & drop file di sini</div>
+            <div class="ud-sub">atau klik untuk browse · Maks 10MB</div>
+            <button class="btn btn-p" style="margin-top:10px;font-size:11px">Pilih File</button>
+          </div>
+
+          <div class="fg" style="margin-top:12px">
+            <label class="fl">Import ke Koleksi</label>
+            <select class="fsel"><option>ML Fundamentals</option><option>Python Basics</option><option>Buat koleksi baru…</option></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <label class="inline-check"><input type="checkbox" checked> <span>Skip soal duplikat</span></label>
+            <label class="inline-check" style="margin-left:8px"><input type="checkbox"> <span>Timpa soal yang sama</span></label>
+          </div>
+          <button class="btn btn-p"><i class="ti ti-upload" style="font-size:12px"></i> Mulai Import</button>
+        </div>
+      </div>
+
+      <!-- Export -->
+      <div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px"><i class="ti ti-download" style="font-size:13px;color:var(--green)"></i> Export Soal</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:14px">Download soal dari koleksimu dalam format yang kamu pilih</div>
+
+          <div class="fg"><label class="fl">Pilih Koleksi</label><select class="fsel"><option>ML Fundamentals (48 soal)</option><option>Python Basics (30 soal)</option><option>Semua koleksi</option></select></div>
+
+          <div class="fg"><label class="fl">Filter Tipe Soal</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <label class="inline-check"><input type="checkbox" checked> <span>MCQ</span></label>
+              <label class="inline-check"><input type="checkbox" checked> <span>Essay</span></label>
+              <label class="inline-check"><input type="checkbox" checked> <span>Isi Kosong</span></label>
+              <label class="inline-check"><input type="checkbox" checked> <span>Urutan</span></label>
+              <label class="inline-check"><input type="checkbox" checked> <span>Mencocokkan</span></label>
+            </div>
+          </div>
+
+          <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Format Export</div>
+          <div class="format-grid" style="margin-bottom:14px">
+            <div class="format-card selected" onclick="selFmt(this)">
+              <div class="format-icon">📊</div>
+              <div class="format-name">Excel</div>
+              <div class="format-ext">.xlsx</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">📄</div>
+              <div class="format-name">CSV</div>
+              <div class="format-ext">.csv</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🗂</div>
+              <div class="format-name">JSON</div>
+              <div class="format-ext">InspiraLearn</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🧩</div>
+              <div class="format-name">QTI</div>
+              <div class="format-ext">IMS Standard</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">🌐</div>
+              <div class="format-name">Moodle XML</div>
+              <div class="format-ext">.xml</div>
+            </div>
+            <div class="format-card" onclick="selFmt(this)">
+              <div class="format-icon">📝</div>
+              <div class="format-name">PDF</div>
+              <div class="format-ext">Print-ready</div>
+            </div>
+          </div>
+
+          <div style="background:var(--green-light);border-radius:var(--r);padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--green)">
+            <i class="ti ti-info-circle" style="font-size:12px"></i> Format QTI dan Moodle XML kompatibel dengan LMS lain (Canvas, Blackboard, Moodle). JSON hanya untuk InspiraLearn.
+          </div>
+
+          <button class="btn btn-success" style="width:100%"><i class="ti ti-download" style="font-size:12px"></i> Export 48 Soal</button>
+
+          <div class="divider"></div>
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Export Terakhir</div>
+          <div style="font-size:11px;color:var(--text-2);display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;align-items:center;gap:8px"><i class="ti ti-file-spreadsheet" style="font-size:13px;color:var(--green)"></i> ML_Fundamentals_export.xlsx <span style="margin-left:auto;color:var(--text-3)">12 Jun</span><a href="#" style="color:#0C628D">Unduh</a></div>
+            <div style="display:flex;align-items:center;gap:8px"><i class="ti ti-file" style="font-size:13px;color:#0C628D"></i> Python_Basics_export.json <span style="margin-left:auto;color:var(--text-3)">3 Jun</span><a href="#" style="color:#0C628D">Unduh</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       COURSE EDITOR (locked state hint)
+  ═══════════════════════════════════ -->
+  <div class="screen" id="s-course-editor">
+    <div class="breadcrumb"><span onclick="go('my-courses')">Kursus Saya</span><i class="ti ti-chevron-right"></i><span class="curr">Machine Learning A–Z</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div class="page-title" style="margin-bottom:2px">Machine Learning A–Z: Python & R</div>
+        <div style="display:flex;gap:6px;align-items:center"><span class="badge b-published"><i class="ti ti-circle-check" style="font-size:9px"></i> Kontrak Aktif</span><span style="font-size:11px;color:var(--text-3)">Tokopedia · Kamu bisa mengedit materi kursus ini</span></div>
+      </div>
+      <button class="btn btn-g" onclick="go('my-courses')">← Kembali</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'ced-lessons')">Materi (48)</div>
+      <div class="tab" onclick="setTab(this,'ced-quiz')">Quiz (6)</div>
+      <div class="tab" onclick="setTab(this,'ced-assignments')">Tugas (2)</div>
+    </div>
+    <div id="ced-lessons">
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Tambah Materi Baru</div>
+        <div class="fgrid2" style="margin-bottom:8px">
+          <div><label class="fl">Judul Materi</label><input class="fi" type="text" placeholder="mis: Deep Learning — Convolutional Neural Network"></div>
+          <div><label class="fl">Modul</label><select class="fsel"><option>Modul 4: Deep Learning</option><option>Modul 3: Unsupervised</option></select></div>
+        </div>
+        <div class="fg"><label class="fl">Video Embed URL</label><input class="fi" type="text" placeholder="https://www.youtube.com/embed/..."></div>
+        <div class="fg"><label class="fl">Konten Materi</label>
+          <div class="rt"><div class="rt-tb"><button class="rt-btn"><b>B</b></button><button class="rt-btn"><i>I</i></button><button class="rt-btn">H1</button><button class="rt-btn">H2</button><button class="rt-btn">• List</button><button class="rt-btn">1. List</button><button class="rt-btn"><i class="ti ti-photo" style="font-size:11px"></i></button><button class="rt-btn"><i class="ti ti-code" style="font-size:11px"></i></button></div><div class="rt-body" contenteditable="true">Tulis konten materi di sini...</div></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-p"><i class="ti ti-plus" style="font-size:12px"></i> Tambah Materi</button><label class="inline-check" style="margin-left:8px"><input type="checkbox"> Publish langsung</label></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;margin-bottom:6px">Modul 2: Supervised Learning — 14 materi</div>
+      <div style="border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px;background:var(--surface)"><i class="ti ti-grip-vertical" style="font-size:13px;color:var(--text-3);cursor:move"></i><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">Regresi Linier — Teori & Implementasi</div><div style="display:flex;gap:4px;margin-top:2px"><span class="badge b-published">Published</span><span class="badge" style="background:var(--teal-light);color:var(--teal)">Video</span></div></div><div class="btn-row"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-o">Toggle</button><button class="btn-sm bs-d">Hapus</button></div></div>
+      <div style="border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;margin-bottom:5px;display:flex;align-items:center;gap:10px;background:var(--surface)"><i class="ti ti-grip-vertical" style="font-size:13px;color:var(--text-3);cursor:move"></i><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">SVM — Support Vector Machine</div><div style="display:flex;gap:4px;margin-top:2px"><span class="badge b-published">Published</span><span class="badge" style="background:var(--blue-light);color:#0C628D">PDF + Video</span></div></div><div class="btn-row"><button class="btn-sm bs-p">Edit</button><button class="btn-sm bs-o">Toggle</button><button class="btn-sm bs-d">Hapus</button></div></div>
+    </div>
+    <div id="ced-quiz" style="display:none"><div class="card" style="padding:24px;text-align:center;color:var(--text-3)"><i class="ti ti-clipboard-list" style="font-size:28px;display:block;margin-bottom:8px"></i><div style="font-size:12px">Kelola quiz dari tab ini. Pilih quiz untuk menambah/edit soal.</div></div></div>
+    <div id="ced-assignments" style="display:none"><div class="card" style="padding:24px;text-align:center;color:var(--text-3)"><i class="ti ti-clipboard" style="font-size:28px;display:block;margin-bottom:8px"></i><div style="font-size:12px">Kelola tugas dari tab ini.</div></div></div>
+  </div>
+
+  <!-- Student progress & Royalty screens (simplified) -->
+  <div class="screen" id="s-student-progress">
+    <div class="page-title">Progress Siswa</div>
+    <div class="page-sub">Pantau perkembangan siswa per kursus yang kamu ampu</div>
+    <div style="font-size:12px;color:var(--text-3);text-align:center;padding:40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)"><i class="ti ti-users" style="font-size:28px;display:block;margin-bottom:8px;color:var(--text-3)"></i>Lihat demo progress siswa di mockup Teacher Dashboard sebelumnya</div>
+  </div>
+  <div class="screen" id="s-royalty">
+    <div class="page-title">Royalti Saya</div>
+    <div class="page-sub">Pendapatan dari kursus berdasarkan kontrak kerjasama</div>
+    <div style="font-size:12px;color:var(--text-3);text-align:center;padding:40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)"><i class="ti ti-coin" style="font-size:28px;display:block;margin-bottom:8px;color:var(--text-3)"></i>Lihat demo royalti di mockup Teacher Dashboard sebelumnya</div>
+  </div>
+  <div class="screen" id="s-profile">
+    <div class="page-title">Profil Instruktur</div>
+    <div class="page-sub">Kelola informasi pribadi dan rekening pembayaran royalti</div>
+    <div style="font-size:12px;color:var(--text-3);text-align:center;padding:40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)"><i class="ti ti-user-circle" style="font-size:28px;display:block;margin-bottom:8px;color:var(--text-3)"></i>Lihat demo profil di mockup Teacher Dashboard sebelumnya</div>
+  </div>
+
+  </div><!-- /content -->
+
+  <!-- NAV BAR -->
+  <div class="nav-demo">
+    <span>Halaman:</span>
+    <button onclick="go('dashboard')">1. Dashboard</button>
+    <button onclick="go('contracts')">2. Kontrak Kerjasama</button>
+    <button onclick="go('my-courses')">3. Kursus Saya</button>
+    <button onclick="go('course-editor')">4. Editor Materi</button>
+    <button onclick="go('question-bank')">5. Bank Soal</button>
+    <button onclick="go('add-question')">6. Tambah Soal (9 Tipe)</button>
+    <button onclick="go('bank-import')">7. Import & Export</button>
+    <button onclick="go('student-progress')">8. Progress Siswa</button>
+    <button onclick="go('royalty')">9. Royalti</button>
+    <button onclick="go('profile')">10. Profil</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ CONTRACT MODAL: GOJEK ═══ -->
+<div id="modal-gojek" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Kontrak Kerjasama — Deep Learning with TensorFlow</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:2px">PT Gojek Indonesia · Versi 1.0 · 18 Jun 2026</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-gojek')"><i class="ti ti-x" style="font-size:14px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <span class="badge b-pending-contract">Menunggu Persetujuanmu</span>
+        <span style="font-size:11px;color:var(--red)"><i class="ti ti-alert-triangle" style="font-size:11px"></i> Batas: 25 Jun 2026</span>
+      </div>
+      <div class="contract-section-title">Pasal 1 — Identitas Para Pihak</div>
+      <div class="contract-full-text">Pihak Pertama: PT Gojek Indonesia (GoTo Group), berkedudukan di Jakarta.
+Pihak Kedua: Dr. Sarah Wulandari, selanjutnya disebut "Instruktur".</div>
+      <div class="contract-section-title">Pasal 2 — Lingkup Pekerjaan</div>
+      <div class="contract-full-text">Instruktur setuju untuk menyiapkan dan mengisi konten kursus "Deep Learning with TensorFlow 2025" yang mencakup:
+• Minimal 20 sesi materi video (masing-masing min. 15 menit)
+• 5 kuis per modul (minimal 10 soal per kuis)
+• 2 proyek capstone dengan dataset nyata
+• Materi harus selesai diunggah sebelum 15 Agustus 2026
+• Format video: MP4 1080p, audio jernih, tanpa watermark</div>
+      <div class="contract-section-title">Pasal 3 — Hak Kekayaan Intelektual</div>
+      <div class="contract-full-text">Konten yang dibuat tetap menjadi milik Instruktur, namun Gojek memperoleh lisensi eksklusif selama 12 bulan untuk mendistribusikan melalui platform InspiraLearn. Setelah kontrak berakhir, Instruktur bebas menerbitkan konten di platform lain.</div>
+      <div class="contract-section-title">Pasal 4 — Royalti & Pembayaran</div>
+      <div class="contract-full-text">• Instruktur mendapatkan 70% dari harga jual kursus setelah dipotong biaya platform (10%)
+• Pembayaran dilakukan setiap tanggal 15 bulan berikutnya
+• Minimum pembayaran Rp 500.000 per transaksi
+• Bonus Rp 5.000.000 jika rating ≥ 4.7 pada akhir kuartal pertama</div>
+      <div class="contract-section-title">Pasal 5 — Kerahasiaan (NDA)</div>
+      <div class="contract-full-text">Instruktur tidak diperkenankan membocorkan informasi internal Gojek yang diakses selama pembuatan konten, termasuk data pengguna, roadmap produk, atau strategi bisnis.</div>
+      <div class="contract-section-title">Pasal 6 — Pengakhiran Kontrak</div>
+      <div class="contract-full-text">Kontrak dapat diakhiri oleh masing-masing pihak dengan pemberitahuan tertulis 30 hari sebelumnya. Jika Instruktur mengakhiri kontrak sebelum konten selesai, Gojek berhak menahan pembayaran hingga konten terpenuhi minimal 80%.</div>
+      <div style="margin-top:16px;padding:12px;background:var(--amber-light);border-radius:var(--r);font-size:11px;color:#92400E">
+        <strong>⚠️ Penting:</strong> Dengan menekan "Setuju & Tandatangani", kamu menyatakan telah membaca dan memahami seluruh isi kontrak ini dan bersedia terikat secara hukum dengan ketentuan di atas.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-g" onclick="closeModal('modal-gojek')">Tutup</button>
+      <button class="btn btn-d" onclick="closeModal('modal-gojek');openModal('modal-reject')">Tolak Kontrak</button>
+      <button class="btn btn-success" onclick="closeModal('modal-gojek');alert('Kontrak Gojek berhasil disetujui! Kursus sekarang terbuka untuk diisi materi.')"><i class="ti ti-check" style="font-size:12px"></i> Setuju & Tandatangani</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTRACT MODAL: BCA ═══ -->
+<div id="modal-bca" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><div class="modal-title">Kontrak — Data Analytics for Business</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">PT BCA Digital · 15 Jun 2026</div></div>
+      <button class="modal-close" onclick="closeModal('modal-bca')"><i class="ti ti-x" style="font-size:14px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="contract-full-text">Pasal 1 — PIHAK
+PT BCA Digital dan Dr. Sarah Wulandari (Instruktur).
+
+Pasal 2 — LINGKUP
+Minimal 15 sesi, 3 kuis per modul, 1 studi kasus nyata berbasis data perbankan.
+Bersifat eksklusif 6 bulan — tidak boleh membuat kursus serupa untuk platform lain.
+
+Pasal 3 — ROYALTI
+65% dari net revenue + bonus Rp 5.000.000 jika rating ≥ 4.5 pada bulan ke-3.
+
+Pasal 4 — REVISI
+Instruktur berhak atas 2 sesi revisi gratis. Revisi tambahan dikenakan biaya Rp 500.000/sesi.
+
+Pasal 5 — DEADLINE
+Konten harus selesai diunggah paling lambat 1 Oktober 2026.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-g" onclick="closeModal('modal-bca')">Tutup</button>
+      <button class="btn btn-d" onclick="closeModal('modal-bca')">Tolak</button>
+      <button class="btn btn-success" onclick="closeModal('modal-bca');alert('Kontrak BCA Digital berhasil disetujui!')"><i class="ti ti-check" style="font-size:12px"></i> Setuju & Tandatangani</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REJECT MODAL ═══ -->
+<div id="modal-reject" class="modal-overlay" style="display:none">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header"><div class="modal-title">Tolak Kontrak</div><button class="modal-close" onclick="closeModal('modal-reject')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:14px">Kamu yakin ingin menolak kontrak ini? Tindakan ini tidak bisa dibatalkan. Kamu bisa menghubungi admin perusahaan jika ada pertanyaan.</div>
+      <div class="fg"><label class="fl">Alasan Penolakan (opsional)</label><textarea class="fta" placeholder="mis: Jadwal bentrok, lingkup terlalu luas, royalti tidak sesuai..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-g" onclick="closeModal('modal-reject')">Batal</button><button class="btn btn-d" onclick="closeModal('modal-reject')"><i class="ti ti-x" style="font-size:12px"></i> Ya, Tolak Kontrak</button></div>
+  </div>
+</div>
+
+<script>
+const NAV_MAP={dashboard:0,contracts:1,'my-courses':2,'course-editor':3,'question-bank':4,'student-progress':5,royalty:6,profile:7};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('s-'+id);
+  if(sc)sc.classList.add('active');
+  document.querySelectorAll('.nl').forEach(n=>n.classList.remove('active'));
+  const links=document.querySelectorAll('.nl');
+  const ni=NAV_MAP[id];
+  if(ni!==undefined&&links[ni])links[ni].classList.add('active');
+  document.getElementById('content').scrollTop=0;
+}
+function setTab(el,targetId){
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const allPanes=['ct-pending','ct-active','ct-history','ced-lessons','ced-quiz','ced-assignments'];
+  allPanes.forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  const t=document.getElementById(targetId);
+  if(t)t.style.display='';
+}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function selectQtype(card,formId){
+  document.querySelectorAll('.qtype-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  ['qf-mcq','qf-mcqmulti','qf-truefalse','qf-short','qf-essay','qf-fillblank','qf-matching','qf-ordering','qf-hotspot'].forEach(id=>{
+    const e=document.getElementById(id);if(e)e.style.display='none';
+  });
+  const f=document.getElementById(formId);if(f)f.style.display='block';
+}
+function selFmt(card){
+  card.closest('.format-grid').querySelectorAll('.format-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+</script>
+</body>
+</html>

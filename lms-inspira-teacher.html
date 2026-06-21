@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS InspiraLearn — Teacher Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0C628D;--blue-light:#EBF5FF;--blue-mid:#185FA5;
+  --orange:#F3921B;--orange-light:#FEF3E2;
+  --teal:#0FADA8;--teal-light:#E0F5F5;
+  --green:#15803D;--green-light:#DCFCE7;
+  --red:#B91C1C;--red-light:#FEE2E2;
+  --purple:#7C3AED;--purple-light:#EDE9FE;
+  --amber:#B45309;--amber-light:#FEF3C7;
+  --bg:#F5F6F8;--surface:#fff;
+  --border:#E5E7EB;--border-mid:#D1D5DB;
+  --text:#111827;--text-2:#4B5563;--text-3:#9CA3AF;
+  --nav-w:224px;--top-h:52px;
+  --r:8px;--r-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* ─── LAYOUT ─── */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:var(--nav-w);flex-shrink:0;background:#1B3A5C;display:flex;flex-direction:column;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--top-h);flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px}
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* ─── SIDEBAR ─── */
+.sb-logo{padding:16px 14px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-icon{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-icon i{color:#fff;font-size:17px}
+.sb-logo-text{font-size:14px;font-weight:700;color:#fff}
+.sb-user{padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sb-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-role{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+.sb-nav{padding:8px 8px;flex:1}
+.sb-section{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;padding:0 8px;margin:12px 0 3px}
+.sb-section:first-child{margin-top:2px}
+.nav-link{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r);font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;transition:.12s;margin-bottom:1px}
+.nav-link:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-link.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+.nav-link i{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.nav-link .nb{margin-left:auto;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px}
+.nb-orange{background:rgba(243,146,27,.3);color:#FBBF6A}
+.nb-red{background:rgba(248,113,113,.25);color:#FCA5A5}
+.nb-blue{background:rgba(255,255,255,.15);color:#fff}
+.sb-bottom{padding:8px 8px;border-top:1px solid rgba(255,255,255,.1)}
+
+/* ─── TOPBAR ─── */
+.search-wrap{display:flex;align-items:center;gap:8px;background:#F3F4F6;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;height:32px;max-width:260px;flex:1}
+.search-wrap i{font-size:13px;color:var(--text-3)}
+.search-wrap input{border:none;background:none;font-size:12px;color:var(--text);outline:none;width:100%}
+.search-wrap input::placeholder{color:var(--text-3)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);position:relative}
+.icon-btn i{font-size:15px}
+.notif-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--orange);border:1.5px solid #fff}
+.tb-avatar{width:32px;height:32px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tb-role-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--orange-light);color:var(--orange)}
+
+/* ─── SCREENS ─── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ─── COMPONENTS ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
+.stat-label{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:700;line-height:1;margin-bottom:3px}
+.stat-sub{font-size:11px;color:var(--text-3)}
+.pbar{height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-size:13px;font-weight:700;color:var(--text)}
+.sec-link{font-size:11px;color:#0C628D;cursor:pointer}
+
+/* ─── BADGES / TAGS ─── */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;gap:3px}
+.badge-published{background:var(--green-light);color:var(--green)}
+.badge-draft{background:#F3F4F6;color:var(--text-3)}
+.badge-mcq{background:var(--blue-light);color:#0C628D}
+.badge-essay{background:var(--purple-light);color:var(--purple)}
+.badge-matching{background:var(--amber-light);color:var(--amber)}
+.badge-video{background:var(--teal-light);color:var(--teal)}
+.badge-pdf{background:var(--red-light);color:var(--red)}
+.badge-link{background:var(--orange-light);color:var(--orange)}
+.badge-module{background:#F3F4F6;color:var(--text-2)}
+.badge-pending{background:var(--amber-light);color:var(--amber)}
+.badge-paid{background:var(--green-light);color:var(--green)}
+
+/* ─── TABS ─── */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:8px 14px;font-size:12px;cursor:pointer;color:var(--text-2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s;font-weight:500}
+.tab:hover{color:var(--text)}
+.tab.active{color:#0C628D;border-bottom-color:#0C628D;font-weight:700}
+
+/* ─── COURSE LIST SIDEBAR ─── */
+.course-sb{width:220px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface)}
+.course-sb-hdr{padding:14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.course-sb-title{font-size:12px;font-weight:700;color:var(--text)}
+.course-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid #F9FAFB;transition:.1s}
+.course-item:hover{background:#F9FAFB}
+.course-item.active{background:var(--blue-light);border-left:3px solid #0C628D}
+.course-item.active .ci-title{color:#0C628D}
+.ci-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3}
+.ci-meta{display:flex;align-items:center;gap:6px}
+
+/* ─── LESSON / MODULE ROWS ─── */
+.lesson-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;background:var(--surface)}
+.lesson-row:hover{border-color:var(--border-mid)}
+.lesson-drag{width:16px;color:var(--text-3);cursor:move;flex-shrink:0;padding-top:2px;font-size:14px}
+.lesson-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lesson-info{flex:1;min-width:0}
+.lesson-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.lesson-meta{display:flex;gap:5px;flex-wrap:wrap}
+.lesson-actions{display:flex;gap:5px;flex-shrink:0;align-items:flex-start}
+
+.module-block{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:10px}
+.module-hdr{padding:10px 14px;background:#FAFAFA;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.module-hdr-title{font-size:12px;font-weight:700;color:var(--text);flex:1}
+.module-lessons{padding:8px}
+
+/* ─── QUIZ / QUESTION ─── */
+.q-row{border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start;background:var(--surface)}
+.q-num{width:24px;height:24px;border-radius:50%;background:#F3F4F6;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--text-3);flex-shrink:0;margin-top:1px}
+.q-body{flex:1;min-width:0}
+.q-prompt{font-size:12px;color:var(--text);margin-bottom:4px;line-height:1.45}
+.q-choices{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+.q-choice{font-size:11px;color:var(--text-2);padding:3px 8px;border-radius:5px;display:flex;align-items:center;gap:6px}
+.q-choice.correct{background:var(--green-light);color:var(--green);font-weight:600}
+.q-choice-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--border-mid);flex-shrink:0}
+.q-choice.correct .q-choice-dot{border-color:var(--green);background:var(--green)}
+
+/* ─── STUDENT TABLE ─── */
+.student-table{width:100%;border-collapse:collapse;font-size:12px}
+.student-table th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:#FAFAFA}
+.student-table td{padding:9px 10px;border-bottom:1px solid #F9FAFB;vertical-align:middle}
+.student-table tr:hover td{background:#F9FAFB}
+.prog-mini{display:flex;align-items:center;gap:6px}
+.prog-mini-bar{flex:1;height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden}
+.prog-mini-fill{height:100%;border-radius:2px;background:#0C628D}
+
+/* ─── FORM ELEMENTS ─── */
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;display:block}
+.form-input{width:100%;height:34px;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--text);background:#fff;outline:none}
+.form-input:focus{border-color:#0C628D;box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.form-textarea{width:100%;border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-size:12px;color:var(--text);background:#fff;outline:none;resize:vertical;min-height:80px}
+.form-textarea:focus{border-color:#0C628D;box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.form-select{width:100%;height:34px;border:1px solid var(--border);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--text);background:#fff;outline:none}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* ─── BUTTONS ─── */
+.btn-p{padding:7px 14px;background:#0C628D;color:#fff;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer}
+.btn-p:hover{background:#0A527A}
+.btn-o{padding:6px 12px;background:none;color:#0C628D;border:1px solid #0C628D;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer}
+.btn-o:hover{background:var(--blue-light)}
+.btn-danger{padding:6px 12px;background:none;color:var(--red);border:1px solid #FECACA;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer}
+.btn-danger:hover{background:var(--red-light)}
+.btn-ghost{padding:6px 10px;background:none;color:var(--text-2);border:1px solid var(--border);border-radius:var(--r);font-size:12px;cursor:pointer}
+.btn-ghost:hover{background:#F3F4F6}
+.btn-sm{padding:4px 10px;background:#0C628D;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.btn-sm-o{padding:4px 10px;background:none;color:var(--text-2);border:1px solid var(--border);border-radius:6px;font-size:11px;cursor:pointer}
+.btn-sm-danger{padding:4px 10px;background:none;color:var(--red);border:1px solid #FECACA;border-radius:6px;font-size:11px;cursor:pointer}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ─── MISC ─── */
+.divider{height:1px;background:var(--border);margin:14px 0}
+.page-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text-3);margin-bottom:20px}
+.breadcrumb{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-3);margin-bottom:14px}
+.breadcrumb span{cursor:pointer}
+.breadcrumb span:hover{color:#0C628D}
+.breadcrumb .curr{color:var(--text);cursor:default}
+.empty-state{text-align:center;padding:24px;color:var(--text-3)}
+.empty-state i{font-size:28px;display:block;margin-bottom:8px}
+.empty-state p{font-size:12px}
+.inline-radio{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer}
+.upload-zone{border:1.5px dashed var(--border-mid);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;color:var(--text-3);font-size:12px;transition:.12s}
+.upload-zone:hover{border-color:#0C628D;color:#0C628D;background:var(--blue-light)}
+.tag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--orange-light);color:var(--amber);font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.tag-chip button{background:none;border:none;color:var(--amber);cursor:pointer;font-size:12px;line-height:1;padding:0}
+.choice-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.choice-label{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-3);flex-shrink:0}
+.choice-label.correct{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.richtext-mock{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.richtext-toolbar{padding:6px 8px;background:#F9FAFB;border-bottom:1px solid var(--border);display:flex;gap:4px;flex-wrap:wrap}
+.richtext-btn{padding:3px 6px;border:none;background:none;font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer;border-radius:4px}
+.richtext-btn:hover{background:#E5E7EB}
+.richtext-body{padding:10px;min-height:80px;font-size:13px;color:var(--text);line-height:1.6}
+.royalty-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F9FAFB;font-size:12px}
+.royalty-row:last-child{border-bottom:none}
+
+/* ─── SPLIT LAYOUT for course editor ─── */
+.editor-layout{display:flex;height:100%;gap:0}
+.course-list-panel{width:210px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;border-radius:var(--r-lg) 0 0 var(--r-lg);overflow:hidden}
+.course-editor-panel{flex:1;overflow-y:auto;padding:20px;min-width:0}
+
+/* ─── NAV BAR ─── */
+.nav-demo{padding:9px 16px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.nav-demo span{font-size:10px;color:var(--text-3);margin-right:3px}
+.nav-demo button{padding:3px 10px;font-size:11px;border:1px solid var(--border);border-radius:99px;background:var(--surface);cursor:pointer;color:var(--text-2);font-family:inherit}
+.nav-demo button:hover{background:#F3F4F6}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon"><i class="ti ti-school"></i></div>
+    <div><div class="sb-logo-text"><span style="color:#7EC8F5">Inspira</span>Learn</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">SR</div>
+    <div>
+      <div class="sb-name">Sarah Wulandari</div>
+      <div class="sb-role">Instruktur / Teacher</div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Utama</div>
+    <div class="nav-link active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nav-link" onclick="go('courses')"><i class="ti ti-book-2"></i> Kelola Kursus <span class="nb nb-blue" id="nb-courses">3</span></div>
+
+    <div class="sb-section">Konten</div>
+    <div class="nav-link" onclick="go('course-editor')"><i class="ti ti-edit"></i> Editor Kursus</div>
+    <div class="nav-link" onclick="go('question-bank')"><i class="ti ti-database"></i> Bank Soal</div>
+    <div class="nav-link" onclick="go('badges')"><i class="ti ti-award"></i> Badge & Sertifikat</div>
+
+    <div class="sb-section">Analitik</div>
+    <div class="nav-link" onclick="go('student-progress')"><i class="ti ti-users"></i> Progress Siswa</div>
+    <div class="nav-link" onclick="go('stats')"><i class="ti ti-chart-bar"></i> Statistik Kursus</div>
+    <div class="nav-link" onclick="go('royalty')"><i class="ti ti-coin"></i> Royalti <span class="nb nb-orange">Baru</span></div>
+
+    <div class="sb-section">Akun</div>
+    <div class="nav-link" onclick="go('profile')"><i class="ti ti-user-circle"></i> Profil Saya</div>
+  </div>
+  <div class="sb-bottom">
+    <div class="nav-link" style="color:rgba(255,255,255,.5)"><i class="ti ti-logout"></i> Keluar</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input type="text" placeholder="Cari kursus, materi, soal…">
+    </div>
+    <div class="tb-right">
+      <div class="tb-role-badge"><i class="ti ti-school" style="font-size:11px"></i> Teacher</div>
+      <div class="icon-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
+      <div class="tb-avatar">SW</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+  <!-- ══════════════════════════════════════
+       1. DASHBOARD TEACHER
+  ══════════════════════════════════════ -->
+  <div class="screen active" id="s-dashboard">
+    <div class="page-title">Dashboard Instruktur</div>
+    <div class="page-sub">Ringkasan performa kursus dan aktivitas siswa kamu</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Kursus</div>
+        <div class="stat-val" style="color:#0C628D">3</div>
+        <div class="stat-sub">2 published · 1 draft</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Siswa</div>
+        <div class="stat-val" style="color:var(--teal)">1.240</div>
+        <div class="stat-sub">+48 bulan ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Royalti Pending</div>
+        <div class="stat-val" style="color:var(--orange)">Rp 2,4jt</div>
+        <div class="stat-sub">3 invoice belum dibayar</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rating Rata-rata</div>
+        <div class="stat-val" style="color:var(--amber)">4.8 ★</div>
+        <div class="stat-sub">dari 3.200 ulasan</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="section-hdr">
+          <div class="sec-title">Kursus Saya</div>
+          <div class="sec-link" onclick="go('courses')">Kelola semua →</div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #F9FAFB;cursor:pointer" onclick="go('course-editor')">
+            <div style="width:40px;height:40px;border-radius:10px;background:#1a0f2e;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-chart-scatter-plot" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Machine Learning A–Z: Python & R</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <span class="badge badge-published"><i class="ti ti-circle-check" style="font-size:10px"></i> Published</span>
+                <span style="font-size:11px;color:var(--text-3)">820 siswa · 48 materi</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:11px;color:var(--text-3)">Selesai</div>
+              <div style="font-size:16px;font-weight:700;color:var(--teal)">68%</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #F9FAFB;cursor:pointer">
+            <div style="width:40px;height:40px;border-radius:10px;background:#0a2010;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-code" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Python untuk Pemula</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <span class="badge badge-published"><i class="ti ti-circle-check" style="font-size:10px"></i> Published</span>
+                <span style="font-size:11px;color:var(--text-3)">380 siswa · 30 materi</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:11px;color:var(--text-3)">Selesai</div>
+              <div style="font-size:16px;font-weight:700;color:var(--teal)">54%</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer">
+            <div style="width:40px;height:40px;border-radius:10px;background:#1a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-robot" style="font-size:20px;color:rgba(255,255,255,.3)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Deep Learning with TensorFlow</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <span class="badge badge-draft">Draft</span>
+                <span style="font-size:11px;color:var(--text-3)">0 siswa · 12 materi</span>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <button class="btn-sm" onclick="go('course-editor')">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-hdr">
+          <div class="sec-title">Aktivitas Terbaru</div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:flex-start">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-user-plus" style="font-size:14px;color:#0C628D"></i></div>
+            <div><div style="font-size:12px;color:var(--text)"><strong>12 siswa baru</strong> mendaftar kursus ML A–Z</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">2 jam lalu</div></div>
+          </div>
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:flex-start">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-message-circle" style="font-size:14px;color:var(--teal)"></i></div>
+            <div><div style="font-size:12px;color:var(--text)"><strong>Fajar A.</strong> mengajukan pertanyaan di Sesi 7 — SVM</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">5 jam lalu</div></div>
+          </div>
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:flex-start">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--amber-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-star" style="font-size:14px;color:var(--amber)"></i></div>
+            <div><div style="font-size:12px;color:var(--text)"><strong>Nadia S.</strong> memberi ulasan bintang 5 di Python Pemula</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">1 hari lalu</div></div>
+          </div>
+          <div style="padding:10px 14px;display:flex;gap:10px;align-items:flex-start">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-certificate" style="font-size:14px;color:var(--green)"></i></div>
+            <div><div style="font-size:12px;color:var(--text)"><strong>8 siswa</strong> menyelesaikan kursus ML A–Z dan mendapat sertifikat</div><div style="font-size:10px;color:var(--text-3);margin-top:2px">2 hari lalu</div></div>
+          </div>
+        </div>
+
+        <div class="section-hdr" style="margin-top:16px">
+          <div class="sec-title">Royalti Bulan Ini</div>
+          <div class="sec-link" onclick="go('royalty')">Detail →</div>
+        </div>
+        <div class="card">
+          <div style="font-size:22px;font-weight:700;color:var(--green);margin-bottom:6px">Rp 4.820.000</div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:12px">dari 2 kursus berbayar · Juni 2026</div>
+          <div class="pbar"><div class="pfill" style="width:68%;background:var(--green)"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:4px"><span>Sudah dibayar: Rp 2,4jt</span><span>Pending: Rp 2,4jt</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       2. KELOLA KURSUS (list)
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-courses">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div><div class="page-title">Kursus Saya</div><div class="page-sub" style="margin:0">3 kursus terdaftar · 2 published</div></div>
+      <button class="btn-p" onclick="go('course-editor')"><i class="ti ti-plus" style="font-size:12px"></i> Buat Kursus Baru</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card" style="display:flex;gap:14px;align-items:center;cursor:pointer" onclick="go('course-editor')">
+        <div style="width:56px;height:44px;border-radius:10px;background:#1a0f2e;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-chart-scatter-plot" style="font-size:22px;color:rgba(255,255,255,.3)"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Machine Learning A–Z: Python & R</div>
+            <span class="badge badge-published">Published</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-3)">820 siswa enrolled · 4 modul · 48 materi · 6 quiz · ★ 4.9</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">Rp 299.000</div>
+          <div style="font-size:10px;color:var(--green);margin-top:2px">Rp 3,1jt royalti</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-sm" onclick="event.stopPropagation();go('course-editor')">Edit</button>
+          <button class="btn-sm-o" onclick="event.stopPropagation();go('stats')">Statistik</button>
+        </div>
+      </div>
+      <div class="card" style="display:flex;gap:14px;align-items:center;cursor:pointer">
+        <div style="width:56px;height:44px;border-radius:10px;background:#0a2010;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-code" style="font-size:22px;color:rgba(255,255,255,.3)"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Python untuk Pemula: dari 0 ke Produktif</div>
+            <span class="badge badge-published">Published</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-3)">380 siswa enrolled · 2 modul · 30 materi · 4 quiz · ★ 4.8</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--teal)">Gratis</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:2px">—</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-sm">Edit</button>
+          <button class="btn-sm-o">Statistik</button>
+        </div>
+      </div>
+      <div class="card" style="display:flex;gap:14px;align-items:center;cursor:pointer">
+        <div style="width:56px;height:44px;border-radius:10px;background:#1a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-robot" style="font-size:22px;color:rgba(255,255,255,.3)"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Deep Learning with TensorFlow 2025</div>
+            <span class="badge badge-draft">Draft</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-3)">0 siswa · 2 modul · 12 materi · 0 quiz — Belum dipublish</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">Rp 399.000</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-sm">Edit</button>
+          <button class="btn-sm-danger">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       3. COURSE EDITOR (full)
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-course-editor">
+    <div class="breadcrumb"><span onclick="go('courses')">Kursus Saya</span><i class="ti ti-chevron-right"></i><span class="curr">Machine Learning A–Z</span></div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;min-height:560px">
+      <!-- Course list panel -->
+      <div class="course-list-panel">
+        <div class="course-sb-hdr">
+          <div class="course-sb-title">Kursus Saya</div>
+          <button class="btn-sm" onclick="go('courses')"><i class="ti ti-plus" style="font-size:10px"></i></button>
+        </div>
+        <div style="overflow-y:auto;flex:1">
+          <div class="course-item active">
+            <div class="ci-title">Machine Learning A–Z: Python & R</div>
+            <div class="ci-meta"><span class="badge badge-published" style="font-size:9px">Published</span><span style="font-size:10px;color:var(--text-3)">48 materi</span></div>
+          </div>
+          <div class="course-item">
+            <div class="ci-title">Python untuk Pemula</div>
+            <div class="ci-meta"><span class="badge badge-published" style="font-size:9px">Published</span><span style="font-size:10px;color:var(--text-3)">30 materi</span></div>
+          </div>
+          <div class="course-item">
+            <div class="ci-title">Deep Learning TensorFlow</div>
+            <div class="ci-meta"><span class="badge badge-draft" style="font-size:9px">Draft</span><span style="font-size:10px;color:var(--text-3)">12 materi</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editor panel -->
+      <div class="course-editor-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Machine Learning A–Z: Python & R</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">820 siswa · ★ 4.9 · Rp 299.000</div>
+          </div>
+          <div class="btn-group">
+            <span class="badge badge-published"><i class="ti ti-circle-check" style="font-size:10px"></i> Published</span>
+            <button class="btn-ghost">Toggle Publish</button>
+            <button class="btn-sm" onclick="go('stats')"><i class="ti ti-chart-bar" style="font-size:11px"></i> Statistik</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="setTab(this,'t-settings')">Pengaturan</div>
+          <div class="tab" onclick="setTab(this,'t-modules')">Modul (4)</div>
+          <div class="tab" onclick="setTab(this,'t-lessons')">Materi (48)</div>
+          <div class="tab" onclick="setTab(this,'t-quiz')">Quiz (6)</div>
+          <div class="tab" onclick="setTab(this,'t-assignments')">Tugas (3)</div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="t-settings">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Judul Kursus</label>
+              <input class="form-input" type="text" value="Machine Learning A–Z: Python & R">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Harga (Rp)</label>
+              <input class="form-input" type="number" value="299000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deskripsi</label>
+            <div class="richtext-mock">
+              <div class="richtext-toolbar">
+                <button class="richtext-btn"><b>B</b></button>
+                <button class="richtext-btn"><i>I</i></button>
+                <button class="richtext-btn">H1</button>
+                <button class="richtext-btn">H2</button>
+                <button class="richtext-btn">• List</button>
+                <button class="richtext-btn">1. List</button>
+                <button class="richtext-btn"><i class="ti ti-photo" style="font-size:11px"></i></button>
+              </div>
+              <div class="richtext-body" contenteditable="true">Kuasai Machine Learning dengan Python dan R. Pelajari algoritma dari regresi linier hingga deep learning, dengan proyek nyata yang bisa masuk portfolio.</div>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Kategori</label>
+              <select class="form-select"><option>Data Science</option><option>Machine Learning</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tags</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;border:1px solid var(--border);border-radius:var(--r);padding:5px 8px;background:#fff">
+                <span class="tag-chip">python <button>×</button></span>
+                <span class="tag-chip">machine learning <button>×</button></span>
+                <span class="tag-chip">data science <button>×</button></span>
+                <input style="border:none;outline:none;font-size:11px;min-width:80px" placeholder="Tambah tag…">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cover Image</label>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:120px;height:80px;border-radius:var(--r);background:#1a0f2e;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-chart-scatter-plot" style="font-size:28px;color:rgba(255,255,255,.3)"></i></div>
+              <div style="flex:1">
+                <div class="upload-zone"><i class="ti ti-upload" style="font-size:16px;display:block;margin-bottom:4px"></i>Klik atau drag gambar cover<br><span style="font-size:10px">PNG, JPG, maks 2MB</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <label class="inline-radio"><input type="checkbox" checked> <span>Publish kursus</span></label>
+            <label class="inline-radio" style="margin-left:12px"><input type="checkbox"> <span>Tampilkan di halaman utama</span></label>
+          </div>
+          <button class="btn-p">Simpan Perubahan</button>
+        </div>
+
+        <!-- MODULES TAB -->
+        <div id="t-modules" style="display:none">
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Tambah Modul Baru</div>
+            <div class="form-grid-3">
+              <div style="grid-column:span 2">
+                <input class="form-input" type="text" placeholder="Nama modul, mis: Supervised Learning">
+              </div>
+              <div><input class="form-input" type="number" placeholder="Order" value="5"></div>
+            </div>
+            <div class="form-group" style="margin-top:8px;margin-bottom:8px">
+              <input class="form-input" type="text" placeholder="Deskripsi singkat (opsional)">
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn-p">Tambah Modul</button>
+              <label class="inline-radio"><input type="checkbox" checked> <span>Publish</span></label>
+            </div>
+          </div>
+          <div class="module-block">
+            <div class="module-hdr">
+              <i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text-3);cursor:move"></i>
+              <div class="module-hdr-title">Modul 1: Python Fundamentals</div>
+              <span class="badge badge-published">Published</span>
+              <span style="font-size:11px;color:var(--text-3)">8 materi</span>
+              <button class="btn-sm-o">Edit</button>
+              <button class="btn-sm-danger">Hapus</button>
+            </div>
+          </div>
+          <div class="module-block">
+            <div class="module-hdr">
+              <i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text-3);cursor:move"></i>
+              <div class="module-hdr-title">Modul 2: Supervised Learning</div>
+              <span class="badge badge-published">Published</span>
+              <span style="font-size:11px;color:var(--text-3)">14 materi</span>
+              <button class="btn-sm-o">Edit</button>
+              <button class="btn-sm-danger">Hapus</button>
+            </div>
+          </div>
+          <div class="module-block">
+            <div class="module-hdr">
+              <i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text-3);cursor:move"></i>
+              <div class="module-hdr-title">Modul 3: Unsupervised Learning</div>
+              <span class="badge badge-published">Published</span>
+              <span style="font-size:11px;color:var(--text-3)">10 materi</span>
+              <button class="btn-sm-o">Edit</button>
+              <button class="btn-sm-danger">Hapus</button>
+            </div>
+          </div>
+          <div class="module-block">
+            <div class="module-hdr">
+              <i class="ti ti-grip-vertical" style="font-size:14px;color:var(--text-3);cursor:move"></i>
+              <div class="module-hdr-title">Modul 4: Deep Learning</div>
+              <span class="badge badge-draft">Draft</span>
+              <span style="font-size:11px;color:var(--text-3)">16 materi</span>
+              <button class="btn-sm-o">Edit</button>
+              <button class="btn-sm-danger">Hapus</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- LESSONS TAB -->
+        <div id="t-lessons" style="display:none">
+          <!-- Add lesson form -->
+          <div class="card" style="margin-bottom:16px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Tambah Materi Baru</div>
+            <div class="form-grid-2" style="margin-bottom:8px">
+              <div>
+                <label class="form-label">Judul Materi</label>
+                <input class="form-input" type="text" placeholder="mis: Regresi Linier — Teori & Implementasi">
+              </div>
+              <div>
+                <label class="form-label">Modul</label>
+                <select class="form-select"><option value="">Tanpa modul</option><option>Modul 1: Python Fundamentals</option><option selected>Modul 2: Supervised Learning</option><option>Modul 3: Unsupervised Learning</option><option>Modul 4: Deep Learning</option></select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Video Embed URL (opsional)</label>
+              <input class="form-input" type="text" placeholder="https://www.youtube.com/embed/...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Konten Materi</label>
+              <div class="richtext-mock">
+                <div class="richtext-toolbar">
+                  <button class="richtext-btn"><b>B</b></button><button class="richtext-btn"><i>I</i></button><button class="richtext-btn">H1</button><button class="richtext-btn">H2</button><button class="richtext-btn">• List</button><button class="richtext-btn">1. List</button><button class="richtext-btn"><i class="ti ti-photo" style="font-size:11px"></i></button><button class="richtext-btn"><i class="ti ti-code" style="font-size:11px"></i></button>
+                </div>
+                <div class="richtext-body" contenteditable="true"><h2 style="font-size:14px;font-weight:700;margin-bottom:6px">Tujuan Pembelajaran</h2><ul style="margin-left:16px;font-size:12px"><li>Memahami konsep regresi linier</li><li>Implementasi dengan scikit-learn</li></ul></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lampiran (PDF / Link)</label>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input class="form-input" type="text" placeholder="Nama file atau link" style="flex:1">
+                <input class="form-input" type="text" placeholder="https://..." style="flex:2">
+              </div>
+              <div class="btn-group">
+                <button class="btn-ghost"><i class="ti ti-link" style="font-size:11px"></i> Tambah Link</button>
+                <button class="btn-ghost"><i class="ti ti-file-type-pdf" style="font-size:11px"></i> Upload PDF</button>
+              </div>
+            </div>
+            <div class="form-grid-2" style="margin-bottom:10px">
+              <div>
+                <label class="form-label">Order</label>
+                <input class="form-input" type="number" value="13">
+              </div>
+              <div style="display:flex;align-items:flex-end;padding-bottom:4px">
+                <label class="inline-radio"><input type="checkbox"> <span>Publish materi ini</span></label>
+              </div>
+            </div>
+            <button class="btn-p">Tambah Materi</button>
+          </div>
+
+          <!-- Existing lessons grouped by module -->
+          <div class="module-block">
+            <div class="module-hdr"><i class="ti ti-grip-vertical" style="font-size:13px;color:var(--text-3)"></i><div class="module-hdr-title">Modul 2: Supervised Learning <span style="font-weight:400;color:var(--text-3)">(5 materi)</span></div></div>
+            <div class="module-lessons">
+              <div class="lesson-row">
+                <span class="lesson-drag"><i class="ti ti-grip-vertical"></i></span>
+                <div class="lesson-icon" style="background:var(--teal-light)"><i class="ti ti-video" style="font-size:14px;color:var(--teal)"></i></div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Pengantar Supervised Learning</div>
+                  <div class="lesson-meta">
+                    <span class="badge badge-published">Published</span>
+                    <span class="badge badge-video">Video</span>
+                    <span style="font-size:10px;color:var(--text-3)">Order: 5 · 15m</span>
+                  </div>
+                </div>
+                <div class="lesson-actions">
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-o">Toggle</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+              <div class="lesson-row">
+                <span class="lesson-drag"><i class="ti ti-grip-vertical"></i></span>
+                <div class="lesson-icon" style="background:var(--blue-light)"><i class="ti ti-file-text" style="font-size:14px;color:#0C628D"></i></div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Regresi Linier — Teori & Rumus</div>
+                  <div class="lesson-meta">
+                    <span class="badge badge-published">Published</span>
+                    <span class="badge badge-pdf">PDF</span>
+                    <span style="font-size:10px;color:var(--text-3)">Order: 6 · 20m</span>
+                  </div>
+                </div>
+                <div class="lesson-actions">
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-o">Toggle</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+              <div class="lesson-row" style="opacity:.6">
+                <span class="lesson-drag"><i class="ti ti-grip-vertical"></i></span>
+                <div class="lesson-icon" style="background:#F3F4F6"><i class="ti ti-file-text" style="font-size:14px;color:var(--text-3)"></i></div>
+                <div class="lesson-info">
+                  <div class="lesson-title">Implementasi Regresi dengan scikit-learn</div>
+                  <div class="lesson-meta">
+                    <span class="badge badge-draft">Draft</span>
+                    <span style="font-size:10px;color:var(--text-3)">Order: 7</span>
+                  </div>
+                </div>
+                <div class="lesson-actions">
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-o">Toggle</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ TAB -->
+        <div id="t-quiz" style="display:none">
+          <!-- Create quiz -->
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Tambah Quiz Baru</div>
+            <div class="form-grid-2" style="margin-bottom:8px">
+              <div>
+                <label class="form-label">Judul Quiz</label>
+                <input class="form-input" type="text" placeholder="mis: Quiz Regresi Linier">
+              </div>
+              <div>
+                <label class="form-label">Untuk Materi</label>
+                <select class="form-select"><option>— Pilih materi —</option><option>Regresi Linier — Teori</option><option>SVM Fundamentals</option></select>
+              </div>
+            </div>
+            <div class="form-grid-3" style="margin-bottom:8px">
+              <div>
+                <label class="form-label">Time Limit (detik)</label>
+                <input class="form-input" type="number" value="1800" placeholder="0 = no limit">
+              </div>
+              <div style="display:flex;align-items:flex-end;padding-bottom:4px;gap:12px">
+                <label class="inline-radio"><input type="checkbox" checked> <span>Acak soal</span></label>
+                <label class="inline-radio"><input type="checkbox"> <span>Publish</span></label>
+              </div>
+            </div>
+            <button class="btn-p">Buat Quiz</button>
+          </div>
+
+          <!-- Quiz list -->
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <!-- Left: quiz list -->
+            <div style="width:180px;flex-shrink:0">
+              <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;margin-bottom:6px">Quiz Tersedia</div>
+              <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                <div style="padding:8px 10px;background:var(--blue-light);border-left:3px solid #0C628D;cursor:pointer">
+                  <div style="font-size:11px;font-weight:700;color:#0C628D">Quiz Regresi</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:1px">12 soal · Published</div>
+                </div>
+                <div style="padding:8px 10px;border-bottom:1px solid #F9FAFB;cursor:pointer">
+                  <div style="font-size:11px;font-weight:600;color:var(--text)">Quiz SVM</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:1px">8 soal · Published</div>
+                </div>
+                <div style="padding:8px 10px;cursor:pointer">
+                  <div style="font-size:11px;font-weight:600;color:var(--text)">Quiz Final</div>
+                  <div style="font-size:10px;color:var(--text-3);margin-top:1px">25 soal · Draft</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: questions -->
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                <div style="font-size:12px;font-weight:700;color:var(--text)">Soal — Quiz Regresi (12 soal)</div>
+                <div class="btn-group">
+                  <button class="btn-ghost" style="font-size:11px"><i class="ti ti-database" style="font-size:11px"></i> Import dari Bank</button>
+                  <button class="btn-ghost" style="font-size:11px"><i class="ti ti-shuffle" style="font-size:11px"></i> Acak Urutan</button>
+                </div>
+              </div>
+
+              <!-- Add question form -->
+              <div class="card" style="margin-bottom:10px">
+                <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">Tambah Soal Baru</div>
+                <div class="form-group" style="margin-bottom:8px">
+                  <label class="form-label">Tipe Soal</label>
+                  <div style="display:flex;gap:12px">
+                    <label class="inline-radio"><input type="radio" name="qtype" checked> <span>Pilihan Ganda</span></label>
+                    <label class="inline-radio"><input type="radio" name="qtype"> <span>Essay</span></label>
+                    <label class="inline-radio"><input type="radio" name="qtype"> <span>Mencocokkan</span></label>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:8px">
+                  <label class="form-label">Pertanyaan</label>
+                  <div class="richtext-mock">
+                    <div class="richtext-toolbar"><button class="richtext-btn"><b>B</b></button><button class="richtext-btn"><i>I</i></button><button class="richtext-btn"><i class="ti ti-photo" style="font-size:11px"></i></button></div>
+                    <div class="richtext-body" contenteditable="true" style="min-height:50px">Algoritma apa yang digunakan untuk meminimalkan fungsi biaya dalam regresi linier?</div>
+                  </div>
+                </div>
+                <div style="margin-bottom:8px">
+                  <label class="form-label">Pilihan Jawaban</label>
+                  <div class="choice-row"><div class="choice-label">A</div><input class="form-input" style="flex:1" type="text" value="Gradient Descent"></div>
+                  <div class="choice-row"><div class="choice-label">B</div><input class="form-input" style="flex:1" type="text" value="Newton's Method"></div>
+                  <div class="choice-row"><div class="choice-label">C</div><input class="form-input" style="flex:1" type="text" value="Backpropagation"></div>
+                  <div class="choice-row"><div class="choice-label">D</div><input class="form-input" style="flex:1" type="text" value="Principal Component Analysis"></div>
+                </div>
+                <div class="form-grid-2">
+                  <div>
+                    <label class="form-label">Jawaban Benar</label>
+                    <select class="form-select"><option value="a">A — Gradient Descent</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select>
+                  </div>
+                  <div>
+                    <label class="form-label">Order</label>
+                    <input class="form-input" type="number" value="13">
+                  </div>
+                </div>
+                <button class="btn-p" style="margin-top:8px">Tambah Soal</button>
+              </div>
+
+              <!-- Existing questions -->
+              <div class="q-row">
+                <div class="q-num">1</div>
+                <div class="q-body">
+                  <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge badge-mcq">MCQ</span></div>
+                  <div class="q-prompt">Apa tujuan utama dari algoritma regresi linier?</div>
+                  <div class="q-choices">
+                    <div class="q-choice"><div class="q-choice-dot"></div> Klasifikasi data</div>
+                    <div class="q-choice correct"><div class="q-choice-dot"></div> Prediksi nilai kontinu ✓</div>
+                    <div class="q-choice"><div class="q-choice-dot"></div> Clustering data</div>
+                    <div class="q-choice"><div class="q-choice-dot"></div> Reduksi dimensi</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+                  <button class="btn-sm-o"><i class="ti ti-chevron-up" style="font-size:10px"></i></button>
+                  <button class="btn-sm-o"><i class="ti ti-chevron-down" style="font-size:10px"></i></button>
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+              <div class="q-row">
+                <div class="q-num">2</div>
+                <div class="q-body">
+                  <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge badge-essay">Essay</span></div>
+                  <div class="q-prompt">Jelaskan perbedaan antara overfitting dan underfitting, serta cara mengatasinya!</div>
+                  <div style="margin-top:6px;font-size:11px;color:var(--text-3);background:#F9FAFB;padding:6px 8px;border-radius:5px">Rubrik: Sebutkan 3 poin utama, berikan contoh nyata, min. 100 kata</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+                  <button class="btn-sm-o"><i class="ti ti-chevron-up" style="font-size:10px"></i></button>
+                  <button class="btn-sm-o"><i class="ti ti-chevron-down" style="font-size:10px"></i></button>
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+              <div class="q-row">
+                <div class="q-num">3</div>
+                <div class="q-body">
+                  <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge badge-matching">Mencocokkan</span></div>
+                  <div class="q-prompt">Cocokkan nama algoritma dengan kategorinya!</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;font-size:11px">
+                    <div style="background:#F9FAFB;padding:5px 8px;border-radius:5px">Linear Regression</div>
+                    <div style="background:var(--teal-light);padding:5px 8px;border-radius:5px;color:#0F6E56">Supervised Learning</div>
+                    <div style="background:#F9FAFB;padding:5px 8px;border-radius:5px">K-Means</div>
+                    <div style="background:var(--teal-light);padding:5px 8px;border-radius:5px;color:#0F6E56">Unsupervised Learning</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+                  <button class="btn-sm-o"><i class="ti ti-chevron-up" style="font-size:10px"></i></button>
+                  <button class="btn-sm-o"><i class="ti ti-chevron-down" style="font-size:10px"></i></button>
+                  <button class="btn-sm">Edit</button>
+                  <button class="btn-sm-danger">Hapus</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ASSIGNMENTS TAB -->
+        <div id="t-assignments" style="display:none">
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Tambah Tugas Baru</div>
+            <div class="form-group">
+              <label class="form-label">Judul Tugas</label>
+              <input class="form-input" type="text" placeholder="mis: Proyek Analisis Data Penjualan">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instruksi Pengerjaan</label>
+              <div class="richtext-mock">
+                <div class="richtext-toolbar"><button class="richtext-btn"><b>B</b></button><button class="richtext-btn"><i>I</i></button><button class="richtext-btn">• List</button><button class="richtext-btn">1. List</button><button class="richtext-btn"><i class="ti ti-file-type-pdf" style="font-size:11px"></i></button></div>
+                <div class="richtext-body" contenteditable="true" style="min-height:60px">Tulis instruksi tugas di sini...</div>
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div><label class="form-label">Batas Pengumpulan</label><input class="form-input" type="datetime-local"></div>
+              <div><label class="form-label">Untuk Materi</label><select class="form-select"><option>— Pilih materi —</option><option>Proyek Akhir: Capstone</option></select></div>
+            </div>
+            <button class="btn-p" style="margin-top:8px">Buat Tugas</button>
+          </div>
+          <div class="lesson-row">
+            <div class="lesson-icon" style="background:var(--blue-light)"><i class="ti ti-clipboard" style="font-size:14px;color:#0C628D"></i></div>
+            <div class="lesson-info">
+              <div class="lesson-title">Proyek Mini: Analisis Data Penjualan</div>
+              <div class="lesson-meta"><span class="badge badge-published">Published</span><span style="font-size:10px;color:var(--text-3)">Batas: 30 Jun · 42 submission</span></div>
+            </div>
+            <div class="lesson-actions"><button class="btn-sm">Lihat Submission</button><button class="btn-sm-danger">Hapus</button></div>
+          </div>
+          <div class="lesson-row">
+            <div class="lesson-icon" style="background:var(--purple-light)"><i class="ti ti-clipboard" style="font-size:14px;color:var(--purple)"></i></div>
+            <div class="lesson-info">
+              <div class="lesson-title">Capstone Project: ML Pipeline End-to-End</div>
+              <div class="lesson-meta"><span class="badge badge-published">Published</span><span style="font-size:10px;color:var(--text-3)">Batas: 15 Jul · 18 submission</span></div>
+            </div>
+            <div class="lesson-actions"><button class="btn-sm">Lihat Submission</button><button class="btn-sm-danger">Hapus</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       4. BANK SOAL
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-question-bank">
+    <div class="page-title">Bank Soal</div>
+    <div class="page-sub">Kelola koleksi soal yang bisa dipakai di berbagai quiz</div>
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <div style="width:180px;flex-shrink:0">
+        <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;margin-bottom:6px">Koleksi</div>
+        <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
+          <div style="padding:8px 10px;background:var(--blue-light);border-left:3px solid #0C628D;cursor:pointer">
+            <div style="font-size:11px;font-weight:700;color:#0C628D">ML Fundamentals</div>
+            <div style="font-size:10px;color:var(--text-3)">48 soal</div>
+          </div>
+          <div style="padding:8px 10px;border-bottom:1px solid #F9FAFB;cursor:pointer">
+            <div style="font-size:11px;font-weight:600;color:var(--text)">Python Basics</div>
+            <div style="font-size:10px;color:var(--text-3)">30 soal</div>
+          </div>
+          <div style="padding:8px 10px;cursor:pointer">
+            <div style="font-size:11px;font-weight:600;color:var(--text)">Deep Learning</div>
+            <div style="font-size:10px;color:var(--text-3)">22 soal</div>
+          </div>
+        </div>
+        <button class="btn-p" style="width:100%;font-size:11px"><i class="ti ti-plus" style="font-size:11px"></i> Koleksi Baru</button>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">ML Fundamentals — 48 Soal</div>
+          <div class="btn-group">
+            <button class="btn-ghost" style="font-size:11px">Filter: Semua Tipe</button>
+            <button class="btn-p" style="font-size:11px"><i class="ti ti-plus" style="font-size:11px"></i> Tambah Soal</button>
+          </div>
+        </div>
+        <div class="q-row">
+          <div class="q-num">1</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge badge-mcq">MCQ</span></div>
+            <div class="q-prompt">Apa kepanjangan dari SVM dalam konteks machine learning?</div>
+            <div class="q-choices">
+              <div class="q-choice"><div class="q-choice-dot"></div> System Vector Machine</div>
+              <div class="q-choice correct"><div class="q-choice-dot"></div> Support Vector Machine ✓</div>
+              <div class="q-choice"><div class="q-choice-dot"></div> Supervised Value Model</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0"><button class="btn-sm">Edit</button><button class="btn-sm-danger">Hapus</button></div>
+        </div>
+        <div class="q-row">
+          <div class="q-num">2</div>
+          <div class="q-body">
+            <div style="display:flex;gap:5px;margin-bottom:4px"><span class="badge badge-essay">Essay</span></div>
+            <div class="q-prompt">Jelaskan konsep bias-variance tradeoff dalam machine learning!</div>
+            <div style="margin-top:5px;font-size:11px;color:var(--text-3)">Rubrik: Minimal 3 poin, sertakan diagram/ilustrasi jika perlu</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0"><button class="btn-sm">Edit</button><button class="btn-sm-danger">Hapus</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       5. BADGE & SERTIFIKAT
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-badges">
+    <div class="page-title">Badge & Sertifikat</div>
+    <div class="page-sub">Atur badge pencapaian dan template sertifikat untuk kursusmu</div>
+    <div class="two-col">
+      <div>
+        <div class="section-hdr"><div class="sec-title">Badge Pencapaian</div><button class="btn-p" style="font-size:11px"><i class="ti ti-plus" style="font-size:11px"></i> Buat Badge</button></div>
+        <div class="card" style="margin-bottom:10px">
+          <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #F9FAFB">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--amber-light);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-award" style="font-size:22px;color:var(--amber)"></i></div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Fast Learner</div>
+              <div style="font-size:11px;color:var(--text-3)">Diberikan jika menyelesaikan 5 materi dalam 1 hari</div>
+            </div>
+            <div class="btn-group"><button class="btn-sm-o">Edit</button><button class="btn-sm-danger">Hapus</button></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #F9FAFB">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--teal-light);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-star" style="font-size:22px;color:var(--teal)"></i></div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Quiz Master</div>
+              <div style="font-size:11px;color:var(--text-3)">Skor 100% di semua quiz</div>
+            </div>
+            <div class="btn-group"><button class="btn-sm-o">Edit</button><button class="btn-sm-danger">Hapus</button></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;padding:8px 0">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--purple-light);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-trophy" style="font-size:22px;color:var(--purple)"></i></div>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Course Graduate</div>
+              <div style="font-size:11px;color:var(--text-3)">Menyelesaikan seluruh kursus (100%)</div>
+            </div>
+            <div class="btn-group"><button class="btn-sm-o">Edit</button><button class="btn-sm-danger">Hapus</button></div>
+          </div>
+        </div>
+        <div class="card" style="border:1.5px dashed var(--border-mid);background:#FAFAFA;text-align:center;padding:20px;cursor:pointer">
+          <i class="ti ti-plus" style="font-size:20px;color:var(--text-3);margin-bottom:6px;display:block"></i>
+          <div style="font-size:12px;color:var(--text-3)">Tambah badge baru</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-hdr"><div class="sec-title">Template Sertifikat</div></div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em">Preview Sertifikat</div>
+          <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px">
+            <div style="height:6px;background:linear-gradient(90deg,#0C628D,#0FADA8,#F3921B)"></div>
+            <div style="padding:16px;text-align:center;background:#fff">
+              <div style="font-size:9px;font-weight:700;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Certificate of Completion</div>
+              <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:2px">Arya Ramadhan</div>
+              <div style="font-size:9px;color:var(--text-3);margin-bottom:8px">telah berhasil menyelesaikan kursus</div>
+              <div style="font-size:12px;font-weight:700;color:#0C628D;margin-bottom:10px">Machine Learning A–Z: Python & R</div>
+              <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--text-3);padding-top:8px;border-top:1px solid #F3F4F6">
+                <span>01 Juni 2026</span>
+                <span style="font-family:monospace">CERT-M4X92-K8P</span>
+                <span>InspiraLearn</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teks Pembuka</label>
+            <input class="form-input" type="text" value="telah berhasil menyelesaikan kursus">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tandatangan / Institusi</label>
+            <input class="form-input" type="text" value="Sarah Wulandari, Ph.D. · InspiraLearn">
+          </div>
+          <button class="btn-p">Simpan Template</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       6. STUDENT PROGRESS
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-student-progress">
+    <div class="page-title">Progress Siswa</div>
+    <div class="page-sub">Pantau perkembangan belajar siswa per kursus</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <select class="form-select" style="width:220px"><option>Machine Learning A–Z</option><option>Python untuk Pemula</option></select>
+      <input class="form-input" type="text" placeholder="Cari nama siswa…" style="width:200px">
+      <select class="form-select" style="width:150px"><option>Semua Status</option><option>Aktif</option><option>Selesai</option><option>Tidak Aktif</option></select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="student-table">
+        <thead>
+          <tr>
+            <th>Siswa</th>
+            <th>Status</th>
+            <th style="width:160px">Progress</th>
+            <th>Materi Selesai</th>
+            <th>Quiz Avg</th>
+            <th>Bergabung</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="font-weight:600;color:var(--text)">Arya Ramadhan</div><div style="font-size:10px;color:var(--text-3)">arya@gmail.com</div></td>
+            <td><span class="badge badge-published">Aktif</span></td>
+            <td><div class="prog-mini"><div class="prog-mini-bar"><div class="prog-mini-fill" style="width:78%"></div></div><span style="font-size:11px;font-weight:700;color:#0C628D;min-width:28px">78%</span></div></td>
+            <td style="font-size:12px">37 / 48</td>
+            <td><span style="font-size:12px;font-weight:700;color:var(--teal)">88</span></td>
+            <td style="font-size:11px;color:var(--text-3)">12 Mar 2026</td>
+            <td><button class="btn-sm-o" style="font-size:10px">Detail</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:600;color:var(--text)">Nadia Sari</div><div style="font-size:10px;color:var(--text-3)">nadia@email.com</div></td>
+            <td><span class="badge" style="background:var(--purple-light);color:var(--purple)">Selesai</span></td>
+            <td><div class="prog-mini"><div class="prog-mini-bar"><div class="prog-mini-fill" style="width:100%;background:var(--teal)"></div></div><span style="font-size:11px;font-weight:700;color:var(--teal);min-width:28px">100%</span></div></td>
+            <td style="font-size:12px">48 / 48</td>
+            <td><span style="font-size:12px;font-weight:700;color:var(--teal)">96</span></td>
+            <td style="font-size:11px;color:var(--text-3)">5 Feb 2026</td>
+            <td><button class="btn-sm-o" style="font-size:10px">Detail</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:600;color:var(--text)">Fajar Alamsyah</div><div style="font-size:10px;color:var(--text-3)">fajar@work.id</div></td>
+            <td><span class="badge badge-published">Aktif</span></td>
+            <td><div class="prog-mini"><div class="prog-mini-bar"><div class="prog-mini-fill" style="width:45%"></div></div><span style="font-size:11px;font-weight:700;color:#0C628D;min-width:28px">45%</span></div></td>
+            <td style="font-size:12px">22 / 48</td>
+            <td><span style="font-size:12px;font-weight:700;color:var(--amber)">72</span></td>
+            <td style="font-size:11px;color:var(--text-3)">28 Apr 2026</td>
+            <td><button class="btn-sm-o" style="font-size:10px">Detail</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:600;color:var(--text)">Devi Wijayanti</div><div style="font-size:10px;color:var(--text-3)">devi@company.co</div></td>
+            <td><span class="badge" style="background:#F3F4F6;color:var(--text-3)">Tidak Aktif</span></td>
+            <td><div class="prog-mini"><div class="prog-mini-bar"><div class="prog-mini-fill" style="width:12%"></div></div><span style="font-size:11px;font-weight:700;color:var(--text-3);min-width:28px">12%</span></div></td>
+            <td style="font-size:12px">6 / 48</td>
+            <td><span style="font-size:12px;font-weight:700;color:var(--text-3)">—</span></td>
+            <td style="font-size:11px;color:var(--text-3)">1 Jun 2026</td>
+            <td><button class="btn-sm-o" style="font-size:10px">Detail</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:600;color:var(--text)">Budi Santoso</div><div style="font-size:10px;color:var(--text-3)">budi@dev.io</div></td>
+            <td><span class="badge badge-published">Aktif</span></td>
+            <td><div class="prog-mini"><div class="prog-mini-bar"><div class="prog-mini-fill" style="width:62%"></div></div><span style="font-size:11px;font-weight:700;color:#0C628D;min-width:28px">62%</span></div></td>
+            <td style="font-size:12px">30 / 48</td>
+            <td><span style="font-size:12px;font-weight:700;color:var(--teal)">81</span></td>
+            <td style="font-size:11px;color:var(--text-3)">20 Mar 2026</td>
+            <td><button class="btn-sm-o" style="font-size:10px">Detail</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:12px;color:var(--text-3)">
+      <span>Menampilkan 5 dari 820 siswa</span>
+      <div class="btn-group"><button class="btn-ghost" style="font-size:11px">← Sebelumnya</button><button class="btn-ghost" style="font-size:11px">Selanjutnya →</button></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       7. STATISTIK KURSUS
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-stats">
+    <div class="page-title">Statistik Kursus</div>
+    <div class="page-sub">Machine Learning A–Z: Python & R</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Enrolled</div><div class="stat-val" style="color:#0C628D">820</div><div class="stat-sub">+48 bulan ini</div></div>
+      <div class="stat-card"><div class="stat-label">Sudah Selesai</div><div class="stat-val" style="color:var(--teal)">558</div><div class="stat-sub">68% completion rate</div></div>
+      <div class="stat-card"><div class="stat-label">Rating</div><div class="stat-val" style="color:var(--amber)">4.9 ★</div><div class="stat-sub">dari 1.240 ulasan</div></div>
+      <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-val" style="color:var(--green)">Rp 245jt</div><div class="stat-sub">Total sejak publish</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px">Enrollment per Bulan</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:100px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:#0C628D;border-radius:3px;height:60%"></div></div><div style="font-size:9px;color:var(--text-3)">Jan</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:#0C628D;border-radius:3px;height:75%"></div></div><div style="font-size:9px;color:var(--text-3)">Feb</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:#0C628D;border-radius:3px;height:55%"></div></div><div style="font-size:9px;color:var(--text-3)">Mar</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:#0C628D;border-radius:3px;height:90%"></div></div><div style="font-size:9px;color:var(--text-3)">Apr</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:#0C628D;border-radius:3px;height:80%"></div></div><div style="font-size:9px;color:var(--text-3)">Mei</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-light);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--orange);border-radius:3px;height:48%"></div></div><div style="font-size:9px;color:var(--text-3)">Jun</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px">Completion Rate per Modul</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Modul 1: Python Fundamentals</span><span style="font-weight:700;color:var(--teal)">94%</span></div><div class="pbar"><div class="pfill" style="width:94%;background:var(--teal)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Modul 2: Supervised Learning</span><span style="font-weight:700;color:#0C628D">81%</span></div><div class="pbar"><div class="pfill" style="width:81%;background:#0C628D"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Modul 3: Unsupervised Learning</span><span style="font-weight:700;color:var(--orange)">72%</span></div><div class="pbar"><div class="pfill" style="width:72%;background:var(--orange)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Modul 4: Deep Learning</span><span style="font-weight:700;color:var(--red)">41%</span></div><div class="pbar"><div class="pfill" style="width:41%;background:var(--red)"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       8. ROYALTI
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-royalty">
+    <div class="page-title">Royalti Saya</div>
+    <div class="page-sub">Pendapatan dari kursus berbayar yang kamu buat</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total Diterima</div><div class="stat-val" style="color:var(--green)">Rp 42,6jt</div><div class="stat-sub">Sejak bergabung</div></div>
+      <div class="stat-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" style="color:#0C628D">Rp 4,8jt</div><div class="stat-sub">Juni 2026</div></div>
+      <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" style="color:var(--orange)">Rp 2,4jt</div><div class="stat-sub">3 invoice belum dibayar</div></div>
+      <div class="stat-card"><div class="stat-label">Rate Royalti</div><div class="stat-val">70%</div><div class="stat-sub">dari harga kursus</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'roy-records')">Riwayat</div>
+      <div class="tab" onclick="setTab(this,'roy-summary')">Per Kursus</div>
+    </div>
+    <div id="roy-records">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:10px 14px;background:#FAFAFA;border-bottom:1px solid var(--border);display:flex;gap:8px">
+          <select class="form-select" style="width:130px;height:30px;font-size:11px"><option>Semua Kursus</option></select>
+          <select class="form-select" style="width:120px;height:30px;font-size:11px"><option>Semua Status</option><option>Pending</option><option>Dibayar</option></select>
+        </div>
+        <div style="padding:0 14px">
+          <div class="royalty-row">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-coin" style="font-size:16px;color:var(--green)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Machine Learning A–Z — 4 penjualan</div>
+              <div style="font-size:11px;color:var(--text-3)">15 Jun 2026 · Rp 299.000 × 4 × 70%</div>
+            </div>
+            <span class="badge badge-paid">Dibayar</span>
+            <div style="font-size:13px;font-weight:700;color:var(--green);min-width:80px;text-align:right">Rp 837.200</div>
+          </div>
+          <div class="royalty-row">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amber-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-coin" style="font-size:16px;color:var(--amber)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Machine Learning A–Z — 6 penjualan</div>
+              <div style="font-size:11px;color:var(--text-3)">10 Jun 2026 · Rp 299.000 × 6 × 70%</div>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+            <div style="font-size:13px;font-weight:700;color:var(--amber);min-width:80px;text-align:right">Rp 1.255.800</div>
+          </div>
+          <div class="royalty-row">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amber-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-coin" style="font-size:16px;color:var(--amber)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Machine Learning A–Z — 3 penjualan</div>
+              <div style="font-size:11px;color:var(--text-3)">5 Jun 2026 · Rp 299.000 × 3 × 70%</div>
+            </div>
+            <span class="badge badge-pending">Pending</span>
+            <div style="font-size:13px;font-weight:700;color:var(--amber);min-width:80px;text-align:right">Rp 627.900</div>
+          </div>
+          <div class="royalty-row" style="border-bottom:none">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-coin" style="font-size:16px;color:var(--green)"></i></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">Machine Learning A–Z — 8 penjualan</div>
+              <div style="font-size:11px;color:var(--text-3)">31 Mei 2026 · Rp 299.000 × 8 × 70%</div>
+            </div>
+            <span class="badge badge-paid">Dibayar</span>
+            <div style="font-size:13px;font-weight:700;color:var(--green);min-width:80px;text-align:right">Rp 1.675.600</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="roy-summary" style="display:none">
+      <div class="card">
+        <div class="royalty-row">
+          <div style="width:36px;height:36px;border-radius:8px;background:#1a0f2e;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-chart-scatter-plot" style="font-size:16px;color:rgba(255,255,255,.4)"></i></div>
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--text)">Machine Learning A–Z</div><div style="font-size:11px;color:var(--text-3)">820 terjual · Rp 299.000 per unit</div></div>
+          <div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--green)">Rp 171.666.000</div><div style="font-size:10px;color:var(--text-3)">70% dari Rp 245,2jt revenue</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       9. PROFIL TEACHER
+  ══════════════════════════════════════ -->
+  <div class="screen" id="s-profile">
+    <div class="page-title">Profil Instruktur</div>
+    <div class="two-col" style="gap:20px">
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+            <div style="width:64px;height:64px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">SW</div>
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--text)">Dr. Sarah Wulandari</div>
+              <div style="font-size:11px;color:var(--text-3)">AI Research Lead · Teacher · InspiraLearn</div>
+              <div style="margin-top:6px"><button class="btn-ghost" style="font-size:11px">Ganti Foto</button></div>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" type="text" value="Dr. Sarah Wulandari"></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="sarah@inspiralearn.id"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Bio Instruktur</label><textarea class="form-textarea">Pakar Machine Learning dan AI dengan pengalaman 10+ tahun. Pernah bekerja di Google dan Tokopedia sebagai Senior Data Scientist. Passionate tentang education technology.</textarea></div>
+          <div class="form-group"><label class="form-label">Spesialisasi / Tags</label><input class="form-input" type="text" value="Machine Learning, Deep Learning, Python, Data Science"></div>
+          <button class="btn-p">Simpan Profil</button>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">Rekap Performa</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-2)">Total Kursus</span><span style="font-weight:700">3 (2 published)</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-2)">Total Siswa</span><span style="font-weight:700;color:var(--teal)">1.240</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-2)">Rating Rata-rata</span><span style="font-weight:700;color:var(--amber)">4.8 ★</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-2)">Total Royalti</span><span style="font-weight:700;color:var(--green)">Rp 42,6jt</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--text-2)">Bergabung sebagai Teacher</span><span style="font-weight:700">Jan 2024</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px">Informasi Pembayaran</div>
+          <div class="form-group"><label class="form-label">Bank</label><select class="form-select"><option>BCA</option><option>Mandiri</option><option>BNI</option></select></div>
+          <div class="form-group"><label class="form-label">No. Rekening</label><input class="form-input" type="text" value="1234567890"></div>
+          <div class="form-group"><label class="form-label">Atas Nama</label><input class="form-input" type="text" value="Sarah Wulandari"></div>
+          <button class="btn-p">Simpan Rekening</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+
+  <!-- NAV BAR -->
+  <div class="nav-demo">
+    <span>Halaman:</span>
+    <button onclick="go('dashboard')">1. Dashboard</button>
+    <button onclick="go('courses')">2. Kelola Kursus</button>
+    <button onclick="go('course-editor')">3. Editor Kursus</button>
+    <button onclick="go('question-bank')">4. Bank Soal</button>
+    <button onclick="go('badges')">5. Badge & Sertifikat</button>
+    <button onclick="go('student-progress')">6. Progress Siswa</button>
+    <button onclick="go('stats')">7. Statistik</button>
+    <button onclick="go('royalty')">8. Royalti</button>
+    <button onclick="go('profile')">9. Profil</button>
+  </div>
+</div>
+</div>
+
+<script>
+const NAV_MAP={dashboard:0,courses:1,'course-editor':2,'question-bank':3,badges:4,'student-progress':5,stats:6,royalty:7,profile:8};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('s-'+id);
+  if(sc)sc.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  const links=document.querySelectorAll('.nav-link');
+  const ni=NAV_MAP[id];
+  if(ni!==undefined&&links[ni])links[ni].classList.add('active');
+  document.getElementById('content').scrollTop=0;
+}
+function setTab(el,targetId){
+  const container=el.closest('.screen')||document.body;
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['t-settings','t-modules','t-lessons','t-quiz','t-assignments','roy-records','roy-summary'].forEach(id=>{
+    const e=container.querySelector('#'+id)||document.getElementById(id);
+    if(e)e.style.display='none';
+  });
+  const t=container.querySelector('#'+targetId)||document.getElementById(targetId);
+  if(t)t.style.display='';
+}
+</script>
+</body>
+</html>

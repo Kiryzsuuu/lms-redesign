@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS InspiraLearn — Admin Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0C628D;--blue-l:#EBF5FF;--blue-2:#185FA5;
+  --orange:#F3921B;--orange-l:#FEF3E2;
+  --teal:#0FADA8;--teal-l:#E0F5F5;
+  --green:#15803D;--green-l:#DCFCE7;
+  --red:#B91C1C;--red-l:#FEE2E2;
+  --purple:#7C3AED;--purple-l:#EDE9FE;
+  --amber:#B45309;--amber-l:#FEF3C7;
+  --pink:#BE185D;--pink-l:#FCE7F3;
+  --bg:#F5F6F8;--surf:#fff;
+  --bdr:#E5E7EB;--bdr-m:#D1D5DB;
+  --t1:#111827;--t2:#4B5563;--t3:#9CA3AF;
+  --r:8px;--rl:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;font-size:14px;color:var(--t1);background:var(--bg);line-height:1.5}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;flex-shrink:0;background:#1B3A5C;display:flex;flex-direction:column;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:50px;flex-shrink:0;background:var(--surf);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:12px}
+.content{flex:1;overflow-y:auto;padding:22px}
+
+/* SIDEBAR */
+.sbl{padding:14px 14px 10px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sbl-ico{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbl-ico i{color:#fff;font-size:16px}
+.sbl-txt{font-size:13px;font-weight:700;color:#fff}
+.sb-user{padding:10px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.sb-name{font-size:11px;font-weight:600;color:#fff}
+.sb-tag{font-size:9px;background:rgba(239,68,68,.3);color:#FCA5A5;padding:1px 6px;border-radius:99px;font-weight:700;margin-top:2px;display:inline-block}
+.sbnav{padding:8px 8px;flex:1}
+.sbsec{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;padding:0 8px;margin:12px 0 3px}
+.nl{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r);font-size:12px;color:rgba(255,255,255,.65);cursor:pointer;transition:.12s;margin-bottom:1px}
+.nl:hover{background:rgba(255,255,255,.1);color:#fff}
+.nl.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+.nl i{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.nl .nb{margin-left:auto;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px}
+.nb-r{background:rgba(248,113,113,.25);color:#FCA5A5}
+.nb-o{background:rgba(243,146,27,.3);color:#FBBF6A}
+.nb-b{background:rgba(255,255,255,.15);color:#fff}
+.nb-g{background:rgba(74,222,128,.2);color:#86EFAC}
+.sb-bot{padding:8px;border-top:1px solid rgba(255,255,255,.1)}
+
+/* TOPBAR */
+.tb-s{display:flex;align-items:center;gap:7px;background:#F3F4F6;border:1px solid var(--bdr);border-radius:var(--r);padding:0 10px;height:30px;max-width:280px;flex:1}
+.tb-s i{font-size:13px;color:var(--t3)}
+.tb-s input{border:none;background:none;font-size:12px;color:var(--t1);outline:none;width:100%}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ib{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--bdr);background:var(--surf);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);position:relative}
+.ib i{font-size:14px}
+.ndot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid #fff}
+.tb-av{width:30px;height:30px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tb-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--red-l);color:var(--red)}
+
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+
+/* BASE */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px}
+.card-flush{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden}
+.pt{font-size:18px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ps{font-size:12px;color:var(--t3);margin-bottom:18px}
+.bc{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3);margin-bottom:12px}
+.bc span{cursor:pointer}.bc span:hover{color:var(--blue)}
+.bc .cur{color:var(--t1);cursor:default}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px 16px}
+.sl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.sv{font-size:22px;font-weight:700;line-height:1;margin-bottom:3px}
+.ss{font-size:11px;color:var(--t3)}
+.pbar{height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden}
+.pfill{height:100%;border-radius:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.sech{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sect{font-size:13px;font-weight:700;color:var(--t1)}
+.secl{font-size:11px;color:var(--blue);cursor:pointer}
+.dvd{height:1px;background:var(--bdr);margin:12px 0}
+
+/* BADGES */
+.b{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;gap:3px;white-space:nowrap}
+.b-pub{background:var(--green-l);color:var(--green)}
+.b-dft{background:#F3F4F6;color:var(--t3)}
+.b-pend{background:var(--amber-l);color:var(--amber)}
+.b-act{background:var(--blue-l);color:var(--blue)}
+.b-rej{background:var(--red-l);color:var(--red)}
+.b-exp{background:var(--purple-l);color:var(--purple)}
+.b-admin{background:var(--red-l);color:var(--red)}
+.b-teacher{background:var(--orange-l);color:var(--orange)}
+.b-student{background:var(--blue-l);color:var(--blue)}
+.b-paid{background:var(--green-l);color:var(--green)}
+.b-pending-pay{background:var(--amber-l);color:var(--amber)}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:14px}
+.tab{padding:7px 14px;font-size:12px;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.12s;font-weight:500}
+.tab:hover{color:var(--t1)}.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}
+
+/* FORMS */
+.fg{margin-bottom:12px}
+.fl{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;display:block}
+.fi{width:100%;height:32px;border:1px solid var(--bdr);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--t1);background:#fff;outline:none}
+.fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.fta{width:100%;border:1px solid var(--bdr);border-radius:var(--r);padding:8px 10px;font-size:12px;color:var(--t1);background:#fff;outline:none;resize:vertical}
+.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(12,98,141,.08)}
+.fsel{width:100%;height:32px;border:1px solid var(--bdr);border-radius:var(--r);padding:0 10px;font-size:12px;color:var(--t1);background:#fff;outline:none}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.ic{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);cursor:pointer}
+
+/* BUTTONS */
+.btn{padding:6px 12px;border:none;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.bp{background:var(--blue);color:#fff}.bp:hover{background:var(--blue-2)}
+.bo{background:none;color:var(--blue);border:1px solid var(--blue)}.bo:hover{background:var(--blue-l)}
+.bg{background:none;color:var(--t2);border:1px solid var(--bdr)}.bg:hover{background:#F3F4F6}
+.bd{background:none;color:var(--red);border:1px solid #FECACA}.bd:hover{background:var(--red-l)}
+.bs{background:var(--green);color:#fff}.bs:hover{background:#166534}
+.bw{background:var(--orange);color:#fff}.bw:hover{background:#D97C0D}
+.btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bsm{padding:3px 9px;font-size:11px;font-weight:600;border:none;border-radius:6px;cursor:pointer}
+.bp-sm{background:var(--blue);color:#fff}
+.bo-sm{background:none;color:var(--t2);border:1px solid var(--bdr)}
+.bd-sm{background:none;color:var(--red);border:1px solid #FECACA}
+.bs-sm{background:var(--green);color:#fff}
+.bw-sm{background:var(--orange);color:#fff}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bdr);background:#FAFAFA;white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid #F9FAFB;vertical-align:middle}
+.tbl tr:hover td{background:#F9FAFB}
+
+/* CONTRACT CARDS */
+.cc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.cc-hdr{padding:14px 16px;display:flex;gap:14px;align-items:flex-start}
+.cc-logo{width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.cc-info{flex:1;min-width:0}
+.cc-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.cc-co{font-size:12px;color:var(--t2)}
+.cc-meta{display:flex;gap:10px;margin-top:5px;flex-wrap:wrap}
+.cc-mi{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:3px}
+.cc-acts{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.cc-body{padding:0 16px 14px}
+.ct-preview{background:#FAFAFA;border:1px solid var(--bdr);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--t2);line-height:1.7;max-height:90px;overflow:hidden;position:relative}
+.ct-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(to bottom,transparent,#FAFAFA)}
+.ct-terms{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.ct-term{font-size:11px;background:#F3F4F6;padding:2px 8px;border-radius:99px;color:var(--t2)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.mb{background:var(--surf);border-radius:var(--rl);width:100%;max-width:660px;max-height:88vh;display:flex;flex-direction:column}
+.mh{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.mt-h{font-size:14px;font-weight:700;color:var(--t1)}
+.mc{width:26px;height:26px;border-radius:var(--r);border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.mbody{flex:1;overflow-y:auto;padding:18px}
+.mf{padding:12px 18px;border-top:1px solid var(--bdr);display:flex;gap:8px;justify-content:flex-end}
+.ct-full{font-size:12px;color:var(--t2);line-height:1.8}
+.cs-title{font-size:11px;font-weight:700;color:var(--t1);margin:12px 0 3px;text-transform:uppercase;letter-spacing:.04em}
+
+/* RICHTEXT */
+.rt{border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.rt-tb{padding:5px 8px;background:#F9FAFB;border-bottom:1px solid var(--bdr);display:flex;gap:3px}
+.rb{padding:2px 6px;border:none;background:none;font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;border-radius:3px}
+.rb:hover{background:#E5E7EB}
+.rt-body{padding:10px;min-height:70px;font-size:12px;color:var(--t1);line-height:1.6;outline:none}
+
+/* USER CARD */
+.uc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-bottom:8px}
+.uc-hdr{padding:12px 14px;display:flex;gap:12px;align-items:center}
+.uc-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.uc-info{flex:1;min-width:0}
+.uc-name{font-size:13px;font-weight:700;color:var(--t1)}
+.uc-email{font-size:11px;color:var(--t3)}
+.uc-detail{padding:0 14px 12px;border-top:1px solid #F9FAFB}
+
+/* ACTIVITY LOG */
+.log-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #F9FAFB}
+.log-row:last-child{border-bottom:none}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.log-body{flex:1;font-size:12px;color:var(--t2)}
+.log-time{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* NAV */
+.nav-demo{padding:8px 14px;background:var(--surf);border-top:1px solid var(--bdr);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.nav-demo span{font-size:10px;color:var(--t3);margin-right:3px}
+.nav-demo button{padding:3px 10px;font-size:11px;border:1px solid var(--bdr);border-radius:99px;background:var(--surf);cursor:pointer;color:var(--t2);font-family:inherit}
+.nav-demo button:hover{background:#F3F4F6}
+
+/* MISC */
+.upload-zone{border:2px dashed var(--bdr-m);border-radius:var(--rl);padding:22px;text-align:center;cursor:pointer;transition:.12s;color:var(--t3)}
+.upload-zone:hover{border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
+.tag-chip{display:inline-flex;align-items:center;gap:4px;background:var(--orange-l);color:var(--amber);font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px}
+.tag-chip button{background:none;border:none;color:var(--amber);cursor:pointer;font-size:12px}
+.pm-row{display:flex;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid #F9FAFB;font-size:12px}
+.pm-row:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+  <div class="sbl">
+    <div class="sbl-ico"><i class="ti ti-school"></i></div>
+    <div><div class="sbl-txt"><span style="color:#7EC8F5">Inspira</span>Learn</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av" style="background:#E53935">AD</div>
+    <div>
+      <div class="sb-name">Admin InspiraLearn</div>
+      <div class="sb-tag">Administrator</div>
+    </div>
+  </div>
+  <div class="sbnav">
+    <div class="sbsec">Utama</div>
+    <div class="nl active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+
+    <div class="sbsec">Kursus & Kontrak</div>
+    <div class="nl" onclick="go('courses')"><i class="ti ti-book-2"></i> Kelola Kursus <span class="nb nb-b">12</span></div>
+    <div class="nl" onclick="go('contracts')"><i class="ti ti-file-contract"></i> Kontrak Kerjasama <span class="nb nb-o">3</span></div>
+    <div class="nl" onclick="go('templates')"><i class="ti ti-template"></i> Template Outline</div>
+    <div class="nl" onclick="go('categories')"><i class="ti ti-category"></i> Kategori</div>
+
+    <div class="sbsec">Pengguna</div>
+    <div class="nl" onclick="go('users')"><i class="ti ti-users"></i> Kelola Pengguna</div>
+    <div class="nl" onclick="go('royalties')"><i class="ti ti-coin"></i> Royalti Teacher <span class="nb nb-o">5</span></div>
+    <div class="nl" onclick="go('coupons')"><i class="ti ti-tag"></i> Kupon Diskon</div>
+
+    <div class="sbsec">Keuangan & Laporan</div>
+    <div class="nl" onclick="go('accounting')"><i class="ti ti-chart-bar"></i> Pembukuan</div>
+    <div class="nl" onclick="go('activity-log')"><i class="ti ti-history"></i> Log Aktivitas</div>
+
+    <div class="sbsec">Konten & Tampilan</div>
+    <div class="nl" onclick="go('hero')"><i class="ti ti-photo"></i> Hero Carousel</div>
+    <div class="nl" onclick="go('testimonials')"><i class="ti ti-message-star"></i> Testimoni <span class="nb nb-r">4</span></div>
+    <div class="nl" onclick="go('about')"><i class="ti ti-info-circle"></i> Tentang Kami</div>
+    <div class="nl" onclick="go('site-settings')"><i class="ti ti-settings"></i> Pengaturan Situs</div>
+  </div>
+  <div class="sb-bot">
+    <div class="nl" style="color:rgba(255,255,255,.5)"><i class="ti ti-logout"></i> Keluar</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-s"><i class="ti ti-search"></i><input type="text" placeholder="Cari user, kursus, kontrak…"></div>
+    <div class="tb-r">
+      <div class="tb-badge"><i class="ti ti-shield" style="font-size:10px"></i> Admin</div>
+      <div class="ib"><i class="ti ti-bell"></i><div class="ndot"></div></div>
+      <div class="tb-av">AD</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+  <!-- ═══════════════════════════════════════════
+       1. DASHBOARD ADMIN
+  ════════════════════════════════════════════ -->
+  <div class="screen active" id="s-dashboard">
+    <div class="pt">Dashboard Admin</div>
+    <div class="ps">Ringkasan platform dan hal-hal yang butuh perhatian hari ini</div>
+
+    <!-- Alert: pending items -->
+    <div style="background:var(--amber-l);border:1px solid #FCD34D;border-radius:var(--rl);padding:12px 16px;margin-bottom:18px;display:flex;gap:12px;align-items:center">
+      <i class="ti ti-alert-triangle" style="font-size:20px;color:var(--amber);flex-shrink:0"></i>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--amber)">3 kontrak menunggu respons teacher · 4 testimoni perlu disetujui · 5 royalti pending pembayaran</div>
+      </div>
+      <button class="btn bg" style="font-size:11px;white-space:nowrap" onclick="go('contracts')">Tinjau →</button>
+    </div>
+
+    <div class="sg">
+      <div class="sc"><div class="sl">Total Kursus</div><div class="sv" style="color:var(--blue)">12</div><div class="ss">9 published · 3 draft</div></div>
+      <div class="sc"><div class="sl">Total Pengguna</div><div class="sv" style="color:var(--teal)">3.240</div><div class="ss">+182 bulan ini</div></div>
+      <div class="sc"><div class="sl">Revenue Bulan Ini</div><div class="sv" style="color:var(--green)">Rp 48,6jt</div><div class="ss">Juni 2026</div></div>
+      <div class="sc"><div class="sl">Royalti Pending</div><div class="sv" style="color:var(--orange)">Rp 12,4jt</div><div class="ss">5 teacher belum dibayar</div></div>
+    </div>
+
+    <div class="g2">
+      <div>
+        <!-- Contracts needing attention -->
+        <div class="sech"><div class="sect">Kontrak Perlu Tindakan</div><div class="secl" onclick="go('contracts')">Semua kontrak →</div></div>
+        <div class="card-flush">
+          <div style="padding:11px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:center">
+            <div style="width:32px;height:32px;border-radius:7px;background:#E53935;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">GO</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--t1)">Deep Learning TensorFlow</div>
+              <div style="font-size:11px;color:var(--t3)">Gojek → Dr. Sarah W. · Dikirim 2 hari lalu</div>
+            </div>
+            <span class="b b-pend"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu Teacher</span>
+          </div>
+          <div style="padding:11px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:center">
+            <div style="width:32px;height:32px;border-radius:7px;background:#1565C0;display:flex;align-items:center;justify-content:12px;font-weight:700;color:#fff;flex-shrink:0;font-size:11px;justify-content:center">BK</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--t1)">Data Analytics for Business</div>
+              <div style="font-size:11px;color:var(--t3)">BCA Digital → Dr. Sarah W. · Dikirim 5 hari lalu</div>
+            </div>
+            <span class="b b-pend"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu Teacher</span>
+          </div>
+          <div style="padding:11px 14px;display:flex;gap:10px;align-items:center">
+            <div style="width:32px;height:32px;border-radius:7px;background:#FF6D00;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">TO</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--t1)">ML A–Z: Python & R</div>
+              <div style="font-size:11px;color:var(--t3)">Tokopedia → Dr. Sarah W. · Aktif s/d Des 2026</div>
+            </div>
+            <span class="b b-pub"><i class="ti ti-circle-check" style="font-size:9px"></i> Aktif</span>
+          </div>
+        </div>
+
+        <!-- Revenue chart mini -->
+        <div class="sech" style="margin-top:14px"><div class="sect">Revenue 7 Hari Terakhir</div><div class="secl" onclick="go('accounting')">Detail →</div></div>
+        <div class="card">
+          <div style="display:flex;align-items:flex-end;gap:5px;height:80px">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--blue);border-radius:3px;height:55%"></div></div><div style="font-size:9px;color:var(--t3)">Sen</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--blue);border-radius:3px;height:80%"></div></div><div style="font-size:9px;color:var(--t3)">Sel</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--blue);border-radius:3px;height:60%"></div></div><div style="font-size:9px;color:var(--t3)">Rab</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--blue);border-radius:3px;height:95%"></div></div><div style="font-size:9px;color:var(--t3)">Kam</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--blue);border-radius:3px;height:70%"></div></div><div style="font-size:9px;color:var(--t3)">Jum</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--orange);border-radius:3px;height:85%"></div></div><div style="font-size:9px;color:var(--t3)">Sab</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="flex:1;width:100%;background:var(--blue-l);border-radius:3px;display:flex;align-items:flex-end"><div style="width:100%;background:var(--orange);border-radius:3px;height:48%"></div></div><div style="font-size:9px;color:var(--t3)">Min</div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--t3)"><span>Total 7 hari: <strong style="color:var(--t1)">Rp 14,2jt</strong></span><span>Avg/hari: <strong style="color:var(--t1)">Rp 2,03jt</strong></span></div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Royalti pending -->
+        <div class="sech"><div class="sect">Royalti Perlu Dibayar</div><div class="secl" onclick="go('royalties')">Bayar semua →</div></div>
+        <div class="card-flush">
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:center">
+            <div style="width:30px;height:30px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">SW</div>
+            <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--t1)">Dr. Sarah Wulandari</div><div style="font-size:11px;color:var(--t3)">3 invoice · ML A–Z, Python</div></div>
+            <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--amber)">Rp 5,4jt</div><span class="b b-pending-pay">Pending</span></div>
+          </div>
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB;display:flex;gap:10px;align-items:center">
+            <div style="width:30px;height:30px;border-radius:50%;background:#15803D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">BR</div>
+            <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--t1)">Budi Raharjo, M.Cs</div><div style="font-size:11px;color:var(--t3)">2 invoice · Web Dev</div></div>
+            <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--amber)">Rp 3,8jt</div><span class="b b-pending-pay">Pending</span></div>
+          </div>
+          <div style="padding:10px 14px;display:flex;gap:10px;align-items:center">
+            <div style="width:30px;height:30px;border-radius:50%;background:#7C3AED;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">AK</div>
+            <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--t1)">Anisa Kusuma, S.Ds</div><div style="font-size:11px;color:var(--t3)">2 invoice · UI/UX</div></div>
+            <div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--amber)">Rp 2,2jt</div><span class="b b-pending-pay">Pending</span></div>
+          </div>
+        </div>
+
+        <!-- Testimoni pending -->
+        <div class="sech" style="margin-top:14px"><div class="sect">Testimoni Menunggu Persetujuan</div><div class="secl" onclick="go('testimonials')">Review semua →</div></div>
+        <div class="card-flush">
+          <div style="padding:10px 14px;border-bottom:1px solid #F9FAFB">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:var(--t1)">Fajar A. <span style="font-weight:400;color:var(--t3)">· ML A–Z · ★★★★★</span></div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px;line-height:1.4">"Kursus terbaik yang pernah saya ikuti. Langsung bisa dipraktekkan di kantor."</div>
+              </div>
+              <div class="btns"><button class="bsm bs-sm">✓</button><button class="bsm bd-sm">✗</button></div>
+            </div>
+          </div>
+          <div style="padding:10px 14px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:var(--t1)">Nadia S. <span style="font-weight:400;color:var(--t3)">· Python · ★★★★★</span></div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px;line-height:1.4">"Instrukturnya sangat responsif dan materi up-to-date sekali."</div>
+              </div>
+              <div class="btns"><button class="bsm bs-sm">✓</button><button class="bsm bd-sm">✗</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log terbaru -->
+        <div class="sech" style="margin-top:14px"><div class="sect">Aktivitas Terbaru</div><div class="secl" onclick="go('activity-log')">Log lengkap →</div></div>
+        <div class="card">
+          <div class="log-row"><div class="log-dot" style="background:var(--blue)"></div><div class="log-body">Admin membuat kursus <strong>Deep Learning TF</strong> dan mengirim kontrak ke Sarah W.<div class="log-time">2 jam lalu</div></div></div>
+          <div class="log-row"><div class="log-dot" style="background:var(--teal)"></div><div class="log-body">Sarah W. mengupload materi Sesi 7 — SVM di kursus ML A–Z<div class="log-time">4 jam lalu</div></div></div>
+          <div class="log-row"><div class="log-dot" style="background:var(--green)"></div><div class="log-body">Order #INV-20260619-X92 terbayar — Fajar A. · ML A–Z · Rp 299.000<div class="log-time">5 jam lalu</div></div></div>
+          <div class="log-row" style="border:none"><div class="log-dot" style="background:var(--orange)"></div><div class="log-body">Kupon PROMO20 dipakai 3× hari ini, sisa quota: 47<div class="log-time">8 jam lalu</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       2. KONTRAK KERJASAMA (ADMIN BUAT)
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-contracts">
+    <div class="pt">Kontrak Kerjasama</div>
+    <div class="ps">Admin membuat kursus + kontrak dari perusahaan mitra, lalu assign ke teacher. Teacher setuju → bisa isi materi → admin publish.</div>
+
+    <!-- Alur -->
+    <div class="card" style="background:var(--blue-l);border-color:#BEE3F8;margin-bottom:18px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:10px">Alur Kontrak</div>
+      <div style="display:flex;align-items:flex-start;gap:0">
+        <div style="text-align:center;flex:1"><div style="width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 5px">1</div><div style="font-size:10px;font-weight:700;color:var(--t1)">Admin</div><div style="font-size:10px;color:var(--t3)">Terima brief dari perusahaan, buat kursus + isi kontrak</div></div>
+        <div style="padding:0 6px;margin-top:8px"><i class="ti ti-arrow-right" style="font-size:13px;color:var(--t3)"></i></div>
+        <div style="text-align:center;flex:1"><div style="width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 5px">2</div><div style="font-size:10px;font-weight:700;color:var(--t1)">Assign Teacher</div><div style="font-size:10px;color:var(--t3)">Pilih teacher yang sesuai keahlian, kirim kontrak</div></div>
+        <div style="padding:0 6px;margin-top:8px"><i class="ti ti-arrow-right" style="font-size:13px;color:var(--t3)"></i></div>
+        <div style="text-align:center;flex:1"><div style="width:28px;height:28px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 5px">3</div><div style="font-size:10px;font-weight:700;color:var(--t1)">Teacher Setuju</div><div style="font-size:10px;color:var(--t3)">Teacher baca & tanda tangani kontrak digital</div></div>
+        <div style="padding:0 6px;margin-top:8px"><i class="ti ti-arrow-right" style="font-size:13px;color:var(--t3)"></i></div>
+        <div style="text-align:center;flex:1"><div style="width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 5px">4</div><div style="font-size:10px;font-weight:700;color:var(--t1)">Isi Materi</div><div style="font-size:10px;color:var(--t3)">Teacher upload konten, admin monitor</div></div>
+        <div style="padding:0 6px;margin-top:8px"><i class="ti ti-arrow-right" style="font-size:13px;color:var(--t3)"></i></div>
+        <div style="text-align:center;flex:1"><div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 5px">5</div><div style="font-size:10px;font-weight:700;color:var(--t1)">Publish</div><div style="font-size:10px;color:var(--t3)">Admin review & publish ke publik</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="tabs" style="margin-bottom:0;border:none">
+        <div class="tab active" onclick="setTab(this,'ctr-all')">Semua (5)</div>
+        <div class="tab" onclick="setTab(this,'ctr-pending')">Menunggu Teacher (3)</div>
+        <div class="tab" onclick="setTab(this,'ctr-active')">Aktif (2)</div>
+        <div class="tab" onclick="setTab(this,'ctr-done')">Selesai</div>
+      </div>
+      <button class="btn bp" onclick="openModal('modal-new-contract')"><i class="ti ti-plus" style="font-size:12px"></i> Buat Kontrak Baru</button>
+    </div>
+
+    <div id="ctr-all">
+      <!-- Contract 1: Pending -->
+      <div class="cc">
+        <div class="cc-hdr">
+          <div class="cc-logo" style="background:#E53935">GO</div>
+          <div class="cc-info">
+            <div class="cc-title">Deep Learning with TensorFlow 2025</div>
+            <div class="cc-co">PT Gojek Indonesia (GoTo Group)</div>
+            <div class="cc-meta">
+              <div class="cc-mi"><i class="ti ti-user" style="font-size:10px"></i> Teacher: Dr. Sarah Wulandari</div>
+              <div class="cc-mi"><i class="ti ti-coin" style="font-size:10px"></i> Royalti: 70%</div>
+              <div class="cc-mi"><i class="ti ti-calendar" style="font-size:10px"></i> 1 Jul – 30 Jun 2027</div>
+              <div class="cc-mi"><i class="ti ti-clock" style="font-size:10px"></i> Dikirim: 18 Jun · Batas respons: 25 Jun</div>
+            </div>
+          </div>
+          <div class="cc-acts">
+            <span class="b b-pend"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu Teacher</span>
+            <button class="bsm bo-sm" onclick="openModal('modal-view-contract')">Lihat Detail</button>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="ct-preview">Min. 20 sesi video, 5 quiz per modul, 2 capstone project. Deadline konten 15 Agustus 2026. NDA berlaku.</div>
+          <div class="ct-terms"><div class="ct-term">20 sesi min.</div><div class="ct-term">5 quiz/modul</div><div class="ct-term">NDA</div><div class="ct-term">Deadline: 15 Agt</div></div>
+          <div style="margin-top:10px;padding:9px 12px;background:#FEF9E7;border:1px solid #FCD34D;border-radius:var(--r);font-size:11px;color:#92400E">
+            <i class="ti ti-info-circle"></i> Teacher belum merespons. Batas waktu: 25 Jun 2026. Kamu bisa <span style="text-decoration:underline;cursor:pointer">kirim pengingat</span> atau <span style="text-decoration:underline;cursor:pointer">ganti teacher</span>.
+          </div>
+          <div class="btns" style="margin-top:10px">
+            <button class="btn bg" style="font-size:11px"><i class="ti ti-send" style="font-size:11px"></i> Kirim Reminder</button>
+            <button class="btn bg" style="font-size:11px" onclick="openModal('modal-reassign')"><i class="ti ti-user-edit" style="font-size:11px"></i> Ganti Teacher</button>
+            <button class="btn bd" style="font-size:11px">Batalkan Kontrak</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract 2: Pending -->
+      <div class="cc">
+        <div class="cc-hdr">
+          <div class="cc-logo" style="background:#1565C0">BK</div>
+          <div class="cc-info">
+            <div class="cc-title">Data Analytics for Business Decision Making</div>
+            <div class="cc-co">PT BCA Digital</div>
+            <div class="cc-meta">
+              <div class="cc-mi"><i class="ti ti-user" style="font-size:10px"></i> Teacher: Dr. Sarah Wulandari</div>
+              <div class="cc-mi"><i class="ti ti-coin" style="font-size:10px"></i> Royalti: 65% + bonus</div>
+              <div class="cc-mi"><i class="ti ti-calendar" style="font-size:10px"></i> 1 Agt – 31 Jul 2027</div>
+            </div>
+          </div>
+          <div class="cc-acts">
+            <span class="b b-pend"><i class="ti ti-clock" style="font-size:9px"></i> Menunggu Teacher</span>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="btns">
+            <button class="btn bg" style="font-size:11px"><i class="ti ti-send" style="font-size:11px"></i> Kirim Reminder</button>
+            <button class="btn bg" style="font-size:11px" onclick="openModal('modal-reassign')"><i class="ti ti-user-edit" style="font-size:11px"></i> Ganti Teacher</button>
+            <button class="btn bd" style="font-size:11px">Batalkan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract 3: Active -->
+      <div class="cc" style="border-color:#BBF7D0">
+        <div class="cc-hdr">
+          <div class="cc-logo" style="background:#FF6D00">TO</div>
+          <div class="cc-info">
+            <div class="cc-title">Machine Learning A–Z: Python & R</div>
+            <div class="cc-co">PT Tokopedia (GoTo Group)</div>
+            <div class="cc-meta">
+              <div class="cc-mi"><i class="ti ti-user" style="font-size:10px"></i> Dr. Sarah Wulandari · Disetujui 15 Des 2025</div>
+              <div class="cc-mi"><i class="ti ti-users" style="font-size:10px"></i> 820 siswa</div>
+              <div class="cc-mi"><i class="ti ti-book" style="font-size:10px"></i> 48 materi · 6 quiz</div>
+              <div class="cc-mi"><i class="ti ti-coin" style="font-size:10px"></i> Revenue: Rp 245jt · Royalti: Rp 171jt dibayar</div>
+            </div>
+          </div>
+          <div class="cc-acts">
+            <span class="b b-pub"><i class="ti ti-circle-check" style="font-size:9px"></i> Aktif & Published</span>
+            <button class="bsm bo-sm" onclick="openModal('modal-view-contract')">Lihat Kontrak</button>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div style="display:flex;gap:12px">
+            <div style="flex:1"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Progress Materi</div><div class="pbar"><div class="pfill" style="width:100%;background:var(--teal)"></div></div><div style="font-size:10px;color:var(--t3);margin-top:2px">48/48 selesai</div></div>
+            <div style="flex:1"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Royalti Dibayar</div><div class="pbar"><div class="pfill" style="width:85%;background:var(--green)"></div></div><div style="font-size:10px;color:var(--t3);margin-top:2px">Rp 145jt dari Rp 171jt</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="ctr-pending" style="display:none"><div class="card" style="color:var(--t3);text-align:center;padding:24px">Filter: 3 kontrak menunggu respons teacher</div></div>
+    <div id="ctr-active" style="display:none"><div class="card" style="color:var(--t3);text-align:center;padding:24px">Filter: 2 kontrak aktif</div></div>
+    <div id="ctr-done" style="display:none"><div class="card" style="color:var(--t3);text-align:center;padding:24px">Kontrak selesai akan muncul di sini</div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       3. KELOLA KURSUS (ADMIN - BUAT DARI SCRATCH)
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-courses">
+    <div class="pt">Kelola Kursus</div>
+    <div class="ps">Admin membuat dan mengelola semua kursus. Assign teacher via kontrak kerjasama.</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input class="fi" type="text" placeholder="Cari kursus…" style="max-width:220px">
+      <select class="fsel" style="width:130px"><option>Semua Status</option><option>Published</option><option>Draft</option></select>
+      <select class="fsel" style="width:150px"><option>Semua Perusahaan</option><option>Tokopedia</option><option>Gojek</option></select>
+      <button class="btn bp" style="margin-left:auto" onclick="openModal('modal-new-course')"><i class="ti ti-plus" style="font-size:12px"></i> Kursus Baru</button>
+    </div>
+    <div class="card-flush">
+      <table class="tbl">
+        <thead><tr><th>Kursus</th><th>Perusahaan Mitra</th><th>Teacher</th><th>Kontrak</th><th>Siswa</th><th>Revenue</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div style="font-weight:700;color:var(--t1)">Machine Learning A–Z</div><div style="font-size:10px;color:var(--t3)">48 materi · 6 quiz · ★ 4.9</div></td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:20px;border-radius:4px;background:#FF6D00;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">TO</div>Tokopedia</div></td>
+            <td>Dr. Sarah W.</td>
+            <td><span class="b b-pub">Aktif</span></td>
+            <td>820</td>
+            <td style="font-weight:700;color:var(--green)">Rp 245jt</td>
+            <td><span class="b b-pub">Published</span></td>
+            <td class="btns"><button class="bsm bp-sm">Edit</button><button class="bsm bo-sm" onclick="go('contracts')">Kontrak</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:700;color:var(--t1)">Python untuk Pemula</div><div style="font-size:10px;color:var(--t3)">30 materi · 4 quiz · Gratis</div></td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:20px;border-radius:4px;background:#1E88E5;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">TR</div>Traveloka</div></td>
+            <td>Dr. Sarah W.</td>
+            <td><span class="b b-pub">Aktif</span></td>
+            <td>380</td>
+            <td style="color:var(--t3)">Gratis</td>
+            <td><span class="b b-pub">Published</span></td>
+            <td class="btns"><button class="bsm bp-sm">Edit</button><button class="bsm bo-sm">Kontrak</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:700;color:var(--t1)">Deep Learning TensorFlow</div><div style="font-size:10px;color:var(--t3)">0 materi — Teacher belum setuju kontrak</div></td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:20px;border-radius:4px;background:#E53935;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">GO</div>Gojek</div></td>
+            <td>Dr. Sarah W.</td>
+            <td><span class="b b-pend"><i class="ti ti-clock" style="font-size:9px"></i> Pending</span></td>
+            <td>—</td>
+            <td style="color:var(--t3)">—</td>
+            <td><span class="b b-dft">Draft</span></td>
+            <td class="btns"><button class="bsm bp-sm">Edit</button><button class="bsm bw-sm" onclick="go('contracts')">Kontrak</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       4. KELOLA PENGGUNA
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-users">
+    <div class="pt">Kelola Pengguna</div>
+    <div class="ps">Atur role, royalti, skills, dan kode referral setiap akun</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input class="fi" type="text" placeholder="Cari nama / email…" style="max-width:220px">
+      <select class="fsel" style="width:130px"><option>Semua Role</option><option>Admin</option><option>Teacher</option><option>Student</option></select>
+      <div style="margin-left:auto;font-size:12px;color:var(--t3);align-self:center">3.240 pengguna total</div>
+    </div>
+    <div class="card-flush">
+      <table class="tbl">
+        <thead><tr><th>Pengguna</th><th>Role</th><th>Royalti</th><th>Skills</th><th>Referral</th><th>Bergabung</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">SW</div><div><div style="font-weight:700">Dr. Sarah Wulandari</div><div style="font-size:10px;color:var(--t3)">sarah@inspiralearn.id</div></div></div></td>
+            <td><span class="b b-teacher">Teacher</span></td>
+            <td><strong>70%</strong></td>
+            <td><div style="display:flex;gap:3px;flex-wrap:wrap"><span class="b b-act" style="font-size:9px">ML</span><span class="b b-act" style="font-size:9px">Python</span><span class="b b-act" style="font-size:9px">AI</span></div></td>
+            <td><code style="font-size:10px;background:#F3F4F6;padding:2px 5px;border-radius:4px">REF-SW2024</code></td>
+            <td style="font-size:11px;color:var(--t3)">Jan 2024</td>
+            <td><button class="bsm bo-sm" onclick="openModal('modal-edit-user')">Edit</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:#15803D;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">BR</div><div><div style="font-weight:700">Budi Raharjo, M.Cs</div><div style="font-size:10px;color:var(--t3)">budi@inspiralearn.id</div></div></div></td>
+            <td><span class="b b-teacher">Teacher</span></td>
+            <td><strong>65%</strong></td>
+            <td><div style="display:flex;gap:3px;flex-wrap:wrap"><span class="b b-act" style="font-size:9px">Web Dev</span><span class="b b-act" style="font-size:9px">React</span></div></td>
+            <td><code style="font-size:10px;background:#F3F4F6;padding:2px 5px;border-radius:4px">REF-BR2024</code></td>
+            <td style="font-size:11px;color:var(--t3)">Mar 2024</td>
+            <td><button class="bsm bo-sm" onclick="openModal('modal-edit-user')">Edit</button></td>
+          </tr>
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:#6B7280;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">FA</div><div><div style="font-weight:700">Fajar Alamsyah</div><div style="font-size:10px;color:var(--t3)">fajar@gmail.com</div></div></div></td>
+            <td><span class="b b-student">Student</span></td>
+            <td style="color:var(--t3)">—</td>
+            <td style="color:var(--t3)">—</td>
+            <td style="color:var(--t3)">—</td>
+            <td style="font-size:11px;color:var(--t3)">Mar 2026</td>
+            <td><button class="bsm bo-sm" onclick="openModal('modal-edit-user')">Edit</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       5. ROYALTI TEACHER
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-royalties">
+    <div class="pt">Royalti Teacher</div>
+    <div class="ps">Bayar royalti ke teacher sesuai penjualan kursus dan kontrak</div>
+    <div class="sg">
+      <div class="sc"><div class="sl">Total Terhutang</div><div class="sv" style="color:var(--orange)">Rp 12,4jt</div><div class="ss">5 teacher pending</div></div>
+      <div class="sc"><div class="sl">Dibayar Bulan Ini</div><div class="sv" style="color:var(--green)">Rp 24,8jt</div><div class="ss">Juni 2026</div></div>
+      <div class="sc"><div class="sl">Total Semua</div><div class="sv" style="color:var(--blue)">Rp 412jt</div><div class="ss">Sejak launch</div></div>
+      <div class="sc"><div class="sl">Teacher Aktif</div><div class="sv">8</div><div class="ss">dengan kontrak berjalan</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <select class="fsel" style="width:180px"><option>Semua Teacher</option><option>Dr. Sarah W.</option></select>
+      <select class="fsel" style="width:130px"><option>Semua Status</option><option>Pending</option><option>Dibayar</option></select>
+      <button class="btn bs" style="margin-left:auto"><i class="ti ti-coin" style="font-size:12px"></i> Bayar Semua Pending</button>
+    </div>
+    <div class="card-flush">
+      <table class="tbl">
+        <thead><tr><th>Teacher</th><th>Kursus</th><th>Penjualan</th><th>Gross</th><th>Royalti (70%)</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><div style="font-weight:700">Dr. Sarah W.</div><div style="font-size:10px;color:var(--t3)">Kontrak: Tokopedia</div></td><td>ML A–Z</td><td>4 unit</td><td>Rp 1.196.000</td><td style="font-weight:700">Rp 837.200</td><td><span class="b b-pending-pay">Pending</span></td><td><button class="bsm bs-sm" onclick="openModal('modal-pay-royalty')">Bayar</button></td></tr>
+          <tr><td><div style="font-weight:700">Dr. Sarah W.</div><div style="font-size:10px;color:var(--t3)">Kontrak: Tokopedia</div></td><td>ML A–Z</td><td>6 unit</td><td>Rp 1.794.000</td><td style="font-weight:700">Rp 1.255.800</td><td><span class="b b-pending-pay">Pending</span></td><td><button class="bsm bs-sm" onclick="openModal('modal-pay-royalty')">Bayar</button></td></tr>
+          <tr><td><div style="font-weight:700">Budi Raharjo</div><div style="font-size:10px;color:var(--t3)">Kontrak: Traveloka</div></td><td>Web Dev</td><td>8 unit</td><td>Rp 2.392.000</td><td style="font-weight:700">Rp 1.554.800</td><td><span class="b b-paid"><i class="ti ti-check" style="font-size:9px"></i> Dibayar</span></td><td><button class="bsm bo-sm">Detail</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       6. PEMBUKUAN / ACCOUNTING
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-accounting">
+    <div class="pt">Pembukuan</div>
+    <div class="ps">Laporan keuangan, transaksi, dan analitik revenue platform</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <input class="fi" type="date" value="2026-06-01" style="width:130px">
+      <span style="align-self:center;color:var(--t3);font-size:12px">s/d</span>
+      <input class="fi" type="date" value="2026-06-20" style="width:130px">
+      <select class="fsel" style="width:130px"><option>Semua Status</option><option>Paid</option><option>Pending</option><option>Failed</option></select>
+      <button class="btn bp">Terapkan</button>
+      <button class="btn bg" style="margin-left:auto"><i class="ti ti-download" style="font-size:12px"></i> Export CSV</button>
+    </div>
+    <div class="sg">
+      <div class="sc"><div class="sl">Total Revenue</div><div class="sv" style="color:var(--green)">Rp 48,6jt</div><div class="ss">Jun 2026 · 163 transaksi</div></div>
+      <div class="sc"><div class="sl">Net Setelah Royalti</div><div class="sv" style="color:var(--blue)">Rp 14,6jt</div><div class="ss">30% platform fee</div></div>
+      <div class="sc"><div class="sl">Refund / Gagal</div><div class="sv" style="color:var(--red)">Rp 894rb</div><div class="ss">3 transaksi</div></div>
+      <div class="sc"><div class="sl">Rata-rata Order</div><div class="sv">Rp 298rb</div><div class="ss">per transaksi</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'acc-orders')">Transaksi</div>
+      <div class="tab" onclick="setTab(this,'acc-summary')">Per Kursus</div>
+    </div>
+    <div id="acc-orders">
+      <div class="card-flush">
+        <table class="tbl">
+          <thead><tr><th>Order ID</th><th>Siswa</th><th>Kursus</th><th>Metode</th><th>Jumlah</th><th>Status</th><th>Tanggal</th></tr></thead>
+          <tbody>
+            <tr><td><code style="font-size:10px">INV-20260619-X92</code></td><td>Fajar A.</td><td>ML A–Z</td><td>QRIS</td><td style="font-weight:700">Rp 299.000</td><td><span class="b b-pub">Paid</span></td><td style="font-size:11px;color:var(--t3)">19 Jun 14:32</td></tr>
+            <tr><td><code style="font-size:10px">INV-20260619-M8P</code></td><td>Nadia S.</td><td>ML A–Z</td><td>VA BCA</td><td style="font-weight:700">Rp 299.000</td><td><span class="b b-pub">Paid</span></td><td style="font-size:11px;color:var(--t3)">19 Jun 11:15</td></tr>
+            <tr><td><code style="font-size:10px">INV-20260618-K4R</code></td><td>Devi W.</td><td>UI/UX</td><td>CC Mandiri</td><td style="font-weight:700">Rp 149.000</td><td><span class="b b-rej">Failed</span></td><td style="font-size:11px;color:var(--t3)">18 Jun 16:20</td></tr>
+            <tr><td><code style="font-size:10px">INV-20260618-Z7Q</code></td><td>Budi S.</td><td>Python</td><td>GoPay</td><td style="font-weight:700">Rp 0</td><td><span class="b b-pub">Paid</span></td><td style="font-size:11px;color:var(--t3)">18 Jun 09:44</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="acc-summary" style="display:none">
+      <div class="card-flush">
+        <table class="tbl">
+          <thead><tr><th>Kursus</th><th>Teacher</th><th>Terjual</th><th>Revenue</th><th>Royalti</th><th>Net Platform</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:700">Machine Learning A–Z</div></td><td>Dr. Sarah W.</td><td>163</td><td style="font-weight:700;color:var(--green)">Rp 48,7jt</td><td>Rp 34,1jt (70%)</td><td style="font-weight:700;color:var(--blue)">Rp 14,6jt</td></tr>
+            <tr><td><div style="font-weight:700">Python untuk Pemula</div></td><td>Dr. Sarah W.</td><td>380</td><td style="color:var(--t3)">Gratis</td><td style="color:var(--t3)">—</td><td style="color:var(--t3)">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       7. KUPON
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-coupons">
+    <div class="pt">Kupon Diskon</div>
+    <div class="ps">Buat dan kelola kode diskon untuk promosi atau referral</div>
+    <div style="display:flex;margin-bottom:14px">
+      <button class="btn bp" onclick="openModal('modal-new-coupon')"><i class="ti ti-plus" style="font-size:12px"></i> Buat Kupon</button>
+    </div>
+    <div class="card-flush">
+      <table class="tbl">
+        <thead><tr><th>Kode</th><th>Deskripsi</th><th>Diskon</th><th>Pemakaian</th><th>Berlaku</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><code style="font-size:11px;background:#F3F4F6;padding:2px 7px;border-radius:4px;font-weight:700">PROMO20</code></td><td>Diskon 20% semua kursus</td><td><span class="b b-act">20%</span></td><td>53 / 100</td><td style="font-size:11px;color:var(--t3)">s/d 30 Jun</td><td><span class="b b-pub">Aktif</span></td><td class="btns"><button class="bsm bo-sm">Edit</button><button class="bsm bd-sm">Hapus</button></td></tr>
+          <tr><td><code style="font-size:11px;background:#F3F4F6;padding:2px 7px;border-radius:4px;font-weight:700">NEWBIE50</code></td><td>Diskon 50% pembelian pertama</td><td><span class="b b-act">50%</span></td><td>28 / ∞</td><td style="font-size:11px;color:var(--t3)">s/d 31 Des</td><td><span class="b b-pub">Aktif</span></td><td class="btns"><button class="bsm bo-sm">Edit</button><button class="bsm bd-sm">Hapus</button></td></tr>
+          <tr><td><code style="font-size:11px;background:#F3F4F6;padding:2px 7px;border-radius:4px;font-weight:700">FLASH100K</code></td><td>Potongan Rp 100.000</td><td><span class="b" style="background:var(--purple-l);color:var(--purple)">Rp 100rb</span></td><td>100 / 100</td><td style="font-size:11px;color:var(--t3)">Expired</td><td><span class="b b-dft">Habis</span></td><td class="btns"><button class="bsm bd-sm">Hapus</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       8. LOG AKTIVITAS
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-activity-log">
+    <div class="pt">Log Aktivitas</div>
+    <div class="ps">Audit trail semua perubahan yang dilakukan oleh admin, teacher, dan sistem</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <select class="fsel" style="width:150px"><option>Semua Resource</option><option>Course</option><option>Contract</option><option>User</option><option>Quiz</option><option>Royalti</option></select>
+      <select class="fsel" style="width:130px"><option>Semua Aksi</option><option>Dibuat</option><option>Diedit</option><option>Dihapus</option><option>Published</option><option>Setuju Kontrak</option></select>
+      <select class="fsel" style="width:160px"><option>Semua User</option><option>Admin</option><option>Dr. Sarah W.</option></select>
+    </div>
+    <div class="card-flush">
+      <table class="tbl">
+        <thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Resource</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">19 Jun · 14:32</td><td><span class="b b-admin">Admin</span></td><td><span class="b b-act">Dibuat</span></td><td>Kontrak</td><td style="font-size:11px;color:var(--t2)">Kontrak Deep Learning TF → Dr. Sarah W. (Gojek)</td></tr>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">19 Jun · 11:20</td><td><span class="b b-teacher">Sarah W.</span></td><td><span class="b b-pub">Upload</span></td><td>Materi</td><td style="font-size:11px;color:var(--t2)">Sesi 7 — SVM Fundamentals di kursus ML A–Z</td></tr>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">18 Jun · 16:00</td><td><span class="b b-admin">Admin</span></td><td><span class="b" style="background:var(--green-l);color:var(--green)">Published</span></td><td>Kursus</td><td style="font-size:11px;color:var(--t2)">Machine Learning A–Z dipublish ke publik</td></tr>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">18 Jun · 09:12</td><td><span class="b b-teacher">Sarah W.</span></td><td><span class="b b-pub">Setuju</span></td><td>Kontrak</td><td style="font-size:11px;color:var(--t2)">Menyetujui kontrak ML A–Z dari Tokopedia</td></tr>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">17 Jun · 14:00</td><td><span class="b b-admin">Admin</span></td><td><span class="b b-act">Diedit</span></td><td>User</td><td style="font-size:11px;color:var(--t2)">Royalti Budi R. diubah dari 60% → 65%</td></tr>
+          <tr><td style="font-size:10px;color:var(--t3);white-space:nowrap">17 Jun · 10:33</td><td><span class="b b-admin">Admin</span></td><td><span class="b" style="background:var(--green-l);color:var(--green)">Dibayar</span></td><td>Royalti</td><td style="font-size:11px;color:var(--t2)">Royalti Rp 3,2jt ke Sarah W. — Transfer BCA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       9. TESTIMONI
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-testimonials">
+    <div class="pt">Kelola Testimoni</div>
+    <div class="ps">Setujui atau tolak testimoni siswa. Hanya yang disetujui tampil di halaman utama.</div>
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'test-pend')">Menunggu (4)</div>
+      <div class="tab" onclick="setTab(this,'test-ok')">Disetujui (24)</div>
+      <div class="tab" onclick="setTab(this,'test-rej')">Ditolak (3)</div>
+    </div>
+    <div id="test-pend" style="display:flex;flex-direction:column;gap:8px">
+      <div class="card" style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:#1B3A5C;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">FA</div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--t1)">Fajar Alamsyah <span style="font-weight:400;color:var(--t3)">· ML A–Z · ★★★★★</span></div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px;line-height:1.5">"Kursus terbaik yang pernah saya ikuti. Penjelasannya sangat jelas dan proyeknya langsung bisa dipakai di tempat kerja."</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:4px">22 Jun 2026 · Selesaikan kursus: 100%</div>
+        </div>
+        <div class="btns"><button class="btn bs" style="font-size:11px"><i class="ti ti-check" style="font-size:11px"></i> Setujui</button><button class="btn bd" style="font-size:11px">Tolak</button></div>
+      </div>
+      <div class="card" style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:#15803D;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">NS</div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--t1)">Nadia Sari <span style="font-weight:400;color:var(--t3)">· Python Pemula · ★★★★★</span></div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px;line-height:1.5">"Instrukturnya sangat responsif menjawab pertanyaan. Materinya up-to-date dengan industri 2025."</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:4px">21 Jun 2026 · Selesaikan kursus: 100%</div>
+        </div>
+        <div class="btns"><button class="btn bs" style="font-size:11px"><i class="ti ti-check" style="font-size:11px"></i> Setujui</button><button class="btn bd" style="font-size:11px">Tolak</button></div>
+      </div>
+    </div>
+    <div id="test-ok" style="display:none"><div class="card" style="color:var(--t3);text-align:center;padding:24px">24 testimoni disetujui</div></div>
+    <div id="test-rej" style="display:none"><div class="card" style="color:var(--t3);text-align:center;padding:24px">3 testimoni ditolak</div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       Placeholder screens
+  ════════════════════════════════════════════ -->
+  <div class="screen" id="s-templates"><div class="pt">Template Outline Kursus</div><div class="ps">Buat template struktur modul yang bisa dipilih teacher saat mengisi materi</div><div class="card" style="text-align:center;padding:32px;color:var(--t3)"><i class="ti ti-template" style="font-size:28px;display:block;margin-bottom:8px"></i>Template manager — sama seperti CourseTemplateManager.jsx di ZIP</div></div>
+  <div class="screen" id="s-categories"><div class="pt">Kelola Kategori</div><div class="ps">Tambah dan atur kategori kursus dengan gambar cover dan warna</div><div class="card" style="text-align:center;padding:32px;color:var(--t3)"><i class="ti ti-category" style="font-size:28px;display:block;margin-bottom:8px"></i>Category manager — sama seperti CategoryManager.jsx di ZIP</div></div>
+  <div class="screen" id="s-hero"><div class="pt">Hero Carousel</div><div class="ps">Kelola slide gambar dan teks di bagian atas halaman utama</div><div class="card" style="text-align:center;padding:32px;color:var(--t3)"><i class="ti ti-photo" style="font-size:28px;display:block;margin-bottom:8px"></i>Hero manager — sama seperti HeroManager.jsx di ZIP</div></div>
+  <div class="screen" id="s-about"><div class="pt">Tentang Kami</div><div class="ps">Edit info platform, visi misi, dan profil instruktur halaman About</div><div class="card" style="text-align:center;padding:32px;color:var(--t3)"><i class="ti ti-info-circle" style="font-size:28px;display:block;margin-bottom:8px"></i>About manager — sama seperti AboutManager.jsx di ZIP</div></div>
+  <div class="screen" id="s-site-settings">
+    <div class="pt">Pengaturan Situs</div>
+    <div class="ps">Konfigurasi Midtrans, SMTP, dan konten halaman utama platform</div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="setTab(this,'ss-midtrans')"><i class="ti ti-credit-card" style="font-size:12px"></i> Midtrans Payment</div>
+      <div class="tab" onclick="setTab(this,'ss-smtp')"><i class="ti ti-mail" style="font-size:12px"></i> Email / SMTP</div>
+      <div class="tab" onclick="setTab(this,'ss-homepage')"><i class="ti ti-home" style="font-size:12px"></i> Konten Halaman Utama</div>
+    </div>
+
+    <!-- MIDTRANS TAB -->
+    <div id="ss-midtrans">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="flex:1">
+          <!-- Status banner -->
+          <div style="background:var(--amber-l);border:1px solid #FCD34D;border-radius:var(--rl);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+            <i class="ti ti-alert-triangle" style="font-size:18px;color:var(--amber);flex-shrink:0"></i>
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;color:var(--amber)">Midtrans belum dikonfigurasi</div>
+              <div style="font-size:11px;color:#92400E;margin-top:2px">Server Key dan Client Key belum diisi. Pembayaran tidak bisa diproses sampai keduanya diset.</div>
+            </div>
+            <div style="font-size:11px;color:var(--amber);font-weight:700;white-space:nowrap">Status: ✗ Offline</div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">Mode Lingkungan</div>
+            <div style="font-size:11px;color:var(--t3);margin-bottom:12px">Variabel: <code style="background:#F3F4F6;padding:1px 5px;border-radius:3px;font-size:10px">MIDTRANS_IS_PRODUCTION</code></div>
+            <div style="display:flex;gap:10px">
+              <label style="flex:1;border:1.5px solid #FCD34D;border-radius:var(--rl);padding:12px;cursor:pointer;background:var(--amber-l)">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <input type="radio" name="mt_env" checked>
+                  <div style="font-size:12px;font-weight:700;color:var(--amber)">Sandbox / Testing</div>
+                </div>
+                <div style="font-size:11px;color:#92400E">Gunakan untuk development dan testing. Transaksi tidak nyata.</div>
+                <div style="font-size:10px;color:var(--amber);margin-top:6px;font-weight:600">URL: app.sandbox.midtrans.com</div>
+              </label>
+              <label style="flex:1;border:1.5px solid var(--bdr);border-radius:var(--rl);padding:12px;cursor:pointer">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <input type="radio" name="mt_env">
+                  <div style="font-size:12px;font-weight:700;color:var(--t1)">Production / Live</div>
+                </div>
+                <div style="font-size:11px;color:var(--t2)">Transaksi nyata dengan uang asli. Pastikan sudah ditest di Sandbox.</div>
+                <div style="font-size:10px;color:var(--t3);margin-top:6px;font-weight:600">URL: app.midtrans.com</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:14px">API Keys</div>
+            <div class="fg">
+              <label class="fl">Merchant ID <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— Variabel: MIDTRANS_MERCHANT_ID</span></label>
+              <input class="fi" type="text" value="M377060101" readonly style="background:#F9FAFB;font-family:monospace;font-size:11px">
+              <div style="font-size:10px;color:var(--t3);margin-top:3px">Merchant ID bersifat read-only, diambil dari akun Midtrans kamu</div>
+            </div>
+            <div class="fg">
+              <label class="fl">Server Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--red)">— RAHASIA, jangan dibagikan!</span></label>
+              <div style="display:flex;gap:6px">
+                <input class="fi" type="password" id="mt-server-key" placeholder="SB-Mid-server-xxxxxxxxxxxx" style="flex:1;font-family:monospace;font-size:11px">
+                <button class="btn bg" style="font-size:11px;white-space:nowrap" onclick="toggleKey('mt-server-key')"><i class="ti ti-eye" style="font-size:11px"></i></button>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:3px">Digunakan di <strong>server</strong> untuk membuat transaksi. Variabel: <code style="background:#F3F4F6;padding:1px 4px;border-radius:3px">MIDTRANS_SERVER_KEY</code></div>
+            </div>
+            <div class="fg">
+              <label class="fl">Client Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">— Aman ditampilkan ke browser</span></label>
+              <div style="display:flex;gap:6px">
+                <input class="fi" type="password" id="mt-client-key" placeholder="SB-Mid-client-xxxxxxxxxxxx" style="flex:1;font-family:monospace;font-size:11px">
+                <button class="btn bg" style="font-size:11px;white-space:nowrap" onclick="toggleKey('mt-client-key')"><i class="ti ti-eye" style="font-size:11px"></i></button>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:3px">Digunakan di <strong>frontend</strong> untuk Snap.js popup. Variabel: <code style="background:#F3F4F6;padding:1px 4px;border-radius:3px">MIDTRANS_CLIENT_KEY</code></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">Konfigurasi Fee</div>
+            <div style="font-size:11px;color:var(--t3);margin-bottom:12px">Digunakan untuk estimasi net revenue di laporan pembukuan. Tidak mempengaruhi transaksi.</div>
+            <div class="fg2">
+              <div class="fg">
+                <label class="fl">Fee Midtrans Global (%) <code style="font-weight:400;font-size:9px">MIDTRANS_FEE_PERCENT</code></label>
+                <input class="fi" type="number" value="0" min="0" max="100" step="0.1" placeholder="mis: 2.9">
+                <div style="font-size:10px;color:var(--t3);margin-top:2px">Default jika tidak ada rule spesifik per metode</div>
+              </div>
+              <div class="fg">
+                <label class="fl">Fee Rules per Metode (JSON) <code style="font-weight:400;font-size:9px">MIDTRANS_FEE_RULES_JSON</code></label>
+                <textarea class="fta" rows="3" style="font-family:monospace;font-size:11px" placeholder='{"qris":{"percent":0.7},"bank_transfer":{"flat":4000},"default":{"percent":2.9}}'></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:12px">Webhook / Notification URL</div>
+            <div style="display:flex;align-items:center;gap:8px;background:#F9FAFB;border:1px solid var(--bdr);border-radius:var(--r);padding:10px 12px">
+              <code style="font-size:12px;color:var(--t1);flex:1">https://api.inspiralearn.id/payments/midtrans/notification</code>
+              <button class="btn bg" style="font-size:11px;white-space:nowrap"><i class="ti ti-copy" style="font-size:11px"></i> Salin</button>
+            </div>
+            <div style="font-size:11px;color:var(--t3);margin-top:6px">Paste URL ini di <strong>Midtrans Dashboard → Settings → Configuration → Payment Notification URL</strong>. Midtrans akan mengirim konfirmasi pembayaran ke endpoint ini.</div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn bp"><i class="ti ti-device-floppy" style="font-size:12px"></i> Simpan Konfigurasi</button>
+            <button class="btn bg"><i class="ti ti-plug" style="font-size:12px"></i> Test Koneksi</button>
+          </div>
+        </div>
+
+        <!-- Right: cara mendapatkan keys -->
+        <div style="width:240px;flex-shrink:0">
+          <div class="card" style="background:#F0F8FD;border-color:#BEE3F8">
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px"><i class="ti ti-help-circle" style="font-size:12px"></i> Cara Mendapatkan API Keys</div>
+            <div style="font-size:11px;color:var(--t2);line-height:1.65;display:flex;flex-direction:column;gap:8px">
+              <div><div style="font-weight:700;margin-bottom:2px">1. Login ke Midtrans Dashboard</div><div><a href="https://dashboard.midtrans.com" style="color:var(--blue)">dashboard.midtrans.com</a> (Production) atau <a href="https://dashboard.sandbox.midtrans.com" style="color:var(--blue)">sandbox.midtrans.com</a></div></div>
+              <div><div style="font-weight:700;margin-bottom:2px">2. Settings → Access Keys</div><div>Salin <strong>Server Key</strong> dan <strong>Client Key</strong> dari tab yang sesuai (Sandbox atau Production)</div></div>
+              <div><div style="font-weight:700;margin-bottom:2px">3. Set Notification URL</div><div>Settings → Configuration → isi Notification URL dengan URL webhook di atas</div></div>
+              <div><div style="font-weight:700;margin-bottom:2px">4. Test dulu di Sandbox</div><div>Gunakan mode Sandbox sampai pembayaran berjalan sempurna, lalu ganti ke Production</div></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--t1);margin-bottom:8px">Metode Pembayaran Aktif</div>
+            <div style="font-size:11px;color:var(--t2);display:flex;flex-direction:column;gap:5px">
+              <label class="ic"><input type="checkbox" checked> QRIS (semua e-wallet)</label>
+              <label class="ic"><input type="checkbox" checked> Virtual Account (BCA, BNI, BRI, Mandiri)</label>
+              <label class="ic"><input type="checkbox"> Kartu Kredit / Debit</label>
+              <label class="ic"><input type="checkbox"> Alfamart / Indomaret</label>
+              <label class="ic"><input type="checkbox"> GoPay</label>
+              <label class="ic"><input type="checkbox"> ShopeePay</label>
+            </div>
+            <div style="font-size:10px;color:var(--t3);margin-top:8px">Kode: <code style="font-size:10px">enabled_payments</code> di routes/payments.js</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMTP TAB -->
+    <div id="ss-smtp" style="display:none">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="flex:1">
+          <div style="background:var(--green-l);border:1px solid #BBF7D0;border-radius:var(--rl);padding:12px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:center">
+            <i class="ti ti-circle-check" style="font-size:18px;color:var(--green);flex-shrink:0"></i>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--green)">SMTP Terhubung</div>
+              <div style="font-size:11px;color:#166534;margin-top:1px">Email OTP, konfirmasi pembelian, dan notifikasi berjalan normal.</div>
+            </div>
+            <div style="font-size:11px;color:var(--green);font-weight:700;white-space:nowrap;margin-left:auto">Status: ✓ Online</div>
+          </div>
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:14px">Konfigurasi SMTP</div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">SMTP Host <code style="font-weight:400;font-size:9px">SMTP_HOST</code></label><input class="fi" type="text" value="smtp.gmail.com"></div>
+              <div class="fg"><label class="fl">SMTP Port <code style="font-weight:400;font-size:9px">SMTP_PORT</code></label><input class="fi" type="number" value="465"></div>
+            </div>
+            <div class="fg2">
+              <div class="fg"><label class="fl">Username / Email <code style="font-weight:400;font-size:9px">SMTP_USER</code></label><input class="fi" type="email" value="noreply@inspiralearn.id"></div>
+              <div class="fg">
+                <label class="fl">App Password <code style="font-weight:400;font-size:9px">SMTP_PASS</code></label>
+                <div style="display:flex;gap:6px"><input class="fi" type="password" id="smtp-pass" value="••••••••••••••••" style="flex:1"><button class="btn bg" style="font-size:11px" onclick="toggleKey('smtp-pass')"><i class="ti ti-eye" style="font-size:11px"></i></button></div>
+              </div>
+            </div>
+            <div class="fg"><label class="fl">From Name & Email <code style="font-weight:400;font-size:9px">SMTP_FROM</code></label><input class="fi" type="text" value="InspiraLearn &lt;noreply@inspiralearn.id&gt;"></div>
+          </div>
+          <div class="card" style="margin-bottom:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:10px">Email yang Dikirim Sistem</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--t2)">
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#F9FAFB;border-radius:var(--r)"><i class="ti ti-shield-check" style="color:var(--teal);font-size:14px"></i><div><div style="font-weight:600">OTP Verifikasi</div><div style="font-size:11px;color:var(--t3)">Dikirim saat register, reset password</div></div><span class="b b-pub" style="margin-left:auto">Aktif</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#F9FAFB;border-radius:var(--r)"><i class="ti ti-receipt" style="color:var(--blue);font-size:14px"></i><div><div style="font-weight:600">Konfirmasi Pembelian</div><div style="font-size:11px;color:var(--t3)">Dikirim setelah pembayaran berhasil</div></div><span class="b b-pub" style="margin-left:auto">Aktif</span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#F9FAFB;border-radius:var(--r)"><i class="ti ti-bell" style="color:var(--orange);font-size:14px"></i><div><div style="font-weight:600">Notifikasi Pembelian ke Admin</div><div style="font-size:11px;color:var(--t3)">Dikirim ke email admin saat ada order baru</div></div><span class="b b-pub" style="margin-left:auto">Aktif</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn bp"><i class="ti ti-device-floppy" style="font-size:12px"></i> Simpan SMTP</button>
+            <button class="btn bg" onclick="alert('Test email dikirim ke admin@inspiralearn.id')"><i class="ti ti-send" style="font-size:12px"></i> Kirim Test Email</button>
+          </div>
+        </div>
+        <div style="width:220px;flex-shrink:0">
+          <div class="card" style="background:#F0F8FD;border-color:#BEE3F8">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px">Gmail App Password</div>
+            <div style="font-size:11px;color:var(--t2);line-height:1.6;display:flex;flex-direction:column;gap:6px">
+              <div>1. Login ke <a href="https://myaccount.google.com" style="color:var(--blue)">myaccount.google.com</a></div>
+              <div>2. Security → 2-Step Verification (aktifkan)</div>
+              <div>3. Security → App Passwords</div>
+              <div>4. Generate password untuk "Mail"</div>
+              <div>5. Gunakan password 16 karakter itu di field App Password</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOMEPAGE TAB -->
+    <div id="ss-homepage" style="display:none">
+      <div class="card" style="margin-bottom:10px;color:var(--t3);font-size:12px;padding:16px;display:flex;align-items:center;gap:10px">
+        <i class="ti ti-home" style="font-size:20px"></i>
+        <div>Edit konten Hero, statistik platform, partner, kutipan, dan footer — sama persis dengan <code>SiteSettingsManager.jsx</code> di ZIP. Sudah ada implementasinya.</div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+
+  <div class="nav-demo">
+    <span>Halaman:</span>
+    <button onclick="go('dashboard')">1. Dashboard</button>
+    <button onclick="go('contracts')">2. Kontrak Kerjasama</button>
+    <button onclick="go('courses')">3. Kelola Kursus</button>
+    <button onclick="go('users')">4. Pengguna</button>
+    <button onclick="go('royalties')">5. Royalti</button>
+    <button onclick="go('accounting')">6. Pembukuan</button>
+    <button onclick="go('coupons')">7. Kupon</button>
+    <button onclick="go('activity-log')">8. Log Aktivitas</button>
+    <button onclick="go('testimonials')">9. Testimoni</button>
+    <button onclick="go('templates')">10. Template</button>
+    <button onclick="go('categories')">11. Kategori</button>
+    <button onclick="go('hero')">12. Hero</button>
+    <button onclick="go('about')">13. About</button>
+    <button onclick="go('site-settings')">14. Site Settings (Midtrans, SMTP)</button>
+  </div>
+</div>
+</div>
+
+<!-- ════ MODAL: BUAT KONTRAK BARU ════ -->
+<div id="modal-new-contract" class="mo" style="display:none">
+  <div class="mb">
+    <div class="mh"><div class="mt-h">Buat Kontrak Kerjasama Baru</div><button class="mc" onclick="closeModal('modal-new-contract')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div style="font-size:11px;color:var(--t3);background:#F3F4F6;border-radius:var(--r);padding:9px 12px;margin-bottom:16px"><i class="ti ti-info-circle"></i> Admin mengisi kontrak atas nama perusahaan mitra. Setelah dikirim, teacher akan menerima notifikasi dan harus menyetujui sebelum bisa mengisi materi.</div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Nama Perusahaan Mitra</label><input class="fi" type="text" placeholder="mis: PT Gojek Indonesia"></div>
+        <div class="fg"><label class="fl">Nama Kursus</label><input class="fi" type="text" placeholder="mis: Deep Learning with TensorFlow"></div>
+      </div>
+      <div class="fg"><label class="fl">Assign Teacher</label>
+        <select class="fsel"><option>— Pilih Teacher —</option><option>Dr. Sarah Wulandari (ML, AI, Python)</option><option>Budi Raharjo, M.Cs (Web Dev, React)</option><option>Anisa Kusuma, S.Ds (UI/UX, Figma)</option></select>
+        <div style="font-size:10px;color:var(--t3);margin-top:3px">Skills teacher yang cocok ditampilkan berdasarkan data profil</div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Tanggal Mulai</label><input class="fi" type="date" value="2026-07-01"></div>
+        <div class="fg"><label class="fl">Tanggal Berakhir</label><input class="fi" type="date" value="2027-06-30"></div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Royalti Teacher (%)</label><input class="fi" type="number" value="70" min="0" max="100"><div style="font-size:10px;color:var(--t3);margin-top:3px">Platform fee otomatis = 100% − royalti</div></div>
+        <div class="fg"><label class="fl">Batas Respons Teacher</label><input class="fi" type="date" value="2026-06-25"></div>
+      </div>
+      <div class="dvd"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:10px">Isi Kontrak</div>
+      <div class="fg"><label class="fl">Lingkup Pekerjaan</label>
+        <div class="rt"><div class="rt-tb"><button class="rb"><b>B</b></button><button class="rb"><i>I</i></button><button class="rb">• List</button><button class="rb">1. List</button></div><div class="rt-body" contenteditable="true">• Minimal 20 sesi materi video (min. 15 menit/sesi)&#10;• 5 quiz per modul (min. 10 soal)&#10;• 2 capstone project&#10;• Deadline konten: 15 Agustus 2026</div></div>
+      </div>
+      <div class="fg"><label class="fl">Hak Kekayaan Intelektual</label><textarea class="fta" rows="3">Konten tetap milik instruktur. Perusahaan mendapat lisensi eksklusif 12 bulan untuk distribusi di InspiraLearn.</textarea></div>
+      <div class="fg"><label class="fl">Klausul Kerahasiaan (NDA)</label>
+        <label class="ic"><input type="checkbox" checked> <span>Kontrak ini mencakup NDA — instruktur tidak boleh membocorkan informasi perusahaan</span></label>
+      </div>
+      <div class="fg"><label class="fl">Catatan Tambahan (Bonus, Revisi, dll)</label><textarea class="fta" rows="2" placeholder="mis: Bonus Rp 5jt jika rating ≥ 4.5 pada bulan ke-3. Revisi gratis 2x."></textarea></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Harga Kursus (Rp)</label><input class="fi" type="number" placeholder="0 = gratis" value="399000"></div>
+        <div class="fg"><label class="fl">Kategori</label><select class="fsel"><option>Data Science</option><option>Machine Learning</option><option>Web Dev</option></select></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('modal-new-contract')">Batal</button>
+      <button class="btn bo">Simpan Draft</button>
+      <button class="btn bp" onclick="closeModal('modal-new-contract');alert('Kontrak berhasil dibuat dan dikirim ke Dr. Sarah Wulandari!')"><i class="ti ti-send" style="font-size:12px"></i> Buat & Kirim ke Teacher</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL: LIHAT KONTRAK ════ -->
+<div id="modal-view-contract" class="mo" style="display:none">
+  <div class="mb">
+    <div class="mh">
+      <div><div class="mt-h">Kontrak — ML A–Z: Python & R</div><div style="font-size:11px;color:var(--t3);margin-top:1px">Tokopedia × Dr. Sarah W. · Ditandatangani 15 Des 2025</div></div>
+      <button class="mc" onclick="closeModal('modal-view-contract')"><i class="ti ti-x" style="font-size:13px"></i></button>
+    </div>
+    <div class="mbody">
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <span class="b b-pub"><i class="ti ti-circle-check" style="font-size:9px"></i> Aktif</span>
+        <span style="font-size:11px;color:var(--t3)">Ditandatangani oleh teacher pada 15 Des 2025 · 14:32 WIB</span>
+      </div>
+      <div class="cs-title">Pihak yang Terlibat</div>
+      <div class="ct-full">Pihak Pertama: PT Tokopedia (GoTo Group)
+Pihak Kedua: Dr. Sarah Wulandari (Teacher InspiraLearn)
+Admin Perantara: Admin InspiraLearn</div>
+      <div class="cs-title">Lingkup Pekerjaan</div>
+      <div class="ct-full">• 48 sesi materi video (telah selesai ✓)
+• 6 quiz · masing-masing 10 soal (telah selesai ✓)
+• 2 capstone project (telah selesai ✓)
+• Rating kursus aktual: 4.9 ★</div>
+      <div class="cs-title">Royalti & Pembayaran</div>
+      <div class="ct-full">Royalti: 70% dari net revenue
+Total royalti terhitung: Rp 171.486.000
+Sudah dibayar: Rp 145.200.000
+Sisa pending: Rp 26.286.000</div>
+      <div class="cs-title">Status Kursus</div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <div style="flex:1"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Progress Konten</div><div class="pbar"><div class="pfill" style="width:100%;background:var(--teal)"></div></div><div style="font-size:10px;color:var(--teal);margin-top:2px">100% — Semua materi selesai</div></div>
+        <div style="flex:1"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Royalti Dibayar</div><div class="pbar"><div class="pfill" style="width:85%;background:var(--green)"></div></div><div style="font-size:10px;color:var(--t3);margin-top:2px">Rp 145,2jt dari Rp 171,5jt</div></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('modal-view-contract')">Tutup</button>
+      <button class="btn bo"><i class="ti ti-download" style="font-size:12px"></i> Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MODAL: GANTI TEACHER ════ -->
+<div id="modal-reassign" class="mo" style="display:none">
+  <div class="mb" style="max-width:440px">
+    <div class="mh"><div class="mt-h">Ganti Teacher</div><button class="mc" onclick="closeModal('modal-reassign')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:14px">Kontrak akan dikirim ulang ke teacher baru. Teacher lama akan menerima notifikasi pembatalan.</div>
+      <div class="fg"><label class="fl">Teacher Baru</label>
+        <select class="fsel"><option>— Pilih Teacher —</option><option>Budi Raharjo, M.Cs (Web Dev, Python)</option><option>Anisa Kusuma, S.Ds (UI/UX)</option><option>Rizky F. (Data Science, ML)</option></select>
+      </div>
+      <div class="fg"><label class="fl">Alasan Penggantian (opsional)</label><textarea class="fta" placeholder="mis: Teacher awal tidak merespons dalam batas waktu"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('modal-reassign')">Batal</button><button class="btn bp" onclick="closeModal('modal-reassign');alert('Teacher berhasil diganti dan kontrak dikirim ulang!')">Ganti & Kirim Ulang</button></div>
+  </div>
+</div>
+
+<!-- ════ MODAL: BAYAR ROYALTI ════ -->
+<div id="modal-pay-royalty" class="mo" style="display:none">
+  <div class="mb" style="max-width:440px">
+    <div class="mh"><div class="mt-h">Bayar Royalti</div><button class="mc" onclick="closeModal('modal-pay-royalty')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div style="background:#F9FAFB;border:1px solid var(--bdr);border-radius:var(--r);padding:12px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--t1)">Dr. Sarah Wulandari</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">BCA · 1234567890 · a.n Sarah Wulandari</div>
+        <div style="font-size:16px;font-weight:700;color:var(--amber);margin-top:8px">Rp 837.200</div>
+      </div>
+      <div class="fg"><label class="fl">Metode Transfer</label><select class="fsel"><option>Transfer Bank Manual</option><option>Flip Business</option><option>Xendit Disbursement</option></select></div>
+      <div class="fg"><label class="fl">No. Referensi / Bukti Transfer</label><input class="fi" type="text" placeholder="mis: TRF20260619001 atau upload bukti"></div>
+      <div class="fg"><label class="fl">Catatan (opsional)</label><input class="fi" type="text" placeholder="mis: Royalti Juni 2026 batch 1"></div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('modal-pay-royalty')">Batal</button><button class="btn bs" onclick="closeModal('modal-pay-royalty');alert('Royalti berhasil dicatat sebagai Dibayar!')"><i class="ti ti-check" style="font-size:12px"></i> Tandai Dibayar</button></div>
+  </div>
+</div>
+
+<!-- ════ MODAL: EDIT USER ════ -->
+<div id="modal-edit-user" class="mo" style="display:none">
+  <div class="mb" style="max-width:500px">
+    <div class="mh"><div class="mt-h">Edit Pengguna — Dr. Sarah Wulandari</div><button class="mc" onclick="closeModal('modal-edit-user')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Role</label><select class="fsel"><option>student</option><option selected>teacher</option><option>admin</option></select></div>
+        <div class="fg"><label class="fl">Royalti (%)</label><input class="fi" type="number" value="70" min="0" max="100"></div>
+      </div>
+      <div class="fg"><label class="fl">Skills / Keahlian</label>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;border:1px solid var(--bdr);border-radius:var(--r);padding:6px 8px;background:#fff;margin-bottom:5px">
+          <span class="tag-chip">machine learning <button>×</button></span>
+          <span class="tag-chip">python <button>×</button></span>
+          <span class="tag-chip">deep learning <button>×</button></span>
+          <input style="border:none;outline:none;font-size:11px;min-width:100px" placeholder="Tambah skill…">
+        </div>
+        <div style="font-size:10px;color:var(--t3)">Skills ini digunakan untuk matching teacher dengan kontrak kursus</div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Kode Referral</label><div style="display:flex;gap:6px"><input class="fi" type="text" value="REF-SW2024" readonly style="background:#F9FAFB"><button class="btn bg" style="white-space:nowrap;font-size:11px">Generate Baru</button></div></div>
+        <div class="fg"><label class="fl">Status Email</label><select class="fsel"><option>Terverifikasi</option><option>Belum verifikasi</option></select></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('modal-edit-user')">Batal</button><button class="btn bd">Hapus Akun</button><button class="btn bp" onclick="closeModal('modal-edit-user')">Simpan Perubahan</button></div>
+  </div>
+</div>
+
+<!-- ════ MODAL: KUPON BARU ════ -->
+<div id="modal-new-coupon" class="mo" style="display:none">
+  <div class="mb" style="max-width:460px">
+    <div class="mh"><div class="mt-h">Buat Kupon Diskon</div><button class="mc" onclick="closeModal('modal-new-coupon')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div class="fg2">
+        <div class="fg"><label class="fl">Kode Kupon</label><input class="fi" type="text" placeholder="PROMO20" style="text-transform:uppercase"></div>
+        <div class="fg"><label class="fl">Tipe Diskon</label><select class="fsel"><option>Persentase (%)</option><option>Nominal (Rp)</option></select></div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Nilai Diskon</label><input class="fi" type="number" placeholder="20"></div>
+        <div class="fg"><label class="fl">Min. Pembelian (Rp)</label><input class="fi" type="number" placeholder="0 = tidak ada minimum" value="0"></div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Berlaku Mulai</label><input class="fi" type="date" value="2026-06-20"></div>
+        <div class="fg"><label class="fl">Berlaku Hingga</label><input class="fi" type="date" value="2026-06-30"></div>
+      </div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Maks. Pemakaian Total</label><input class="fi" type="number" placeholder="kosong = unlimited" value="100"></div>
+        <div class="fg"><label class="fl">Maks. per User</label><input class="fi" type="number" value="1"></div>
+      </div>
+      <div class="fg"><label class="fl">Deskripsi</label><input class="fi" type="text" placeholder="Kupon promo Juni 2026"></div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('modal-new-coupon')">Batal</button><button class="btn bp" onclick="closeModal('modal-new-coupon')">Buat Kupon</button></div>
+  </div>
+</div>
+
+<!-- ════ MODAL: BUAT KURSUS BARU ════ -->
+<div id="modal-new-course" class="mo" style="display:none">
+  <div class="mb">
+    <div class="mh"><div class="mt-h">Buat Kursus Baru</div><button class="mc" onclick="closeModal('modal-new-course')"><i class="ti ti-x" style="font-size:13px"></i></button></div>
+    <div class="mbody">
+      <div style="background:var(--blue-l);border:1px solid #BEE3F8;border-radius:var(--r);padding:9px 12px;margin-bottom:14px;font-size:11px;color:var(--blue)"><i class="ti ti-info-circle"></i> Setelah kursus dibuat, kamu bisa membuat kontrak kerjasama dan assign teacher untuk mengisi materi.</div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Judul Kursus</label><input class="fi" type="text" placeholder="mis: Data Analytics for Business"></div>
+        <div class="fg"><label class="fl">Perusahaan Mitra</label><input class="fi" type="text" placeholder="mis: PT BCA Digital"></div>
+      </div>
+      <div class="fg"><label class="fl">Deskripsi</label><textarea class="fta" rows="3" placeholder="Deskripsi singkat kursus…"></textarea></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Kategori</label><select class="fsel"><option>Data Science</option><option>Machine Learning</option><option>Web Development</option><option>UI/UX Design</option></select></div>
+        <div class="fg"><label class="fl">Harga (Rp)</label><input class="fi" type="number" placeholder="0 = gratis" value="299000"></div>
+      </div>
+      <div class="fg"><label class="fl">Template Outline</label><select class="fsel"><option>Tanpa template</option><option>Template Data Science (4 modul)</option><option>Template ML Practitioner (5 modul)</option></select></div>
+      <div style="display:flex;align-items:center;gap:8px"><label class="ic"><input type="checkbox"> <span>Langsung buat kontrak setelah kursus dibuat</span></label></div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('modal-new-course')">Batal</button><button class="btn bp" onclick="closeModal('modal-new-course');openModal('modal-new-contract')">Buat Kursus → Buat Kontrak</button></div>
+  </div>
+</div>
+
+<script>
+const NM={dashboard:0,contracts:1,courses:2,templates:3,categories:4,users:5,royalties:6,coupons:7,accounting:8,'activity-log':9,hero:10,testimonials:11,about:12,'site-settings':13};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('s-'+id);
+  if(sc)sc.classList.add('active');
+  document.querySelectorAll('.nl').forEach(n=>n.classList.remove('active'));
+  const links=document.querySelectorAll('.nl');
+  const ni=NM[id];
+  if(ni!==undefined&&links[ni])links[ni].classList.add('active');
+  document.getElementById('content').scrollTop=0;
+}
+function setTab(el,tid){
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const all=['ctr-all','ctr-pending','ctr-active','ctr-done','acc-orders','acc-summary','test-pend','test-ok','test-rej','ss-midtrans','ss-smtp','ss-homepage'];
+  all.forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
+  const t=document.getElementById(tid);if(t)t.style.display='';
+}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function toggleKey(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.type=el.type==='password'?'text':'password';
+}
+</script>
+</body>
+</html>

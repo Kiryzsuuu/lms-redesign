@@ -1,0 +1,110 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Azure: Open (Web+API+Kudu)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "all"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open Web (site)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "web"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open API (site)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "api"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open Kudu (Web)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "kudu-web"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open Kudu (API)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "kudu-api"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open Portal Blade (Web)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "portal-web"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Azure: Open Portal Blade (API)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/open-azure.ps1",
+        "-Target",
+        "portal-api"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

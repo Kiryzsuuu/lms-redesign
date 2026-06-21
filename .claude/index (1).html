@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InspiraLearn — Platform Belajar #1 Indonesia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #0C628D;
+  --blue-dark: #084E72;
+  --blue-light: #E8F4FA;
+  --orange: #F3921B;
+  --orange-dark: #D97A0E;
+  --orange-light: #FEF0E0;
+  --teal: #1BBFA0;
+  --teal-light: #E3F9F5;
+  --yellow: #FFD166;
+  --cream: #F5F0E8;
+  --navy: #1A1A2E;
+  --navy-80: rgba(26,26,46,0.8);
+  --navy-50: rgba(26,26,46,0.5);
+  --navy-30: rgba(26,26,46,0.3);
+  --navy-10: rgba(26,26,46,0.1);
+  --cream-70: rgba(245,240,232,0.7);
+  --cream-40: rgba(245,240,232,0.4);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.6;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ===== UTILITY ===== */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ===== TYPOGRAPHY ===== */
+h1, h2, h3, h4 { line-height: 1.1; letter-spacing: -0.5px; font-weight: 800; }
+h1 { font-size: clamp(2.6rem, 4.5vw, 3.8rem); letter-spacing: -1.5px; }
+h2 { font-size: clamp(1.8rem, 2.8vw, 2.5rem); letter-spacing: -0.8px; }
+
+/* ===== BUTTONS ===== */
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; font-family: inherit; font-weight: 700; border-radius: 10px; transition: all 0.2s; cursor: pointer; border: 2px solid transparent; }
+.btn-primary { background: var(--blue); color: var(--cream); border-color: var(--navy); padding: 0.8rem 1.8rem; font-size: 1rem; }
+.btn-primary:hover { background: var(--navy); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(12,98,141,0.25); }
+.btn-secondary { background: var(--yellow); color: var(--navy); border-color: var(--navy); padding: 0.8rem 1.8rem; font-size: 1rem; }
+.btn-secondary:hover { background: var(--orange); transform: translateY(-2px); }
+.btn-outline { background: transparent; color: var(--navy); border-color: var(--navy); padding: 0.45rem 1.1rem; font-size: 0.88rem; border-radius: 8px; }
+.btn-outline:hover { background: var(--navy); color: var(--cream); }
+.btn-orange { background: var(--orange); color: var(--navy); border-color: var(--navy); padding: 0.5rem 1.2rem; font-size: 0.9rem; border-radius: 8px; }
+.btn-orange:hover { background: var(--yellow); }
+.btn-ghost { background: transparent; border: none; color: var(--navy-80); padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.88rem; font-weight: 500; }
+.btn-ghost:hover { background: var(--navy-10); color: var(--navy); }
+
+.sec-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--blue);
+  border: 1.5px solid var(--blue);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.9rem;
+}
+.sec-sub { color: var(--navy-50); font-size: 0.97rem; line-height: 1.7; max-width: 500px; margin-top: 0.5rem; }
+
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2.5rem;
+  background: var(--cream);
+  border-bottom: 2px solid var(--navy);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.logo-mark { display: flex; align-items: center; gap: 0.65rem; }
+.logo-box {
+  width: 34px; height: 34px;
+  background: var(--orange);
+  border: 2px solid var(--navy);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.85rem; color: var(--navy);
+  flex-shrink: 0;
+}
+.logo-text { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.5px; color: var(--navy); }
+.nav-links { display: flex; gap: 0.2rem; }
+.nav-actions { display: flex; gap: 0.6rem; align-items: center; }
+
+/* Mobile nav toggle */
+.nav-toggle { display: none; background: transparent; border: 2px solid var(--navy); border-radius: 7px; width: 36px; height: 36px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.nav-toggle span { width: 18px; height: 2px; background: var(--navy); border-radius: 2px; display: block; transition: all 0.3s; }
+
+/* ===== HERO ===== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 88vh;
+  border-bottom: 2px solid var(--navy);
+}
+.hero-left {
+  padding: 4rem 3rem 4rem 2.5rem;
+  display: flex; flex-direction: column; justify-content: center;
+  border-right: 2px solid var(--navy);
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--blue);
+  color: var(--cream);
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.3rem 0.9rem;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.8rem;
+  width: fit-content;
+}
+.tag-pulse {
+  width: 7px; height: 7px;
+  background: var(--yellow);
+  border-radius: 50%;
+  animation: pulse-anim 2s ease-in-out infinite;
+}
+@keyframes pulse-anim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+.hero-left h1 { margin-bottom: 1.4rem; }
+.h1-accent { color: var(--orange); }
+.hero-body { font-size: 1.05rem; color: var(--navy-50); line-height: 1.75; max-width: 480px; margin-bottom: 2.4rem; }
+.hero-btns { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 3rem; }
+
+.hero-stats { display: flex; gap: 0; border-top: 1.5px solid var(--navy-10); padding-top: 2rem; }
+.h-stat { flex: 1; padding: 0 1.5rem 0 0; }
+.h-stat + .h-stat { padding-left: 1.5rem; border-left: 1px solid var(--navy-10); }
+.h-stat-num { font-size: 2rem; font-weight: 800; line-height: 1; }
+.h-stat-label { font-size: 0.78rem; color: var(--navy-50); margin-top: 0.25rem; font-weight: 500; }
+
+.hero-right {
+  background: var(--navy);
+  padding: 3rem 2.5rem;
+  display: flex; flex-direction: column; gap: 1.1rem;
+  position: relative; overflow: hidden;
+}
+.hero-right::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(243,146,27,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-right-label {
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--cream-40);
+  margin-bottom: 0.2rem;
+}
+.cpc {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.cpc:hover { background: rgba(255,255,255,0.09); transform: translateX(5px); }
+.cpc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.7rem; }
+.cpc-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.cpc-badge { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid; }
+.cpc-title { color: var(--cream); font-weight: 700; font-size: 0.93rem; line-height: 1.35; margin-bottom: 0.45rem; }
+.cpc-meta { display: flex; justify-content: space-between; align-items: center; }
+.cpc-inst { font-size: 0.76rem; color: var(--cream-40); }
+.cpc-price { font-size: 0.88rem; font-weight: 800; color: var(--yellow); }
+
+.hero-float-badge {
+  position: absolute; bottom: 2.5rem; right: 2rem;
+  background: var(--orange);
+  border: 2px solid rgba(245,240,232,0.3);
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  text-align: center;
+  animation: float-y 4s ease-in-out infinite;
+}
+@keyframes float-y { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.hfb-num { font-size: 1.5rem; font-weight: 800; color: var(--navy); line-height: 1; }
+.hfb-label { font-size: 0.7rem; font-weight: 700; color: var(--navy); opacity: 0.65; margin-top: 0.2rem; }
+
+/* ===== MARQUEE ===== */
+.marquee-bar {
+  background: var(--orange);
+  border-top: 2px solid var(--navy);
+  border-bottom: 2px solid var(--navy);
+  padding: 0.85rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-track { display: inline-flex; gap: 3rem; animation: marquee-scroll 22s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.mq-item { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.83rem; color: var(--navy); }
+.mq-sep { width: 5px; height: 5px; background: var(--navy); border-radius: 50%; opacity: 0.35; }
+
+/* ===== SECTION COMMON ===== */
+.section { padding: 5rem 2.5rem; }
+.section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+.link-see-all { font-size: 0.85rem; font-weight: 700; color: var(--blue); border-bottom: 2px solid var(--blue); padding-bottom: 1px; transition: all 0.15s; white-space: nowrap; }
+.link-see-all:hover { color: var(--orange); border-color: var(--orange); }
+
+/* ===== CATEGORIES BENTO ===== */
+.cats-bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto; gap: 1rem; }
+.cat-tile {
+  border: 2px solid var(--navy);
+  border-radius: 14px;
+  padding: 1.6rem 1.4rem 1.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.cat-tile:hover { transform: translateY(-4px); box-shadow: 5px 5px 0 var(--navy); }
+.cat-tile.wide { grid-column: span 2; }
+.ct-icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+.ct-name { font-weight: 800; font-size: 1rem; margin-bottom: 0.3rem; }
+.ct-count { font-size: 0.78rem; opacity: 0.5; font-weight: 500; }
+.ct-arrow {
+  position: absolute; bottom: 1.2rem; right: 1.3rem;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700;
+  transition: all 0.15s;
+  opacity: 0.5;
+}
+.cat-tile:hover .ct-arrow { opacity: 1; }
+
+.tile-blue { background: var(--blue-light); color: var(--navy); }
+.tile-blue:hover .ct-arrow { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+.tile-orange { background: var(--orange-light); color: var(--navy); }
+.tile-orange:hover .ct-arrow { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+.tile-teal { background: var(--teal-light); color: var(--navy); }
+.tile-teal:hover .ct-arrow { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+.tile-yellow { background: #FFFBE6; color: var(--navy); }
+.tile-yellow:hover .ct-arrow { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+.tile-navy { background: var(--navy); color: var(--cream); }
+.tile-navy .ct-count { opacity: 0.35; }
+.tile-navy .ct-arrow { border-color: rgba(245,240,232,0.5); }
+.tile-navy:hover .ct-arrow { background: var(--cream); color: var(--navy); border-color: var(--cream); opacity: 1; }
+
+/* ===== FILTER TABS ===== */
+.filter-bar { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.f-btn {
+  background: transparent;
+  border: 1.5px solid var(--navy-30);
+  color: var(--navy-50);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.f-btn:hover, .f-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+/* ===== COURSE CARDS ===== */
+.courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.course-card {
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.25s;
+  cursor: pointer;
+  display: flex; flex-direction: column;
+}
+.course-card:hover { transform: translateY(-5px); box-shadow: 6px 6px 0 var(--navy); }
+.cc-thumb {
+  height: 160px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  border-bottom: 2px solid var(--navy);
+  position: relative;
+  flex-shrink: 0;
+}
+.cc-hot {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--orange);
+  border: 1.5px solid var(--navy);
+  color: var(--navy);
+  font-size: 0.65rem; font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.cc-body { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; }
+.cc-tags { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.cc-tag {
+  font-size: 0.66rem; font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  border: 1.5px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.tag-b { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+.tag-o { background: var(--orange-light); color: #A06010; border-color: var(--orange); }
+.tag-t { background: var(--teal-light); color: #0D8A72; border-color: var(--teal); }
+.cc-title { font-weight: 800; font-size: 0.97rem; line-height: 1.35; margin-bottom: 0.45rem; color: var(--navy); }
+.cc-inst { font-size: 0.79rem; color: var(--navy-50); margin-bottom: 1rem; font-weight: 500; }
+.cc-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1.5px solid var(--navy-10);
+  padding-top: 0.85rem;
+  margin-top: auto;
+}
+.cc-price { font-weight: 800; font-size: 1.05rem; color: var(--blue); }
+.cc-price-old { font-size: 0.78rem; color: var(--navy-30); text-decoration: line-through; font-weight: 400; margin-left: 0.35rem; }
+.cc-rating { font-size: 0.79rem; color: var(--navy-50); display: flex; align-items: center; gap: 0.25rem; }
+.star-o { color: var(--orange); }
+
+/* ===== WHY SECTION ===== */
+.why-section {
+  background: var(--navy);
+  padding: 5rem 2.5rem;
+  border-top: 2px solid var(--navy);
+  border-bottom: 2px solid var(--navy);
+}
+.why-section .sec-tag { color: var(--yellow); border-color: var(--yellow); }
+.why-section h2 { color: var(--cream); }
+.why-section .sec-sub { color: var(--cream-40); }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 3rem; }
+.why-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1.8rem 1.5rem;
+  transition: border-color 0.2s;
+}
+.why-card:hover { border-color: rgba(243,146,27,0.4); }
+.wc-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
+.wc-title { font-weight: 800; font-size: 0.98rem; color: var(--cream); margin-bottom: 0.5rem; }
+.wc-desc { font-size: 0.85rem; color: var(--cream-40); line-height: 1.65; }
+
+/* ===== TESTIMONIALS ===== */
+.testi-band {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  border-top: 2px solid var(--navy);
+  border-bottom: 2px solid var(--navy);
+}
+.testi-left {
+  background: var(--orange);
+  padding: 3.5rem 2.5rem;
+  border-right: 2px solid var(--navy);
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.tl-big { font-size: 4.5rem; font-weight: 800; color: var(--navy); line-height: 1; letter-spacing: -2px; }
+.tl-label { font-size: 0.85rem; color: var(--navy); opacity: 0.6; margin-top: 0.3rem; font-weight: 600; }
+.tl-quote { font-size: 1.05rem; color: var(--navy); line-height: 1.65; font-weight: 500; margin-top: 2.5rem; }
+.tl-source { font-size: 0.8rem; color: var(--navy); opacity: 0.55; margin-top: 1rem; font-weight: 600; }
+.testi-right { padding: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; align-content: start; background: var(--cream); }
+.testi-card {
+  background: white;
+  border: 1.5px solid var(--navy-10);
+  border-radius: 14px;
+  padding: 1.4rem;
+  transition: all 0.2s;
+}
+.testi-card:hover { border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue-light); }
+.tc-stars { color: var(--orange); font-size: 0.88rem; letter-spacing: 2px; margin-bottom: 0.9rem; }
+.tc-text { font-size: 0.88rem; color: var(--navy-80); line-height: 1.65; margin-bottom: 1.2rem; font-style: italic; }
+.tc-author { display: flex; align-items: center; gap: 0.75rem; }
+.tc-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.tc-name { font-weight: 700; font-size: 0.87rem; color: var(--navy); }
+.tc-role { font-size: 0.73rem; color: var(--navy-50); }
+
+/* ===== PARTNERS ===== */
+.partners-section { padding: 3.5rem 2.5rem; border-bottom: 2px solid var(--navy); }
+.partners-label { text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--navy-30); margin-bottom: 2rem; }
+.partners-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1rem 2rem; }
+.partner-badge {
+  background: white;
+  border: 1.5px solid var(--navy-10);
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--navy-50);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.partner-badge:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+  background: var(--blue);
+  border-bottom: 2px solid var(--navy);
+  padding: 5.5rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.cta-section .sec-tag { border-color: var(--yellow); color: var(--yellow); }
+.cta-title { font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800; color: var(--cream); letter-spacing: -1px; line-height: 1.1; margin-bottom: 1.1rem; }
+.cta-sub { font-size: 0.97rem; color: var(--cream-40); line-height: 1.7; }
+.cta-checks { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.cta-check { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; color: var(--cream-70); font-weight: 500; }
+.cta-check::before { content: '✓'; font-weight: 800; color: var(--teal); font-size: 1rem; }
+.cta-form-box {
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 2.2rem;
+}
+.cta-form-title { font-weight: 800; font-size: 1.2rem; color: var(--cream); margin-bottom: 0.4rem; }
+.cta-form-sub { font-size: 0.83rem; color: var(--cream-40); margin-bottom: 1.8rem; }
+.form-field { margin-bottom: 1rem; }
+.form-label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--cream-40); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.4rem; }
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  color: var(--cream);
+  padding: 0.75rem 1.1rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.93rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input::placeholder { color: rgba(245,240,232,0.25); }
+.form-input:focus { border-color: var(--yellow); }
+.btn-cta-submit {
+  width: 100%;
+  background: var(--orange);
+  border: 2px solid rgba(26,26,46,0.5);
+  color: var(--navy);
+  padding: 0.9rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.97rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+.btn-cta-submit:hover { background: var(--yellow); transform: translateY(-1px); }
+.cta-note { font-size: 0.75rem; color: var(--cream-40); text-align: center; margin-top: 0.9rem; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--navy);
+  padding: 4rem 2.5rem 2rem;
+}
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+.footer-brand .logo-box { background: var(--orange); border-color: rgba(245,240,232,0.2); }
+.footer-brand .logo-text { color: var(--cream); }
+.footer-tagline { font-size: 0.84rem; color: var(--cream-40); margin-top: 0.7rem; line-height: 1.65; max-width: 240px; }
+.footer-socials { display: flex; gap: 0.6rem; margin-top: 1.5rem; }
+.social-btn {
+  width: 34px; height: 34px;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cream-40);
+  font-size: 0.8rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.social-btn:hover { border-color: var(--orange); color: var(--orange); }
+.footer-col-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--cream-40); margin-bottom: 1.1rem; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-links a { font-size: 0.87rem; color: rgba(245,240,232,0.5); transition: color 0.15s; }
+.footer-links a:hover { color: var(--orange); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 1.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-copy { font-size: 0.8rem; color: rgba(245,240,232,0.25); }
+.footer-legal { display: flex; gap: 1.5rem; }
+.footer-legal a { font-size: 0.8rem; color: rgba(245,240,232,0.3); transition: color 0.15s; }
+.footer-legal a:hover { color: var(--orange); }
+
+/* ===== BACK TO TOP ===== */
+.back-top {
+  position: fixed; bottom: 2rem; right: 2rem;
+  width: 44px; height: 44px;
+  background: var(--orange);
+  border: 2px solid var(--navy);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 800; color: var(--navy);
+  cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s;
+  z-index: 100;
+  text-decoration: none;
+}
+.back-top.visible { opacity: 1; pointer-events: all; }
+.back-top:hover { background: var(--yellow); transform: translateY(-2px); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { border-right: none; border-bottom: 2px solid var(--navy); padding: 3rem 2rem; }
+  .hero-right { padding: 2rem; min-height: 400px; }
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+  .cats-bento { grid-template-columns: repeat(2, 1fr); }
+  .cat-tile.wide { grid-column: span 2; }
+  .courses-grid { grid-template-columns: repeat(2, 1fr); }
+  .testi-band { grid-template-columns: 1fr; }
+  .testi-left { border-right: none; border-bottom: 2px solid var(--navy); }
+  .cta-section { grid-template-columns: 1fr; gap: 3rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
+@media (max-width: 768px) {
+  .navbar { padding: 0.9rem 1.5rem; }
+  .nav-links, .nav-actions { display: none; }
+  .nav-toggle { display: flex; }
+  .section { padding: 3.5rem 1.5rem; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  h1 { font-size: 2.2rem; letter-spacing: -1px; }
+  h2 { font-size: 1.7rem; }
+  .hero-left { padding: 2.5rem 1.5rem; }
+  .hero-right { padding: 1.8rem 1.5rem; }
+  .hero-float-badge { display: none; }
+  .cats-bento { grid-template-columns: 1fr 1fr; }
+  .cat-tile.wide { grid-column: span 2; }
+  .courses-grid { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .testi-right { grid-template-columns: 1fr; padding: 1.5rem; }
+  .cta-section { padding: 3rem 1.5rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .footer-brand { grid-column: span 2; }
+}
+@media (max-width: 480px) {
+  .cats-bento { grid-template-columns: 1fr; }
+  .cat-tile.wide { grid-column: span 1; }
+  .hero-stats { flex-direction: column; gap: 1rem; }
+  .h-stat + .h-stat { padding-left: 0; border-left: none; border-top: 1px solid var(--navy-10); padding-top: 1rem; }
+  .why-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-brand { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACK TO TOP -->
+<a href="#top" class="back-top" id="backTop" aria-label="Kembali ke atas">↑</a>
+
+<!-- ===== NAVBAR ===== -->
+<header id="top">
+<nav class="navbar" role="navigation" aria-label="Navigasi utama">
+  <div class="logo-mark">
+    <div class="logo-box" aria-hidden="true">IL</div>
+    <span class="logo-text">InspiraLearn</span>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <button class="btn-ghost">Kursus</button>
+    <button class="btn-ghost">Bootcamp</button>
+    <button class="btn-ghost">Sertifikasi</button>
+    <button class="btn-ghost">Korporat</button>
+    <button class="btn-ghost">Blog</button>
+  </div>
+  <div class="nav-actions" id="navActions">
+    <button class="btn-outline">Masuk</button>
+    <button class="btn-orange">Coba Gratis</button>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-left">
+    <div class="hero-tag">
+      <span class="tag-pulse" aria-hidden="true"></span>
+      Platform Belajar #1 Indonesia
+    </div>
+    <h1 id="hero-heading">
+      Skill Nyata.<br>
+      Karir <span class="h1-accent">Impian.</span><br>
+      Mulai Hari Ini.
+    </h1>
+    <p class="hero-body">
+      Bukan sekadar video — kamu belajar dengan kurikulum yang dirancang praktisi industri terbaik, didampingi mentor aktif, dan langsung bisa diterapkan di dunia kerja nyata.
+    </p>
+    <div class="hero-btns">
+      <button class="btn btn-primary">Jelajahi Kursus →</button>
+      <button class="btn btn-secondary">▶ Lihat Demo</button>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat">
+        <div class="h-stat-num" style="color:var(--blue)">50K+</div>
+        <div class="h-stat-label">Pelajar aktif</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num" style="color:var(--orange)">500+</div>
+        <div class="h-stat-label">Kursus premium</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num" style="color:var(--teal)">98%</div>
+        <div class="h-stat-label">Kepuasan siswa</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right" aria-hidden="true">
+    <div class="hero-right-label">📚 Kursus Terlaris Minggu Ini</div>
+    <div class="cpc">
+      <div class="cpc-top">
+        <div class="cpc-icon" style="background:rgba(243,146,27,0.15)">🐍</div>
+        <span class="cpc-badge" style="background:rgba(27,191,160,0.12);color:#1BBFA0;border-color:rgba(27,191,160,0.35)">Pemula</span>
+      </div>
+      <div class="cpc-title">Python untuk Data Science &amp; Machine Learning</div>
+      <div class="cpc-meta">
+        <span class="cpc-inst">Andi Wirawan · Ex-Tokopedia</span>
+        <span class="cpc-price">Rp 299K</span>
+      </div>
+    </div>
+    <div class="cpc">
+      <div class="cpc-top">
+        <div class="cpc-icon" style="background:rgba(12,98,141,0.2)">⚡</div>
+        <span class="cpc-badge" style="background:rgba(255,209,102,0.15);color:#B08010;border-color:rgba(255,209,102,0.5)">Menengah</span>
+      </div>
+      <div class="cpc-title">Full-Stack React &amp; Node.js dari Nol ke Deploy</div>
+      <div class="cpc-meta">
+        <span class="cpc-inst">Budi Santoso · Ex-Tokopedia</span>
+        <span class="cpc-price">Rp 349K</span>
+      </div>
+    </div>
+    <div class="cpc">
+      <div class="cpc-top">
+        <div class="cpc-icon" style="background:rgba(27,191,160,0.15)">🎨</div>
+        <span class="cpc-badge" style="background:rgba(243,146,27,0.12);color:#B06010;border-color:rgba(243,146,27,0.35)">Pemula</span>
+      </div>
+      <div class="cpc-title">Figma UI/UX Masterclass: Wireframe ke Prototype</div>
+      <div class="cpc-meta">
+        <span class="cpc-inst">Rina Kusuma · Ex-Gojek</span>
+        <span class="cpc-price">Rp 249K</span>
+      </div>
+    </div>
+    <div class="cpc">
+      <div class="cpc-top">
+        <div class="cpc-icon" style="background:rgba(255,209,102,0.15)">🤖</div>
+        <span class="cpc-badge" style="background:rgba(12,98,141,0.12);color:#0C628D;border-color:rgba(12,98,141,0.3)">Trending</span>
+      </div>
+      <div class="cpc-title">Generative AI &amp; Prompt Engineering Terapan</div>
+      <div class="cpc-meta">
+        <span class="cpc-inst">Dr. Farhan Aziz · AI Researcher</span>
+        <span class="cpc-price">Rp 449K</span>
+      </div>
+    </div>
+    <div class="hero-float-badge">
+      <div class="hfb-num">4.9 ★</div>
+      <div class="hfb-label">Rata-rata rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee-bar" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="mq-item">💻 Programming</span><span class="mq-sep"></span>
+    <span class="mq-item">📊 Data Science</span><span class="mq-sep"></span>
+    <span class="mq-item">🎨 UI/UX Design</span><span class="mq-sep"></span>
+    <span class="mq-item">🤖 AI &amp; Machine Learning</span><span class="mq-sep"></span>
+    <span class="mq-item">🔐 Cybersecurity</span><span class="mq-sep"></span>
+    <span class="mq-item">📈 Digital Marketing</span><span class="mq-sep"></span>
+    <span class="mq-item">💼 Bisnis &amp; Manajemen</span><span class="mq-sep"></span>
+    <span class="mq-item">📱 Mobile Dev</span><span class="mq-sep"></span>
+    <span class="mq-item">💻 Programming</span><span class="mq-sep"></span>
+    <span class="mq-item">📊 Data Science</span><span class="mq-sep"></span>
+    <span class="mq-item">🎨 UI/UX Design</span><span class="mq-sep"></span>
+    <span class="mq-item">🤖 AI &amp; Machine Learning</span><span class="mq-sep"></span>
+    <span class="mq-item">🔐 Cybersecurity</span><span class="mq-sep"></span>
+    <span class="mq-item">📈 Digital Marketing</span><span class="mq-sep"></span>
+    <span class="mq-item">💼 Bisnis &amp; Manajemen</span><span class="mq-sep"></span>
+    <span class="mq-item">📱 Mobile Dev</span><span class="mq-sep"></span>
+  </div>
+</div>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="section" aria-labelledby="cat-heading">
+  <div class="section-header">
+    <div>
+      <span class="sec-tag">Kategori</span>
+      <h2 id="cat-heading">Belajar Apa Hari Ini?</h2>
+      <p class="sec-sub">8 bidang utama, 500+ kursus — dari pemula sampai profesional senior.</p>
+    </div>
+    <a href="#" class="link-see-all">Lihat semua →</a>
+  </div>
+  <div class="cats-bento">
+    <div class="cat-tile tile-blue wide">
+      <span class="ct-icon">💻</span>
+      <div class="ct-name">Programming &amp; Web Dev</div>
+      <div class="ct-count">142 kursus tersedia</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-orange">
+      <span class="ct-icon">📊</span>
+      <div class="ct-name">Data Science</div>
+      <div class="ct-count">86 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-teal">
+      <span class="ct-icon">🤖</span>
+      <div class="ct-name">AI &amp; Machine Learning</div>
+      <div class="ct-count">48 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-navy">
+      <span class="ct-icon">🔐</span>
+      <div class="ct-name">Cybersecurity</div>
+      <div class="ct-count">34 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-yellow">
+      <span class="ct-icon">🎨</span>
+      <div class="ct-name">UI/UX Design</div>
+      <div class="ct-count">63 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-orange">
+      <span class="ct-icon">📱</span>
+      <div class="ct-name">Mobile Development</div>
+      <div class="ct-count">55 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-blue">
+      <span class="ct-icon">📈</span>
+      <div class="ct-name">Digital Marketing</div>
+      <div class="ct-count">71 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+    <div class="cat-tile tile-teal">
+      <span class="ct-icon">💼</span>
+      <div class="ct-name">Bisnis &amp; Karir</div>
+      <div class="ct-count">90 kursus</div>
+      <div class="ct-arrow" aria-hidden="true">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COURSES ===== -->
+<section class="section" style="padding-top:0" aria-labelledby="courses-heading">
+  <div class="section-header">
+    <div>
+      <span class="sec-tag">Paling Diminati</span>
+      <h2 id="courses-heading">Kursus Terlaris</h2>
+      <p class="sec-sub">Dipilih oleh ribuan pelajar aktif setiap bulannya.</p>
+    </div>
+    <a href="#" class="link-see-all">Lihat 500+ kursus →</a>
+  </div>
+  <div class="filter-bar" role="group" aria-label="Filter kategori kursus">
+    <button class="f-btn active">Semua</button>
+    <button class="f-btn">Tech</button>
+    <button class="f-btn">Data</button>
+    <button class="f-btn">Desain</button>
+    <button class="f-btn">AI / ML</button>
+    <button class="f-btn">Security</button>
+    <button class="f-btn">Bisnis</button>
+  </div>
+  <div class="courses-grid">
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#E8F0FE">
+        <span role="img" aria-label="Python">🐍</span>
+        <span class="cc-hot">Terlaris</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-b">Pemula</span>
+          <span class="cc-tag tag-t">Data</span>
+        </div>
+        <h3 class="cc-title">Python untuk Data Science &amp; Machine Learning</h3>
+        <div class="cc-inst">oleh Andi Wirawan · Binus University</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 299K<span class="cc-price-old">Rp 599K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 4.9 (2.1K)</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#FEF3E2">
+        <span role="img" aria-label="Web Dev">⚡</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-b">Menengah</span>
+          <span class="cc-tag tag-o">Web Dev</span>
+        </div>
+        <h3 class="cc-title">Full-Stack React &amp; Node.js dari Nol ke Deploy</h3>
+        <div class="cc-inst">oleh Budi Santoso · Ex-Tokopedia</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 349K<span class="cc-price-old">Rp 699K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 4.9 (3.2K)</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#E3F9F5">
+        <span role="img" aria-label="Figma">🎨</span>
+        <span class="cc-hot">Baru</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-t">Desain</span>
+          <span class="cc-tag tag-o">Pemula</span>
+        </div>
+        <h3 class="cc-title">Figma Masterclass: UI/UX Design dari Wireframe ke Prototype</h3>
+        <div class="cc-inst">oleh Rina Kusuma · Ex-Gojek</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 249K<span class="cc-price-old">Rp 499K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 4.8 (1.7K)</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#FFF0E0">
+        <span role="img" aria-label="AI">🤖</span>
+        <span class="cc-hot">Trending</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-b">Menengah</span>
+          <span class="cc-tag tag-t">AI / ML</span>
+        </div>
+        <h3 class="cc-title">Generative AI &amp; Prompt Engineering Terapan</h3>
+        <div class="cc-inst">oleh Dr. Farhan Aziz · AI Researcher</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 449K<span class="cc-price-old">Rp 899K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 5.0 (412)</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#FDEAEA">
+        <span role="img" aria-label="Security">🔐</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-o">Lanjutan</span>
+          <span class="cc-tag tag-b">Security</span>
+        </div>
+        <h3 class="cc-title">Ethical Hacking &amp; Cybersecurity Fundamentals</h3>
+        <div class="cc-inst">oleh Rizal Hadi · CEH, OSCP</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 399K<span class="cc-price-old">Rp 799K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 4.9 (754)</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="course-card">
+      <div class="cc-thumb" style="background:#E8F4FA">
+        <span role="img" aria-label="Data">📊</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-tags">
+          <span class="cc-tag tag-t">Data</span>
+          <span class="cc-tag tag-b">Pemula</span>
+        </div>
+        <h3 class="cc-title">SQL &amp; Excel untuk Analisis Data Bisnis</h3>
+        <div class="cc-inst">oleh Maya Putri · Ex-Traveloka</div>
+        <div class="cc-footer">
+          <div class="cc-price">Rp 199K<span class="cc-price-old">Rp 399K</span></div>
+          <div class="cc-rating"><span class="star-o">★</span> 4.7 (986)</div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+  <div style="text-align:center; margin-top:2.5rem;">
+    <button class="btn btn-outline" style="font-size:0.93rem;padding:0.7rem 2rem">Lihat Semua 500+ Kursus →</button>
+  </div>
+</section>
+
+<!-- ===== WHY US ===== -->
+<section class="why-section" aria-labelledby="why-heading">
+  <div class="container" style="padding:0">
+    <span class="sec-tag">Keunggulan</span>
+    <h2 id="why-heading">Kenapa InspiraLearn?</h2>
+    <p class="sec-sub">Dirancang bersama industri terbaik Indonesia. Bukan copy-paste dari luar negeri.</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="wc-icon" style="background:rgba(243,146,27,0.15)">🎯</div>
+        <div class="wc-title">Kurikulum Industri Nyata</div>
+        <div class="wc-desc">Dibuat bareng praktisi Gojek, Tokopedia &amp; Bukalapak — bukan teori doang.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon" style="background:rgba(27,191,160,0.15)">💬</div>
+        <div class="wc-title">Mentor Live Tiap Minggu</div>
+        <div class="wc-desc">Sesi tanya jawab langsung dengan instruktur, bukan bot atau FAQ.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon" style="background:rgba(255,209,102,0.18)">📜</div>
+        <div class="wc-title">Sertifikat Diakui HRD</div>
+        <div class="wc-desc">300+ perusahaan tech Indonesia sudah mengenal sertifikat InspiraLearn.</div>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon" style="background:rgba(12,98,141,0.2)">♾️</div>
+        <div class="wc-title">Akses Seumur Hidup</div>
+        <div class="wc-desc">Beli sekali, update materi otomatis. Tidak ada biaya langganan tahunan.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testi-band" aria-labelledby="testi-heading">
+  <div class="testi-left">
+    <div>
+      <div class="tl-big">50K+</div>
+      <div class="tl-label">Pelajar sudah bergabung</div>
+    </div>
+    <div>
+      <div class="tl-quote">"Lulusan InspiraLearn rata-rata mendapat pekerjaan 3× lebih cepat dibanding rata-rata fresh graduate Indonesia."</div>
+      <div class="tl-source">— Tim Riset InspiraLearn, 2025</div>
+    </div>
+  </div>
+  <div class="testi-right">
+    <h2 id="testi-heading" class="sr-only">Testimoni pelajar</h2>
+    <div class="testi-card">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-text">"Dari fresh graduate bingung mau ngapain, sekarang jadi junior developer di startup fintech. Kursus React-nya benar-benar mind-blowing!"</p>
+      <div class="tc-author">
+        <div class="tc-avatar" style="background:var(--orange-light);color:var(--orange)">AR</div>
+        <div>
+          <div class="tc-name">Arya Ramadhan</div>
+          <div class="tc-role">Junior Developer · Akseleran</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-text">"Materi cybersecurity-nya sangat up-to-date. Instruktur berpengalaman dan responsif. Worth every rupiah!"</p>
+      <div class="tc-author">
+        <div class="tc-avatar" style="background:var(--blue-light);color:var(--blue)">DM</div>
+        <div>
+          <div class="tc-name">Dewi Maharani</div>
+          <div class="tc-role">IT Security Analyst · BRI</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-text">"Gara-gara kursus Data Science di sini, gaji saya naik hampir 2× dalam 8 bulan. Rekomendasi banget!"</p>
+      <div class="tc-author">
+        <div class="tc-avatar" style="background:var(--teal-light);color:var(--teal)">FN</div>
+        <div>
+          <div class="tc-name">Farida Nuraini</div>
+          <div class="tc-role">Data Analyst · Traveloka</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-text">"Beda banget sama platform lain — materinya langsung applicable, bukan teori yang bikin ngantuk."</p>
+      <div class="tc-author">
+        <div class="tc-avatar" style="background:#FFFBE6;color:#8B6914">RH</div>
+        <div>
+          <div class="tc-name">Rizky Handoko</div>
+          <div class="tc-role">Product Manager · Halodoc</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PARTNERS ===== -->
+<section class="partners-section" aria-label="Perusahaan mitra">
+  <div class="partners-label">Alumni kami bekerja di</div>
+  <div class="partners-grid">
+    <div class="partner-badge">Tokopedia</div>
+    <div class="partner-badge">Gojek</div>
+    <div class="partner-badge">Traveloka</div>
+    <div class="partner-badge">Bukalapak</div>
+    <div class="partner-badge">Telkom Indonesia</div>
+    <div class="partner-badge">BCA Digital</div>
+    <div class="partner-badge">Shopee</div>
+    <div class="partner-badge">Halodoc</div>
+    <div class="partner-badge">Akseleran</div>
+    <div class="partner-badge">Blibli</div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section" aria-labelledby="cta-heading">
+  <div class="cta-left">
+    <span class="sec-tag">Mulai Sekarang</span>
+    <h2 id="cta-heading" class="cta-title">
+      Satu Langkah<br>Menuju Karir<br>Impianmu
+    </h2>
+    <p class="cta-sub">Bergabung gratis sekarang. Akses 50+ kursus intro tanpa kartu kredit. Upgrade kapan saja kamu siap.</p>
+    <div class="cta-checks">
+      <div class="cta-check">Gratis untuk kursus intro — selamanya</div>
+      <div class="cta-check">Tidak butuh kartu kredit</div>
+      <div class="cta-check">Batalkan kapan saja</div>
+      <div class="cta-check">Sertifikat untuk semua kursus</div>
+    </div>
+  </div>
+  <div>
+    <div class="cta-form-box">
+      <div class="cta-form-title">Buat Akun Gratis</div>
+      <div class="cta-form-sub">Mulai belajar dalam 2 menit</div>
+      <form onsubmit="return false;">
+        <div class="form-field">
+          <label class="form-label" for="reg-name">Nama lengkap</label>
+          <input class="form-input" type="text" id="reg-name" name="name" placeholder="Indra Aulia" autocomplete="name">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-email">Email aktif</label>
+          <input class="form-input" type="email" id="reg-email" name="email" placeholder="indra@email.com" autocomplete="email">
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-pass">Password</label>
+          <input class="form-input" type="password" id="reg-pass" name="password" placeholder="Minimal 8 karakter">
+        </div>
+        <button type="submit" class="btn-cta-submit">Daftar Gratis — Mulai Belajar Sekarang</button>
+      </form>
+      <div class="cta-note">Dengan mendaftar, kamu setuju dengan <a href="#" style="color:rgba(245,240,232,0.5)">Syarat &amp; Ketentuan</a> kami.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo-mark">
+        <div class="logo-box" aria-hidden="true">IL</div>
+        <span class="logo-text">InspiraLearn</span>
+      </div>
+      <p class="footer-tagline">Platform belajar online untuk profesional Indonesia yang ingin naik level karir.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Instagram">IG</a>
+        <a href="#" class="social-btn" aria-label="YouTube">YT</a>
+        <a href="#" class="social-btn" aria-label="LinkedIn">LI</a>
+        <a href="#" class="social-btn" aria-label="Twitter/X">X</a>
+        <a href="#" class="social-btn" aria-label="TikTok">TK</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Produk</div>
+      <ul class="footer-links">
+        <li><a href="#">Kursus Online</a></li>
+        <li><a href="#">Bootcamp</a></li>
+        <li><a href="#">Sertifikasi</a></li>
+        <li><a href="#">Program Korporat</a></li>
+        <li><a href="#">Jadi Instruktur</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Perusahaan</div>
+      <ul class="footer-links">
+        <li><a href="#">Tentang Kami</a></li>
+        <li><a href="#">Karir</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Press Kit</a></li>
+        <li><a href="#">Mitra</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Bantuan</div>
+      <ul class="footer-links">
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Hubungi Kami</a></li>
+        <li><a href="#">Kebijakan Privasi</a></li>
+        <li><a href="#">Syarat &amp; Ketentuan</a></li>
+        <li><a href="#">Panduan Kerentanan</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 InspiraLearn by Inspiratekno. All rights reserved.</div>
+    <div class="footer-legal">
+      <a href="#">Privasi</a>
+      <a href="#">Syarat</a>
+      <a href="#">Cookie</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ===== FILTER TABS ===== */
+document.querySelectorAll('.f-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* ===== BACK TO TOP ===== */
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('visible', window.scrollY > 400);
+}, { passive: true });
+
+/* ===== MOBILE NAV TOGGLE ===== */
+const navToggle = document.getElementById('navToggle');
+const navLinks  = document.getElementById('navLinks');
+const navActions= document.getElementById('navActions');
+let navOpen = false;
+navToggle.addEventListener('click', () => {
+  navOpen = !navOpen;
+  navToggle.setAttribute('aria-expanded', navOpen);
+  if (navOpen) {
+    navLinks.style.display = 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '64px';
+    navLinks.style.left = '0'; navLinks.style.right = '0';
+    navLinks.style.background = 'var(--cream)';
+    navLinks.style.borderBottom = '2px solid var(--navy)';
+    navLinks.style.padding = '1rem 1.5rem';
+    navLinks.style.gap = '0.2rem';
+    navActions.style.display = 'flex';
+    navActions.style.position = 'absolute';
+    navActions.style.top = '64px';
+    navActions.style.left = '0'; navActions.style.right = '0';
+    navActions.style.background = 'var(--cream)';
+    navActions.style.padding = '0 1.5rem 1.2rem';
+    navActions.style.borderBottom = '2px solid var(--navy)';
+    navActions.style.marginTop = '8.5rem';
+  } else {
+    navLinks.removeAttribute('style');
+    navActions.removeAttribute('style');
+  }
+});
+
+/* ===== HOVER PERF HINT ===== */
+document.querySelectorAll('.cat-tile, .course-card, .testi-card').forEach(el => {
+  el.addEventListener('mouseenter', () => el.style.willChange = 'transform');
+  el.addEventListener('mouseleave',  () => el.style.willChange = 'auto');
+});
+
+/* ===== SCROLL REVEAL (lightweight) ===== */
+const revealEls = document.querySelectorAll('.course-card, .cat-tile, .why-card, .testi-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+revealEls.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = `opacity 0.45s ease ${(i % 4) * 0.08}s, transform 0.45s ease ${(i % 4) * 0.08}s`;
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
