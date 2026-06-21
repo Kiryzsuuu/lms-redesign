@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { DashboardLayout } from './components/DashboardLayout';
+import { PageLoader } from './components/PageLoader';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
@@ -248,12 +249,13 @@ export default function App() {
     </Routes>
   );
 
-  if (isLessonPage) return routes;
+  if (isLessonPage) return <>{routes}<PageLoader /></>;
 
   if (isDashboard) {
     return (
       <RequireAuth>
         <DashboardLayout>{routes}</DashboardLayout>
+        <PageLoader />
       </RequireAuth>
     );
   }
@@ -263,6 +265,7 @@ export default function App() {
       <Navbar />
       <main className="flex-1">{routes}</main>
       <Footer />
+      <PageLoader />
     </div>
   );
 }
