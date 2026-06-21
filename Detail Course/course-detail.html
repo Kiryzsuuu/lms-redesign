@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python for Data Manipulation — InspiraLearn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="course-detail.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 18 18" fill="none"><path d="M9 1L10.5 6.5H16L11.5 10L13 15.5L9 12.5L5 15.5L6.5 10L2 6.5H7.5L9 1Z" fill="white" fill-opacity=".95"/></svg>
+      </div>
+      Inspira<span class="logo-accent">Learn</span>
+    </a>
+    <div class="nav-crumb">
+      <a href="index.html">Beranda</a><span class="sep">›</span>
+      <a href="#">Data Science</a><span class="sep">›</span>
+      <span class="current">Python for Data Manipulation</span>
+    </div>
+    <div class="nav-actions">
+      <button class="nbtn nbtn-ghost" id="saveBtn">♡ Simpan</button>
+      <button class="nbtn nbtn-ghost" id="shareBtn">⬆ Bagikan</button>
+      <a href="index.html" class="nbtn nbtn-primary">← Beranda</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="hero-wrap">
+    <div class="hero-left">
+      <div class="hero-pills reveal">
+        <span class="hpill hp-blue">📊 Data Science</span>
+        <span class="hpill hp-teal">🐍 Python</span>
+        <span class="hpill hp-orange">🔥 Terlaris</span>
+        <span class="hpill hp-violet">⭐ Top Rated</span>
+      </div>
+      <h1 class="hero-title reveal d1">
+        Python for Data Manipulation:<br>
+        <mark>Pandas, Visualisasi &amp; EDA</mark>
+      </h1>
+      <p class="hero-desc reveal d2">
+        Kuasai cara mengolah, membersihkan, mentransformasi, dan menganalisis data secara profesional menggunakan Pandas dan Python. Pendekatan <em>learn by doing</em> — 4 modul praktis, proyek nyata, langsung diterapkan di pekerjaan.
+      </p>
+      <div class="rating-row reveal d2">
+        <div class="stars-wrap">
+          <span class="stars">★★★★★</span>
+          <span class="rating-num">4.9</span>
+          <span class="rating-ct">(1.847 ulasan)</span>
+        </div>
+        <div class="rmeta">👥 <strong>8.243</strong> terdaftar</div>
+        <div class="rmeta">🕐 Diperbarui <strong>Apr 2025</strong></div>
+        <div class="rmeta">🌐 <strong>Bahasa Indonesia</strong></div>
+      </div>
+      <div class="inst-inline reveal d3">
+        <div class="iava">AW</div>
+        <div class="iava-info">
+          <div class="iava-label">Instruktur</div>
+          <div class="iava-name">Andi Wirawan, M.Sc.</div>
+          <div class="iava-role">Senior Data Scientist · Ex-Tokopedia · Binus University</div>
+        </div>
+        <div class="iava-chips">
+          <span class="iava-chip">⭐ 4.9</span>
+          <span class="iava-chip">👥 24K Siswa</span>
+          <span class="iava-chip">🎓 5 Kursus</span>
+        </div>
+      </div>
+      <div class="feat-badges reveal d4">
+        <div class="fb-item"><div class="fb-icon">✓</div>Akses seumur hidup</div>
+        <div class="fb-item"><div class="fb-icon">✓</div>Sertifikat terverifikasi</div>
+        <div class="fb-item"><div class="fb-icon">✓</div>Mobile &amp; desktop</div>
+        <div class="fb-item"><div class="fb-icon">✓</div>Capstone project</div>
+        <div class="fb-item"><div class="fb-icon">✓</div>Live Q&amp;A mingguan</div>
+      </div>
+    </div>
+    <div class="hero-sticky reveal d2">
+      <div class="enroll-card">
+        <div class="ec-thumb">
+          <div class="ec-thumb-pattern"></div>
+          <span class="ec-thumb-emoji">🐍</span>
+          <button class="ec-play" aria-label="Putar preview">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3.5L16.5 10L5 16.5V3.5Z" fill="white"/></svg>
+          </button>
+          <span class="ec-badge">▶ Preview gratis tersedia</span>
+        </div>
+        <div class="ec-body">
+          <div class="ec-progress">
+            <div class="ep-top"><span class="ep-label">Progress Belajar</span><span class="ep-pct">35% selesai</span></div>
+            <div class="ep-bar"><div class="ep-fill" id="epFill"></div></div>
+          </div>
+          <div class="ec-price-row">
+            <div class="ec-price">Rp 119.000</div>
+            <div class="ec-orig">Rp 299.000</div>
+            <div class="ec-disc">Hemat 60%</div>
+          </div>
+          <div class="ec-timer">⏰ Promo berakhir: <strong id="countdown">11:47:32</strong></div>
+          <button class="btn-enroll" id="enrollBtn">Daftar Sekarang — Rp 119.000</button>
+          <button class="btn-try">▶ Coba Gratis 3 Lesson</button>
+          <div class="ec-guarantee">🛡 Garansi uang kembali 30 hari · Tanpa syarat</div>
+          <div class="ec-includes">
+            <div class="ei"><div class="ei-dot" style="background:var(--blue-xs)">📹</div>8 jam video on-demand HD</div>
+            <div class="ei"><div class="ei-dot" style="background:var(--teal-xs)">📄</div>32 artikel &amp; resource tambahan</div>
+            <div class="ei"><div class="ei-dot" style="background:var(--amber-xs)">📝</div>4 quiz + 1 capstone project</div>
+            <div class="ei"><div class="ei-dot" style="background:var(--violet-xs)">📜</div>Sertifikat digital terverifikasi</div>
+            <div class="ei"><div class="ei-dot" style="background:var(--lime-xs)">♾️</div>Akses seumur hidup + update gratis</div>
+            <div class="ei"><div class="ei-dot" style="background:var(--rose-xs)">💬</div>Live Q&amp;A mingguan instruktur</div>
+          </div>
+          <div class="ec-share">
+            <button class="share-link">🔗 Salin Link</button>
+            <button class="share-link">💬 WhatsApp</button>
+            <button class="share-link">𝕏 Twitter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="content-wrap">
+  <div class="main-col">
+    <div class="quick-stats reveal">
+      <div class="qs" style="--qc:var(--blue)"><div class="qs-n">48</div><div class="qs-l">Video Lesson</div></div>
+      <div class="qs" style="--qc:var(--teal)"><div class="qs-n">8 Jam</div><div class="qs-l">Total Durasi</div></div>
+      <div class="qs" style="--qc:var(--orange)"><div class="qs-n">4</div><div class="qs-l">Modul Praktis</div></div>
+      <div class="qs" style="--qc:var(--violet)"><div class="qs-n">Semua</div><div class="qs-l">Level</div></div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tbtn active" data-tab="overview">Ikhtisar</button>
+      <button class="tbtn" data-tab="curriculum">Kurikulum</button>
+      <button class="tbtn" data-tab="instructor">Instruktur</button>
+      <button class="tbtn" data-tab="reviews">Ulasan <span style="color:var(--n400);font-weight:400">(1.847)</span></button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="tpanel active" id="tab-overview">
+      <div class="learn-box reveal">
+        <div class="lb-title"><span class="lb-icon" style="background:var(--blue-xs);color:var(--blue)">📌</span>Yang Akan Kamu Pelajari</div>
+        <div class="learn-grid">
+          <div class="li"><div class="li-check">✓</div>Struktur DataFrame Pandas secara mendalam</div>
+          <div class="li"><div class="li-check">✓</div>Teknik data cleaning: missing values, duplikat</div>
+          <div class="li"><div class="li-check">✓</div>Transformasi: merge, join, groupby, pivot</div>
+          <div class="li"><div class="li-check">✓</div>Visualisasi dengan Matplotlib dan Seaborn</div>
+          <div class="li"><div class="li-check">✓</div>Exploratory Data Analysis (EDA) end-to-end</div>
+          <div class="li"><div class="li-check">✓</div>Membaca CSV, Excel, JSON berbagai format</div>
+          <div class="li"><div class="li-check">✓</div>Analisis statistik deskriptif dengan Python</div>
+          <div class="li"><div class="li-check">✓</div>Membuat laporan analisis siap presentasi</div>
+        </div>
+      </div>
+      <div class="s-block reveal">
+        <div class="s-title"><span class="lb-icon" style="background:var(--orange-xs);color:var(--orange-m)">📋</span>Prasyarat</div>
+        <div class="req-item"><div class="req-dot"></div>Mengenal dasar Python — variabel, list, loop, fungsi (tidak perlu mahir)</div>
+        <div class="req-item"><div class="req-dot"></div>Laptop dengan Python 3.8+ terinstal (panduan setup ada di modul 1)</div>
+        <div class="req-item"><div class="req-dot"></div>Tidak perlu background statistik — semua dijelaskan dari nol</div>
+        <div class="req-item"><div class="req-dot"></div>1–2 jam per hari untuk belajar secara efektif</div>
+      </div>
+      <div class="s-block reveal">
+        <div class="s-title"><span class="lb-icon" style="background:var(--teal-xs);color:var(--teal)">📖</span>Deskripsi Lengkap</div>
+        <div class="desc-text">
+          <p>Data yang berantakan bukan hambatan — jika Anda tahu cara menanganinya. Course ini mengajarkan cara mengolah, membersihkan, mentransformasi, dan menganalisis data secara profesional menggunakan <strong>Pandas</strong> dan Python, melalui pendekatan <em>learn by doing</em> dalam empat modul praktis.</p>
+          <p>Course ini menyajikan insight melalui visualisasi komunikatif dan contoh relevan terkini — dikemas dalam kurang dari 8 jam konten yang langsung bisa diterapkan di pekerjaan.</p>
+          <p id="descMore" style="display:none">Cocok untuk profesional, analis, dan fresh graduate yang sudah mengenal Python dasar. Setelah kursus ini, kamu akan mampu melakukan EDA lengkap secara mandiri, membuat visualisasi siap presentasi, dan membangun portofolio data science pertama yang bisa ditunjukkan ke recruiter.</p>
+        </div>
+        <button class="desc-toggle" id="descBtn" onclick="toggleDesc()">Baca selengkapnya ↓</button>
+      </div>
+    </div>
+
+    <!-- CURRICULUM -->
+    <div class="tpanel" id="tab-curriculum">
+      <div class="cur-head">
+        <div>
+          <div class="s-title" style="margin-bottom:.2rem">Kurikulum Kursus</div>
+          <div class="cur-meta">4 modul · 48 lesson · 8 jam 14 menit total</div>
+        </div>
+        <button class="expand-all" onclick="toggleAll()">Buka semua modul</button>
+      </div>
+      <div class="module reveal">
+        <div class="mh open" onclick="toggleMod(this)">
+          <div class="mh-left"><div class="m-num">1</div><div class="m-title">Fondasi: Python &amp; Environment Setup</div></div>
+          <div class="mh-right"><div class="m-count">8 lesson · 1j 42m</div><span class="m-chev">▾</span></div>
+        </div>
+        <div class="mb open">
+          <div class="lrow"><div class="l-icon li-done">✓</div><div class="l-info"><div class="l-name">Selamat datang &amp; overview kursus</div><div class="l-type">Video</div></div><span class="l-dur">5:12</span><span class="l-prev">Preview</span></div>
+          <div class="lrow"><div class="l-icon li-done">✓</div><div class="l-info"><div class="l-name">Instalasi Python, Anaconda &amp; Jupyter Notebook</div><div class="l-type">Video + Panduan PDF</div></div><span class="l-dur">12:40</span><span class="l-prev">Preview</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Review Python dasar yang relevan untuk data</div><div class="l-type">Video</div></div><span class="l-dur">18:25</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Mengenal NumPy: array &amp; operasi dasar</div><div class="l-type">Video</div></div><span class="l-dur">22:10</span></div>
+          <div class="lrow"><div class="l-icon li-quiz">📝</div><div class="l-info"><div class="l-name">Quiz: Fondasi Python &amp; NumPy</div><div class="l-type">Quiz · 10 soal</div></div><span class="l-dur">15m</span></div>
+        </div>
+      </div>
+      <div class="module reveal d1">
+        <div class="mh" onclick="toggleMod(this)">
+          <div class="mh-left"><div class="m-num">2</div><div class="m-title">Pandas: DataFrame, Series &amp; Data Loading</div></div>
+          <div class="mh-right"><div class="m-count">14 lesson · 2j 18m</div><span class="m-chev">▾</span></div>
+        </div>
+        <div class="mb">
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Intro Pandas: Series dan DataFrame</div><div class="l-type">Video</div></div><span class="l-dur">16:30</span><span class="l-prev">Preview</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Membaca CSV, Excel, dan JSON</div><div class="l-type">Video</div></div><span class="l-dur">14:22</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Indexing, slicing, dan .loc vs .iloc</div><div class="l-type">Video</div></div><span class="l-dur">19:45</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Filtering data dengan kondisi kompleks</div><div class="l-type">Video</div></div><span class="l-dur">17:10</span></div>
+          <div class="lrow"><div class="l-icon li-proj">🛠</div><div class="l-info"><div class="l-name">Hands-on: Analisis Dataset E-Commerce</div><div class="l-type">Latihan Praktik</div></div><span class="l-dur">30m</span></div>
+        </div>
+      </div>
+      <div class="module reveal d2">
+        <div class="mh" onclick="toggleMod(this)">
+          <div class="mh-left"><div class="m-num">3</div><div class="m-title">Data Cleaning &amp; Transformasi Lanjutan</div></div>
+          <div class="mh-right"><div class="m-count">16 lesson · 2j 45m</div><span class="m-chev">▾</span></div>
+        </div>
+        <div class="mb">
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Handling missing values: deteksi &amp; strategi</div><div class="l-type">Video</div></div><span class="l-dur">21:15</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Duplikasi data: identifikasi &amp; penanganan</div><div class="l-type">Video</div></div><span class="l-dur">14:30</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">GroupBy, aggregasi &amp; pivot table</div><div class="l-type">Video</div></div><span class="l-dur">24:20</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Merge &amp; Join antar DataFrame</div><div class="l-type">Video</div></div><span class="l-dur">22:10</span></div>
+          <div class="lrow"><div class="l-icon li-proj">🏆</div><div class="l-info"><div class="l-name">Mini Project: Bersihkan dataset real-world</div><div class="l-type">Project · Submit &amp; Review Mentor</div></div><span class="l-dur">—</span></div>
+        </div>
+      </div>
+      <div class="module reveal d3">
+        <div class="mh" onclick="toggleMod(this)">
+          <div class="mh-left"><div class="m-num">4</div><div class="m-title">Visualisasi &amp; EDA: Capstone Project</div></div>
+          <div class="mh-right"><div class="m-count">10 lesson + Capstone · 1j 29m</div><span class="m-chev">▾</span></div>
+        </div>
+        <div class="mb">
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Matplotlib: figure, axes &amp; kustomisasi</div><div class="l-type">Video</div></div><span class="l-dur">20:40</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">Seaborn: visualisasi statistik yang indah</div><div class="l-type">Video</div></div><span class="l-dur">18:55</span></div>
+          <div class="lrow"><div class="l-icon li-vid">▶</div><div class="l-info"><div class="l-name">EDA workflow end-to-end</div><div class="l-type">Video</div></div><span class="l-dur">26:15</span></div>
+          <div class="lrow"><div class="l-icon li-proj">🏆</div><div class="l-info"><div class="l-name">🏆 Capstone: Analisis Penjualan E-Commerce Indonesia</div><div class="l-type">Final Project · Portfolio-ready</div></div><span class="l-dur">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTRUCTOR -->
+    <div class="tpanel" id="tab-instructor">
+      <div class="inst-main reveal">
+        <div class="iava-lg">AW</div>
+        <div>
+          <div class="iname">Andi Wirawan, M.Sc.</div>
+          <div class="ihl">Senior Data Scientist · Ex-Tokopedia · Dosen Binus University</div>
+          <div class="istats">
+            <div class="istat">⭐ <strong>4.9</strong> Rating</div>
+            <div class="istat">👥 <strong>24.318</strong> Siswa</div>
+            <div class="istat">🎓 <strong>5</strong> Kursus Aktif</div>
+            <div class="istat">📅 <strong>12 tahun</strong> pengalaman</div>
+          </div>
+          <div class="ibio">Andi adalah Data Scientist dengan lebih dari 12 tahun pengalaman di industri teknologi Indonesia. Sebelumnya menjabat sebagai Senior Data Scientist di Tokopedia, memimpin tim analitik yang mengelola data transaksi jutaan pengguna harian. Saat ini aktif sebagai dosen di Binus University dan consultant data untuk beberapa startup teknologi di Jakarta.<br><br>Spesialisasi: Python, Pandas, Machine Learning, dan Business Analytics.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="tpanel" id="tab-reviews">
+      <div class="rating-summary reveal">
+        <div class="rs-score">
+          <div class="rs-big">4.9</div>
+          <div class="rs-stars">★★★★★</div>
+          <div class="rs-lbl">Rating Kursus</div>
+        </div>
+        <div class="rs-bars">
+          <div class="bar-row"><div class="bar-lbl">5★</div><div class="bar-track"><div class="bar-fill" style="width:87%"></div></div><div class="bar-pct">87%</div></div>
+          <div class="bar-row"><div class="bar-lbl">4★</div><div class="bar-track"><div class="bar-fill" style="width:9%;opacity:.7"></div></div><div class="bar-pct">9%</div></div>
+          <div class="bar-row"><div class="bar-lbl">3★</div><div class="bar-track"><div class="bar-fill" style="width:3%;opacity:.5"></div></div><div class="bar-pct">3%</div></div>
+          <div class="bar-row"><div class="bar-lbl">2★</div><div class="bar-track"><div class="bar-fill" style="width:1%;opacity:.3"></div></div><div class="bar-pct">1%</div></div>
+          <div class="bar-row"><div class="bar-lbl">1★</div><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><div class="bar-pct">0%</div></div>
+        </div>
+      </div>
+      <div class="rev-filters">
+        <span class="rfc active">Semua</span>
+        <span class="rfc">⭐⭐⭐⭐⭐ 5 bintang</span>
+        <span class="rfc">⭐⭐⭐⭐ 4 bintang</span>
+        <span class="rfc">Terbaru</span>
+        <span class="rfc">Paling membantu</span>
+      </div>
+      <div class="rev-list">
+        <div class="rev-card reveal">
+          <div class="rev-head">
+            <div class="rev-auth"><div class="rav" style="background:linear-gradient(135deg,#0C628D,#1178AB)">AR</div><div><div class="rname">Arya Ramadhan</div><div class="rmeta-rev">Data Analyst · Jakarta · 342 orang merasa membantu</div></div></div>
+            <div class="rev-right"><div class="rev-stars">★★★★★</div><div class="rev-date">12 April 2025</div></div>
+          </div>
+          <div class="rev-text">Ini bukan kursus biasa. Pak Andi benar-benar tahu cara mengajar — penjelasannya sistematis, contohnya relevan banget sama dunia kerja. Saya langsung bisa apply teknik GroupBy dan merge di kerjaan dalam seminggu setelah selesai modul 3. Capstone project-nya bagus banget untuk portfolio!</div>
+          <div class="rev-helpful"><span>Apakah membantu?</span><button class="hbtn liked" onclick="this.classList.toggle('liked')">👍 Ya (124)</button><button class="hbtn" onclick="this.classList.toggle('liked')">👎 Tidak</button></div>
+        </div>
+        <div class="rev-card reveal d1">
+          <div class="rev-head">
+            <div class="rev-auth"><div class="rav" style="background:linear-gradient(135deg,#E11D74,#a0005a)">SF</div><div><div class="rname">Siti Fatimah</div><div class="rmeta-rev">Fresh Graduate · Surabaya</div></div></div>
+            <div class="rev-right"><div class="rev-stars">★★★★★</div><div class="rev-date">28 Maret 2025</div></div>
+          </div>
+          <div class="rev-text">Awalnya takut karena merasa Python saya masih basic banget, tapi kursus ini beneran ramah pemula. Setiap konsep dijelaskan dari awal, ada quiz yang bantu ngecek pemahaman, dan capstone project-nya jadi bahan interview pertama saya yang diterima!</div>
+          <div class="rev-helpful"><span>Apakah membantu?</span><button class="hbtn" onclick="this.classList.toggle('liked')">👍 Ya (87)</button><button class="hbtn" onclick="this.classList.toggle('liked')">👎 Tidak</button></div>
+        </div>
+        <div class="rev-card reveal d2">
+          <div class="rev-head">
+            <div class="rev-auth"><div class="rav" style="background:linear-gradient(135deg,#0BA894,#0a7a76)">BP</div><div><div class="rname">Budi Prasetyo</div><div class="rmeta-rev">Business Analyst · Bandung</div></div></div>
+            <div class="rev-right"><div class="rev-stars">★★★★★</div><div class="rev-date">15 Maret 2025</div></div>
+          </div>
+          <div class="rev-text">Sebagai business analyst yang selama ini cuma pakai Excel, kursus ini benar-benar game-changer. Sekarang saya bisa olah data 10x lebih cepat. Live Q&amp;A-nya sangat membantu — pertanyaan saya tentang pivot table dijawab super detail.</div>
+          <div class="rev-helpful"><span>Apakah membantu?</span><button class="hbtn" onclick="this.classList.toggle('liked')">👍 Ya (65)</button><button class="hbtn" onclick="this.classList.toggle('liked')">👎 Tidak</button></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button class="see-all-btn">Lihat semua 1.847 ulasan →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-col">
+    <div class="for-card reveal">
+      <div class="fc-title">👤 Kursus Ini Untuk Siapa</div>
+      <div class="fc-item"><span class="fc-ico">✅</span>Profesional &amp; analis yang ingin upgrade dari Excel ke Python</div>
+      <div class="fc-item"><span class="fc-ico">✅</span>Fresh graduate yang ingin masuk dunia data science</div>
+      <div class="fc-item"><span class="fc-ico">✅</span>Developer yang butuh skill manipulasi data</div>
+      <div class="fc-item"><span class="fc-ico">❌</span>Pemula total tanpa pengetahuan Python (tersedia kursus intro)</div>
+    </div>
+    <div class="related-card-wrap reveal d1">
+      <div class="rc-title">🎯 Lanjutkan dengan Kursus Ini</div>
+      <a href="#" class="rcard"><div class="rthumb" style="background:linear-gradient(135deg,#0f1929,#1a3a5a)">🤖</div><div><div class="rname">Machine Learning dengan Scikit-Learn</div><div class="rprice">Rp 149K <s>Rp 349K</s></div></div></a>
+      <a href="#" class="rcard"><div class="rthumb" style="background:linear-gradient(135deg,#1a0f2e,#2d1b69)">📊</div><div><div class="rname">Data Visualization: Tableau &amp; Power BI</div><div class="rprice">Rp 129K <s>Rp 299K</s></div></div></a>
+      <a href="#" class="rcard"><div class="rthumb" style="background:linear-gradient(135deg,#0a100f,#103322)">🗄️</div><div><div class="rname">SQL untuk Data Analyst: Query sampai Optimasi</div><div class="rprice">Rp 99K <s>Rp 249K</s></div></div></a>
+    </div>
+  </div>
+</div>
+
+<div class="mob-bar">
+  <div><div class="mb-price">Rp 119.000</div><div class="mb-orig">Rp 299.000 · Hemat 60%</div></div>
+  <button class="mb-btn">Daftar Sekarang</button>
+</div>
+
+<footer style="background:#0F172A;padding:2rem 1.75rem">
+  <div style="max-width:1300px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1rem;color:#fff">Inspira<span style="color:#F3921B">Learn</span></div>
+    <div style="font-size:.77rem;color:rgba(255,255,255,.25)">© 2025 InspiraLearn by Inspiratekno. All rights reserved.</div>
+    <div style="display:flex;gap:1.25rem"><a href="#" style="font-size:.77rem;color:rgba(255,255,255,.3)">Privasi</a><a href="#" style="font-size:.77rem;color:rgba(255,255,255,.3)">Syarat</a><a href="index.html" style="font-size:.77rem;color:#C8E6F5">← Beranda</a></div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.tbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tpanel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+function toggleMod(h) {
+  const b = h.nextElementSibling, o = h.classList.contains('open');
+  h.classList.toggle('open', !o); b.classList.toggle('open', !o);
+}
+let allOpen = false;
+function toggleAll() {
+  allOpen = !allOpen;
+  document.querySelectorAll('.mh').forEach(h => {
+    h.classList.toggle('open', allOpen);
+    h.nextElementSibling.classList.toggle('open', allOpen);
+  });
+  document.querySelector('.expand-all').textContent = allOpen ? 'Tutup semua modul' : 'Buka semua modul';
+}
+function toggleDesc() {
+  const m = document.getElementById('descMore'), b = document.getElementById('descBtn');
+  const h = m.style.display === 'none';
+  m.style.display = h ? 'block' : 'none';
+  b.textContent = h ? 'Tampilkan lebih sedikit ↑' : 'Baca selengkapnya ↓';
+}
+document.querySelectorAll('.rfc').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.rfc').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+setTimeout(() => { const f = document.getElementById('epFill'); if(f) f.style.width='35%'; }, 400);
+let t = 11*3600+47*60+32;
+setInterval(() => {
+  if(t<=0) return; t--;
+  const h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
+  const el=document.getElementById('countdown');
+  if(el) el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+},1000);
+document.getElementById('enrollBtn').addEventListener('click',function(){
+  this.textContent='⏳ Memproses...'; this.style.opacity='.7'; this.disabled=true;
+  setTimeout(()=>{this.textContent='✅ Berhasil Terdaftar!';this.style.background='linear-gradient(135deg,#0BA894,#0a7a76)';this.style.opacity='1';this.disabled=false;},1600);
+});
+const sb = document.getElementById('saveBtn'); let saved=false;
+sb.addEventListener('click',()=>{ saved=!saved; sb.textContent=saved?'♥ Tersimpan':'♡ Simpan'; sb.style.color=saved?'#E11D74':''; });
+document.getElementById('shareBtn').addEventListener('click',()=>{ navigator.clipboard.writeText(window.location.href).then(()=>{const b=document.getElementById('shareBtn');const o=b.textContent;b.textContent='✓ Link Disalin';setTimeout(()=>b.textContent=o,2000);}); });
+const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target);}});},{threshold:.06,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>

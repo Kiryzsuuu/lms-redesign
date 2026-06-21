@@ -1,0 +1,106 @@
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+const multer = require('multer');
+
+const UPLOAD_DIR = process.env.NODE_ENV === 'production'
+  ? '/tmp/uploads'
+  : path.resolve(__dirname, '../../uploads');
+
+function ensureUploadDir() {
+  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+function uploadsRouter({ requireAuth, requireRole }) {
+  const router = express.Router();
+
+  ensureUploadDir();
+
+  const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname || '').toLowerCase();
+      const name = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext || ''}`;
+      cb(null, name);
+    },
+  });
+
+  const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype || !file.mimetype.startsWith('image/')) {
+        return cb(new Error('Only image uploads are allowed'));
+      }
+      cb(null, true);
+    },
+  });
+
+  const uploadPdf = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (file.mimetype !== 'application/pdf') {
+        return cb(new Error('Only PDF uploads are allowed'));
+      }
+      cb(null, true);
+    },
+  });
+
+  router.post(
+    '/image',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    upload.single('file'),
+    (req, res) => {
+      if (!req.file) return res.status(400).json({ error: { message: 'File is required' } });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const url = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
+      res.status(201).json({ url });
+    }
+  );
+
+  // Avatar upload — accessible to all authenticated users
+  router.post(
+    '/avatar',
+    requireAuth,
+    upload.single('file'),
+    (req, res) => {
+      if (!req.file) return res.status(400).json({ error: { message: 'File is required' } });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const url = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
+      res.status(201).json({ url });
+    }
+  );
+
+  // Signature upload — accessible to all authenticated users (teacher/admin use for certificates)
+  router.post(
+    '/signature',
+    requireAuth,
+    upload.single('file'),
+    (req, res) => {
+      if (!req.file) return res.status(400).json({ error: { message: 'File is required' } });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const url = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
+      res.status(201).json({ url });
+    }
+  );
+
+  router.post(
+    '/pdf',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    uploadPdf.single('file'),
+    (req, res) => {
+      if (!req.file) return res.status(400).json({ error: { message: 'File is required' } });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const url = `${baseUrl}/uploads/${encodeURIComponent(req.file.filename)}`;
+      res.status(201).json({ url });
+    }
+  );
+
+  return router;
+}
+
+module.exports = { uploadsRouter, UPLOAD_DIR };

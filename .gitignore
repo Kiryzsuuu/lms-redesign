@@ -1,0 +1,63 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# env files (keep examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
+!.env.biznet.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+api-logs*.zip
+
+# build outputs
+dist/
+**/dist/
+build/
+**/build/
+
+# coverage
+coverage/
+**/coverage/
+
+# runtime
+.cache/
+.parcel-cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+.vscode/
+!.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# misc
+*.local
+
+# local AI/assistant settings
+.claude/settings.local.json
+
+# server uploads (avoid committing user-generated content)
+server/uploads/
+.azure
+
+# deployment/diagnostic files with secrets
+MIDTRANS_DEPLOYMENT_READY.md
+deploy-midtrans.ps1
+DPAPI_FIX_GUIDE.md
+MIDTRANS_401_DIAGNOSTIC.md
+MIDTRANS_401_ROOT_CAUSE.md
+PORTAL_UPDATE_GUIDE.md
