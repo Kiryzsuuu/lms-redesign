@@ -1,5 +1,4 @@
 const express = require('express');
-const PDFDocument = require('pdfkit');
 const { z } = require('zod');
 const { Course } = require('../models/Course');
 const { Lesson } = require('../models/Lesson');
@@ -348,6 +347,7 @@ function reportsRouter({ requireAuth, requireRole }) {
       const completedLessons = lessons.filter((l) => byLessonId.get(String(l._id))?.isCompleted).length;
       const certEligible = totalLessons > 0 && completedLessons === totalLessons;
 
+      const PDFDocument = require('pdfkit');
       const doc = new PDFDocument({ size: 'A4', margin: 50 });
       const safeTitle = (course.title || 'course').replace(/[^a-z0-9\- _]/gi, '').slice(0, 60) || 'course';
 
