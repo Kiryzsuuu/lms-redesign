@@ -6,14 +6,33 @@ import { useAuth } from '../../lib/auth';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { RichTextEditor } from '../../components/RichTextEditor';
 
-function LessonCard({ l, onEdit, onToggle, onDelete }) {
+function LessonCard({ l, onEdit, onToggle, onDelete, dragProps, isDragging, isDragOver }) {
   return (
-    <Card className="p-4 mb-2">
+    <Card
+      className="p-4 mb-2"
+      style={{
+        opacity: isDragging ? 0.4 : 1,
+        borderTop: isDragOver ? '2px solid #0C628D' : undefined,
+        transition: 'opacity .12s',
+      }}
+      {...(dragProps?.containerProps || {})}
+    >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="font-semibold leading-snug line-clamp-2 break-words">{l.title}</div>
-          <div className="mt-1 text-xs">
-            <span className={l.isPublished ? 'text-emerald-600' : 'text-rose-500'}>{l.isPublished ? 'Published' : 'Draft'}</span>
+        <div className="flex items-start gap-2 min-w-0">
+          {dragProps && (
+            <span
+              {...dragProps.handleProps}
+              title="Geser untuk mengubah urutan"
+              style={{ cursor: 'grab', color: '#9CA3AF', flexShrink: 0, marginTop: 1, touchAction: 'none' }}
+            >
+              <i className="ti ti-grip-vertical" style={{ fontSize: 16 }} />
+            </span>
+          )}
+          <div className="min-w-0">
+            <div className="font-semibold leading-snug line-clamp-2 break-words">{l.title}</div>
+            <div className="mt-1 text-xs">
+              <span className={l.isPublished ? 'text-emerald-600' : 'text-rose-500'}>{l.isPublished ? 'Published' : 'Draft'}</span>
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 shrink-0">
@@ -23,6 +42,43 @@ function LessonCard({ l, onEdit, onToggle, onDelete }) {
         </div>
       </div>
     </Card>
+  );
+}
+
+/** Renders a drag-and-drop reorderable list of lessons within one group. */
+function LessonDndList({ lessons, onEdit, onToggle, onDelete, onReorder }) {
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+
+  return (
+    <>
+      {lessons.map((l, idx) => (
+        <LessonCard
+          key={l._id}
+          l={l}
+          onEdit={onEdit}
+          onToggle={onToggle}
+          onDelete={onDelete}
+          isDragging={dragIdx === idx}
+          isDragOver={overIdx === idx && dragIdx !== null && dragIdx !== idx}
+          dragProps={{
+            containerProps: {
+              onDragOver: (e) => { e.preventDefault(); if (overIdx !== idx) setOverIdx(idx); },
+              onDrop: (e) => {
+                e.preventDefault();
+                if (dragIdx !== null && dragIdx !== idx) onReorder(lessons, dragIdx, idx);
+                setDragIdx(null); setOverIdx(null);
+              },
+            },
+            handleProps: {
+              draggable: true,
+              onDragStart: (e) => { setDragIdx(idx); e.dataTransfer.effectAllowed = 'move'; },
+              onDragEnd: () => { setDragIdx(null); setOverIdx(null); },
+            },
+          }}
+        />
+      ))}
+    </>
   );
 }
 
@@ -497,6 +553,20 @@ export default function CourseManager() {
       await loadCourseDetails(selected._id);
     } catch (e) {
       setError(e?.response?.data?.error?.message || 'Gagal update materi');
+    }
+  }
+
+  async function reorderLessons(groupLessons, fromIdx, toIdx) {
+    if (!selected || fromIdx === toIdx) return;
+    const reordered = [...groupLessons];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    const reorderedIds = reordered.map((l) => String(l._id));
+    try {
+      await api.put(`/courses/${selected._id}/lessons/reorder`, { orderedIds: reorderedIds });
+      await loadCourseDetails(selected._id);
+    } catch (e) {
+      setError(e?.response?.data?.error?.message || 'Gagal mengubah urutan materi');
     }
   }
 
@@ -1504,27 +1574,23 @@ export default function CourseManager() {
                     <div className="mt-4 grid gap-3">
                       {(() => {
                         if (modules.length === 0) {
-                          return lessons.map((l) => (
-                            <LessonCard key={l._id} l={l} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} />
-                          ));
+                          return <LessonDndList lessons={lessons} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} onReorder={reorderLessons} />;
                         }
                         const groups = [];
                         for (const mod of modules) {
                           const ml = lessons.filter((l) => String(l.moduleId) === String(mod._id));
                           groups.push(<div key={mod._id}>
                             <div className="text-xs font-bold text-slate-500 uppercase tracking-wide py-1 border-b border-slate-100 mb-2">{mod.title}</div>
-                            {ml.length === 0 ? <div className="text-xs text-slate-400 italic mb-2">Belum ada materi di modul ini.</div> : ml.map((l) => (
-                              <LessonCard key={l._id} l={l} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} />
-                            ))}
+                            {ml.length === 0 ? <div className="text-xs text-slate-400 italic mb-2">Belum ada materi di modul ini.</div> : (
+                              <LessonDndList lessons={ml} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} onReorder={reorderLessons} />
+                            )}
                           </div>);
                         }
                         const uncat = lessons.filter((l) => !l.moduleId || !modules.find((m) => String(m._id) === String(l.moduleId)));
                         if (uncat.length > 0) {
                           groups.push(<div key="__uncat">
                             <div className="text-xs font-bold text-slate-500 uppercase tracking-wide py-1 border-b border-slate-100 mb-2">Tidak Termodul</div>
-                            {uncat.map((l) => (
-                              <LessonCard key={l._id} l={l} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} />
-                            ))}
+                            <LessonDndList lessons={uncat} onEdit={beginEditLesson} onToggle={toggleLessonPublish} onDelete={deleteLesson} onReorder={reorderLessons} />
                           </div>);
                         }
                         return groups;

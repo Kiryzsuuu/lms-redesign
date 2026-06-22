@@ -404,6 +404,40 @@ function coursesRouter({ requireAuth, requireRole }) {
     })
   );
 
+  // Reorder modules by an explicit ordered list of IDs
+  router.put(
+    '/:courseId/modules/reorder',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    asyncHandler(async (req, res) => {
+      await assertCanEditCourse(req.params.courseId, req.user);
+      const orderedIds = Array.isArray(req.body.orderedIds) ? req.body.orderedIds : [];
+      await Promise.all(
+        orderedIds.map((id, idx) =>
+          Module.updateOne({ _id: id, courseId: req.params.courseId }, { order: idx })
+        )
+      );
+      res.json({ ok: true });
+    })
+  );
+
+  // Reorder lessons within a module by an explicit ordered list of IDs
+  router.put(
+    '/:courseId/lessons/reorder',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    asyncHandler(async (req, res) => {
+      await assertCanEditCourse(req.params.courseId, req.user);
+      const orderedIds = Array.isArray(req.body.orderedIds) ? req.body.orderedIds : [];
+      await Promise.all(
+        orderedIds.map((id, idx) =>
+          Lesson.updateOne({ _id: id, courseId: req.params.courseId }, { order: idx })
+        )
+      );
+      res.json({ ok: true });
+    })
+  );
+
   router.put(
     '/:courseId/modules/:moduleId',
     requireAuth,

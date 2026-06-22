@@ -130,6 +130,21 @@
 /* ── scroll container for sidebar pages ── */
 .ds-scroll{height:100%;overflow-y:auto;padding:24px}
 
+/* ============================================================
+   Global typographic normalization for ALL dashboard pages.
+   Brings legacy admin/teacher pages (Tailwind defaults, 16px base)
+   down to the same compact scale as the sidebar + ds pages, so
+   fonts/sizes read consistently across the whole app.
+   Explicit Tailwind text-* utilities still win where set.
+   ============================================================ */
+.dash-content{font-size:14px;line-height:1.5;color:#111827}
+/* Unstyled headings inside dashboard pages — match ds scale */
+.dash-content h1{font-size:18px;line-height:1.3}
+.dash-content h2{font-size:16px;line-height:1.35}
+.dash-content h3{font-size:14px;line-height:1.4}
+/* Bare strong/labels default smaller to match compact UI */
+.dash-content label{font-size:13px}
+
 /* ── responsive ── */
 @media (max-width:900px){
   .ds-stat-grid{grid-template-columns:repeat(2,1fr)}

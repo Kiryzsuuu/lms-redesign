@@ -325,7 +325,7 @@ export function DashboardLayout({ children }) {
         </header>
 
         {/* Content — overflow:hidden so SidebarShell pages control their own scroll */}
-        <div style={{ flex: 1, overflow: 'hidden' }}>
+        <div className="dash-content" style={{ flex: 1, overflow: 'hidden' }}>
           {children}
         </div>
       </div>
