@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { DsPage, DsStat, DsCard, DsSectionHdr, DsCourseCard, DsEmpty } from '../components/ds';
 
 function StatCard({ label, value, sub, color }) {
   return (
@@ -389,40 +390,131 @@ function TeacherDashboard({ api, user, stats }) {
   );
 }
 
-function StudentDashboard({ user, stats }) {
+function courseProgress(c) {
+  const total = (c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0);
+  const done = (c.modules || []).reduce((s, m) => s + (m.lessons || []).filter(l => l.completed).length, 0);
+  if (c.progressPercent != null) return Math.round(c.progressPercent);
+  return total ? Math.round((done / total) * 100) : 0;
+}
+
+function priceLabel(c) {
+  if (!c.priceIdr || c.priceIdr === 0) return { text: 'Gratis', kind: 'free' };
+  return { text: `Rp ${Number(c.priceIdr).toLocaleString('id-ID')}`, kind: 'paid' };
+}
+
+function StudentDashboard({ user, stats, student }) {
+  const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const enrolled = student.myCourses || [];
+  const active = enrolled[0];
+  const recommended = (student.catalog || []).filter(c => !enrolled.some(e => String(e._id) === String(c._id))).slice(0, 4);
+
   return (
-    <div style={{ height: '100%', overflowY: 'auto' }}>
-      <div style={{ padding: 22 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 3 }}>Dashboard</div>
-        <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 18 }}>
-          Halo, <strong style={{ color: '#4B5563' }}>{user?.name}</strong> — selamat belajar!
+    <DsPage>
+      <div className="ds-page-head">
+        <div className="ds-h1">Selamat datang kembali, {user?.name?.split(' ')[0] || 'Pelajar'} 👋</div>
+        <div className="ds-sub">{today}</div>
+      </div>
+
+      <div className="ds-stat-grid">
+        <DsStat label="Kursus Diikuti" value={enrolled.length} sub="Total kursus aktif" color="#0C628D" />
+        <DsStat label="Progres Rata-rata" value={`${student.avgProgress || 0}%`} progress={student.avgProgress || 0} sub={`${enrolled.length} kursus`} color="#0C628D" />
+        <DsStat label="Sertifikat" value={student.certificates || 0} sub={student.certificates ? 'Selamat!' : 'Selesaikan kursus dulu'} color="#0FADA8" />
+        <DsStat label="Kursus di Katalog" value={stats.courses} sub="Tersedia untuk diikuti" color="#F3921B" />
+      </div>
+
+      <div className="ds-two-col">
+        {/* LEFT */}
+        <div>
+          <DsSectionHdr title="Kursus Aktif" linkTo="/dashboard/my-courses" linkLabel="Semua" />
+          {active ? (
+            <Link to={`/courses/${active._id}`} style={{ textDecoration: 'none' }}>
+              <div className="ds-card" style={{ marginBottom: 16, cursor: 'pointer' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 12, background: '#0f1929', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                    {active.coverImageUrl
+                      ? <img src={active.coverImageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <i className="ti ti-book" style={{ fontSize: 26, color: 'rgba(255,255,255,.3)' }} />}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 3 }}>{active.title}</div>
+                    <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 8 }}>{active.categoryId?.name || 'Kursus'}</div>
+                    <div className="ds-prog-row">
+                      <div className="ds-prog-bar"><div className="ds-prog-fill" style={{ width: `${courseProgress(active)}%` }} /></div>
+                      <div className="ds-prog-pct">{courseProgress(active)}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ) : (
+            <div className="ds-card" style={{ marginBottom: 16 }}>
+              <DsEmpty icon="ti-book-off">Belum mengikuti kursus apa pun. Jelajahi katalog untuk mulai belajar!</DsEmpty>
+            </div>
+          )}
+
+          {recommended.length > 0 && (
+            <>
+              <DsSectionHdr title="Kursus yang Mungkin Kamu Suka" linkTo="/dashboard/catalog" linkLabel="Lihat semua" />
+              <div className="ds-c-grid" style={{ gridTemplateColumns: 'repeat(2,1fr)' }}>
+                {recommended.map(c => (
+                  <DsCourseCard
+                    key={c._id}
+                    to={`/courses/${c._id}`}
+                    image={c.coverImageUrl}
+                    icon="ti-book"
+                    pill={priceLabel(c)}
+                    title={c.title}
+                    metaLeft={c.categoryId?.name || 'Kursus'}
+                    metaRight={null}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 22 }}>
-          <StatCard label="Kursus Tersedia" value={stats.courses} sub="Total kursus publik" color="#0C628D" />
-          <StatCard label="Kursus Diikuti" value="0" sub="Beli dari katalog" />
-          <StatCard label="Sertifikat" value="0" sub="Selesaikan kursus dulu" color="#0FADA8" />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-          <NavCard to="/courses" icon="ti-compass" label="Jelajahi Kursus" desc="Lihat semua kursus yang tersedia" />
-          <NavCard to="/my-profile" icon="ti-user-circle" label="Profil Saya" desc="Kelola akun dan preferensi" />
+        {/* RIGHT */}
+        <div>
+          <DsSectionHdr title="Akses Cepat" />
+          <div className="ds-card">
+            <div className="ds-res-item" onClick={() => { window.location.href = '/dashboard/my-courses'; }}>
+              <div className="ds-res-icon"><i className="ti ti-book-2" /></div>
+              <div className="ds-res-info"><div className="ds-res-name">Kursus Saya</div><div className="ds-res-meta">{enrolled.length} kursus aktif</div></div>
+              <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />
+            </div>
+            <div className="ds-res-item" onClick={() => { window.location.href = '/dashboard/catalog'; }}>
+              <div className="ds-res-icon"><i className="ti ti-compass" /></div>
+              <div className="ds-res-info"><div className="ds-res-name">Katalog Kursus</div><div className="ds-res-meta">{stats.courses} kursus tersedia</div></div>
+              <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />
+            </div>
+            <div className="ds-res-item" onClick={() => { window.location.href = '/dashboard/certificates'; }}>
+              <div className="ds-res-icon"><i className="ti ti-certificate" /></div>
+              <div className="ds-res-info"><div className="ds-res-name">Sertifikat</div><div className="ds-res-meta">{student.certificates || 0} diterbitkan</div></div>
+              <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />
+            </div>
+            <div className="ds-res-item" style={{ marginBottom: 0 }} onClick={() => { window.location.href = '/my-profile'; }}>
+              <div className="ds-res-icon"><i className="ti ti-user-circle" /></div>
+              <div className="ds-res-info"><div className="ds-res-name">Profil Saya</div><div className="ds-res-meta">Kelola akun</div></div>
+              <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </DsPage>
   );
 }
 
 export default function Dashboard() {
   const { api, user, role } = useAuth();
   const [stats, setStats] = useState({ courses: 0, pendingContracts: 0 });
+  const [student, setStudent] = useState({ myCourses: [], catalog: [], certificates: 0, avgProgress: 0 });
 
   useEffect(() => {
     if (!api) return;
     const load = async () => {
       try {
         const [coursesRes] = await Promise.allSettled([api.get('/courses')]);
-        const courseCount = coursesRes.status === 'fulfilled' ? (coursesRes.value.data.courses || []).length : 0;
+        const catalog = coursesRes.status === 'fulfilled' ? (coursesRes.value.data.courses || []) : [];
 
         let pendingContracts = 0;
         if (role === 'admin') {
@@ -431,9 +523,21 @@ export default function Dashboard() {
         } else if (role === 'teacher') {
           const r = await api.get('/contracts/mine').catch(() => ({ data: { contracts: [] } }));
           pendingContracts = (r.data.contracts || []).filter(c => c.status === 'sent').length;
+        } else {
+          // student
+          const [mineRes, certRes] = await Promise.allSettled([
+            api.get('/courses/my-courses'),
+            api.get('/certificates/my-certificates'),
+          ]);
+          const myCourses = mineRes.status === 'fulfilled' ? (mineRes.value.data.courses || []) : [];
+          const certificates = certRes.status === 'fulfilled' ? (certRes.value.data.certificates || []).length : 0;
+          const avgProgress = myCourses.length
+            ? Math.round(myCourses.reduce((s, c) => s + courseProgress(c), 0) / myCourses.length)
+            : 0;
+          setStudent({ myCourses, catalog, certificates, avgProgress });
         }
 
-        setStats({ courses: courseCount, pendingContracts });
+        setStats({ courses: catalog.length, pendingContracts });
       } catch {}
     };
     load();
@@ -441,5 +545,5 @@ export default function Dashboard() {
 
   if (role === 'admin') return <AdminDashboard api={api} user={user} stats={stats} />;
   if (role === 'teacher') return <TeacherDashboard api={api} user={user} stats={stats} />;
-  return <StudentDashboard user={user} stats={stats} />;
+  return <StudentDashboard user={user} stats={stats} student={student} />;
 }

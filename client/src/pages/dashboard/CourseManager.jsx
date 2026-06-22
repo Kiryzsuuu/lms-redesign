@@ -605,14 +605,14 @@ export default function CourseManager() {
         payload.promptHtml = questionForm.promptHtml;
         payload.imageUrl = questionForm.imageUrl || '';
         payload.rubric = questionForm.rubric;
-        if (!editingQuestionId) payload.order = questionForm.order;
+        if (!editingQuestionId) payload.order = questions.length;
       } else if (questionForm.type === 'matching') {
         const cleanedPairs = (questionForm.pairs || []).filter((p) => (p.left || '').trim() && (p.right || '').trim());
         payload.type = 'matching';
         payload.promptHtml = questionForm.promptHtml;
         payload.imageUrl = questionForm.imageUrl || '';
         payload.pairs = cleanedPairs;
-        if (!editingQuestionId) payload.order = questionForm.order;
+        if (!editingQuestionId) payload.order = questions.length;
       } else {
         const cleanedChoices = questionForm.choices.filter((c) => c.text.trim());
         payload.type = 'mcq';
@@ -620,7 +620,7 @@ export default function CourseManager() {
         payload.imageUrl = questionForm.imageUrl || '';
         payload.choices = cleanedChoices;
         payload.correctChoiceId = questionForm.correctChoiceId;
-        if (!editingQuestionId) payload.order = questionForm.order;
+        if (!editingQuestionId) payload.order = questions.length;
       }
 
       if (editingQuestionId) {
@@ -1885,19 +1885,6 @@ export default function CourseManager() {
                                 </div>
                               </>
                             )}
-
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              <div>
-                                <Label>Order</Label>
-                                <div className="mt-1">
-                                  <Input
-                                    type="number"
-                                    value={questionForm.order}
-                                    onChange={(e) => setQuestionForm((f) => ({ ...f, order: Number(e.target.value) }))}
-                                  />
-                                </div>
-                              </div>
-                            </div>
 
                             <Button type="submit">{editingQuestionId ? 'Update Soal' : 'Tambah Soal'}</Button>
                           </form>

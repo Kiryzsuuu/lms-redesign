@@ -16,6 +16,10 @@ import ResetPassword from './pages/ResetPassword';
 import OtpVerify from './pages/OtpVerify';
 import MyProfile from './pages/MyProfile';
 import Dashboard from './pages/Dashboard';
+import StudentCourses from './pages/StudentCourses';
+import StudentCertificates from './pages/StudentCertificates';
+import StudentProgress from './pages/StudentProgress';
+import StudentCatalog from './pages/StudentCatalog';
 import HeroManager from './pages/dashboard/HeroManager';
 import CourseManager from './pages/dashboard/CourseManager';
 import UserManager from './pages/dashboard/UserManager';
@@ -86,6 +90,38 @@ export default function App() {
           element={
             <RequireAuth>
               <Dashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/my-courses"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentCourses />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/certificates"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentCertificates />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/progress"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentProgress />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/catalog"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentCatalog />
             </RequireAuth>
           }
         />

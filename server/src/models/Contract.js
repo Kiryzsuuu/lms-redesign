@@ -32,6 +32,8 @@ const contractSchema = new mongoose.Schema(
     acceptedAt:       { type: Date },
     rejectedAt:       { type: Date },
     rejectionReason:  { type: String, default: '' },
+    teacherDescription: { type: String, default: '' },
+    teacherExpertise:   { type: String, default: '' },
 
     // Admin notes
     adminNotes: { type: String, default: '' },

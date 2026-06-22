@@ -71,10 +71,23 @@ const TEACHER_NAV = [
 
 const STUDENT_NAV = [
   {
-    section: 'Menu',
+    section: 'Utama',
     items: [
       { to: '/dashboard', icon: 'ti-layout-dashboard', label: 'Dashboard' },
-      { to: '/courses', icon: 'ti-compass', label: 'Jelajahi Kursus' },
+      { to: '/dashboard/my-courses', icon: 'ti-book-2', label: 'Kursus Saya' },
+      { to: '/dashboard/catalog', icon: 'ti-compass', label: 'Katalog Kursus' },
+    ],
+  },
+  {
+    section: 'Belajar',
+    items: [
+      { to: '/dashboard/progress', icon: 'ti-chart-bar', label: 'Nilai & Progress' },
+      { to: '/dashboard/certificates', icon: 'ti-certificate', label: 'Sertifikat' },
+    ],
+  },
+  {
+    section: 'Akun',
+    items: [
       { to: '/my-profile', icon: 'ti-user-circle', label: 'Profil Saya' },
     ],
   },

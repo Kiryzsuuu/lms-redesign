@@ -199,10 +199,18 @@ function contractsRouter({ requireAuth, requireRole }) {
 
       contract.status = 'accepted';
       contract.acceptedAt = new Date();
+      contract.teacherDescription = (req.body.teacherDescription || '').trim();
+      contract.teacherExpertise = (req.body.teacherExpertise || '').trim();
       await contract.save();
 
-      // Update the course ownerId to this teacher so they can edit it
-      await Course.findByIdAndUpdate(contract.courseId, { ownerId: contract.teacherId });
+      // Update the course ownerId to this teacher so they can edit it.
+      // Seed the course description from the teacher's contract description.
+      const courseUpdate = { ownerId: contract.teacherId };
+      if (contract.teacherDescription) courseUpdate.description = contract.teacherDescription;
+      if (contract.teacherExpertise) {
+        courseUpdate.tags = contract.teacherExpertise.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      await Course.findByIdAndUpdate(contract.courseId, courseUpdate);
 
       audit({
         actor: req.user,

@@ -26,6 +26,8 @@ function StatusBadge({ status }) {
 function ContractModal({ contract, role, onClose, onAccept, onReject }) {
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectForm, setShowRejectForm] = useState(false);
+  const [teacherDescription, setTeacherDescription] = useState('');
+  const [teacherExpertise, setTeacherExpertise] = useState('');
 
   if (!contract) return null;
 
@@ -89,10 +91,55 @@ function ContractModal({ contract, role, onClose, onAccept, onReject }) {
             </>
           )}
 
+          {/* Teacher input: only description + expertise */}
+          {role === 'teacher' && contract.status === 'sent' && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-900)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 8 }}>Lengkapi Data Kamu</div>
+              <div style={{ marginBottom: 10 }}>
+                <div className="form-label">Deskripsi Kursus / Pengantar Pengajar <span style={{ color: 'var(--red)' }}>*</span></div>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  value={teacherDescription}
+                  onChange={e => setTeacherDescription(e.target.value)}
+                  placeholder="Jelaskan kursus yang akan kamu isi dan pendekatan pengajaranmu…"
+                />
+              </div>
+              <div>
+                <div className="form-label">Keahlian (pisahkan dengan koma) <span style={{ color: 'var(--red)' }}>*</span></div>
+                <input
+                  className="form-input"
+                  type="text"
+                  value={teacherExpertise}
+                  onChange={e => setTeacherExpertise(e.target.value)}
+                  placeholder="mis: Machine Learning, Python, Data Science"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Acceptance warning */}
           {role === 'teacher' && contract.status === 'sent' && (
             <div style={{ background: 'var(--amber-100)', border: '1px solid #FCD34D', borderRadius: 'var(--r-md)', padding: '10px 12px', marginBottom: 14, fontSize: 11, color: '#92400E' }}>
               <strong>⚠️ Penting:</strong> Dengan menekan "Setuju & Tandatangani", kamu terikat secara hukum dengan seluruh klausul di atas. Baca semua isi kontrak dengan seksama.
+            </div>
+          )}
+
+          {/* Show teacher-provided data on accepted contracts */}
+          {(contract.teacherDescription || contract.teacherExpertise) && contract.status !== 'sent' && (
+            <div style={{ marginBottom: 14 }}>
+              {contract.teacherDescription && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-900)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6 }}>Deskripsi Pengajar</div>
+                  <div style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7, marginBottom: 10 }}>{contract.teacherDescription}</div>
+                </>
+              )}
+              {contract.teacherExpertise && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-900)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6 }}>Keahlian</div>
+                  <div style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7 }}>{contract.teacherExpertise}</div>
+                </>
+              )}
             </div>
           )}
 
@@ -136,7 +183,11 @@ function ContractModal({ contract, role, onClose, onAccept, onReject }) {
                 </>
               )}
               {!showRejectForm && (
-                <button className="btn btn-success" onClick={() => onAccept(contract._id)}>
+                <button
+                  className="btn btn-success"
+                  disabled={!teacherDescription.trim() || !teacherExpertise.trim()}
+                  onClick={() => onAccept(contract._id, { teacherDescription, teacherExpertise })}
+                >
                   <i className="ti ti-check" style={{ fontSize: 12 }} /> Setuju & Tandatangani
                 </button>
               )}
@@ -306,10 +357,10 @@ export default function ContractManager() {
 
   useEffect(() => { load(); }, [filterStatus]);
 
-  async function handleAccept(id) {
+  async function handleAccept(id, payload = {}) {
     setError('');
     try {
-      await api.post(`/contracts/${id}/accept`);
+      await api.post(`/contracts/${id}/accept`, payload);
       setViewContract(null);
       await load();
     } catch (e) {

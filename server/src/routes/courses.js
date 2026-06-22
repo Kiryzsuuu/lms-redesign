@@ -3,6 +3,7 @@ const { z } = require('zod');
 const { Course } = require('../models/Course');
 const { Module } = require('../models/Module');
 const { Lesson } = require('../models/Lesson');
+const { CourseTemplate } = require('../models/CourseTemplate');
 const { Quiz } = require('../models/Quiz');
 const { Attempt } = require('../models/Attempt');
 const { LessonProgress } = require('../models/LessonProgress');
@@ -284,6 +285,38 @@ function coursesRouter({ requireAuth, requireRole }) {
       const data = schema.parse(req.body);
       const ownerId = req.user.role === 'admin' && req.body.ownerId ? req.body.ownerId : req.user.sub;
       const course = await Course.create({ ...data, ownerId });
+
+      // Apply outline template: create modules + lessons from the chosen template.
+      if (data.templateId) {
+        try {
+          const tpl = await CourseTemplate.findById(data.templateId);
+          if (tpl && Array.isArray(tpl.modules)) {
+            for (let mi = 0; mi < tpl.modules.length; mi++) {
+              const m = tpl.modules[mi];
+              const mod = await Module.create({
+                courseId: course._id,
+                title: m.title || `Modul ${mi + 1}`,
+                order: mi,
+                isPublished: false,
+              });
+              const lessons = Array.isArray(m.lessons) ? m.lessons : [];
+              for (let li = 0; li < lessons.length; li++) {
+                const l = lessons[li];
+                await Lesson.create({
+                  courseId: course._id,
+                  moduleId: mod._id,
+                  title: l.title || `Materi ${li + 1}`,
+                  order: li,
+                  isPublished: false,
+                });
+              }
+            }
+          }
+        } catch (e) {
+          // Non-fatal: course is created even if template application fails.
+        }
+      }
+
       await syncTeacherSkills(ownerId, data.tags);
       audit({ actor: req.user, action: 'create', resource: 'course', resourceId: course._id, resourceName: course.title, req });
       res.status(201).json({ course });
