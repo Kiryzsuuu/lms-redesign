@@ -32,6 +32,53 @@ function computeAvailability(assignment) {
 function assignmentsRouter({ requireAuth, requireRole }) {
   const router = express.Router();
 
+  // Student: list assignments across enrolled courses with attempt status
+  router.get(
+    '/mine',
+    requireAuth,
+    asyncHandler(async (req, res) => {
+      const user = await User.findById(req.user.sub).select('purchasedCourseIds completedCourseIds activeCourseId');
+      if (!user) throw new HttpError(401, 'Unauthorized');
+      const courseIds = [
+        ...(user.purchasedCourseIds || []),
+        ...(user.completedCourseIds || []),
+        ...(user.activeCourseId ? [user.activeCourseId] : []),
+      ];
+      const uniqueIds = [...new Set(courseIds.map((c) => String(c)))];
+      if (uniqueIds.length === 0) return res.json({ assignments: [] });
+
+      const assignments = await Assignment.find({ courseId: { $in: uniqueIds } })
+        .populate('courseId', 'title')
+        .sort({ dueDate: 1, createdAt: -1 })
+        .lean();
+
+      const attempts = await AssignmentAttempt.find({
+        userId: req.user.sub,
+        assignmentId: { $in: assignments.map((a) => a._id) },
+      }).select('assignmentId status submittedAt score').lean();
+      const byAssignment = new Map(attempts.map((t) => [String(t.assignmentId), t]));
+
+      const now = new Date();
+      const result = assignments.map((a) => {
+        const attempt = byAssignment.get(String(a._id)) || null;
+        const submitted = !!(attempt && attempt.submittedAt);
+        const overdue = !submitted && a.dueDate && new Date(a.dueDate) < now;
+        return {
+          _id: a._id,
+          title: a.title,
+          type: a.type,
+          courseId: a.courseId?._id,
+          courseTitle: a.courseId?.title || 'Kursus',
+          lessonId: a.lessonId,
+          dueDate: a.dueDate || null,
+          status: submitted ? 'done' : overdue ? 'late' : 'upcoming',
+          score: attempt?.score ?? null,
+        };
+      });
+      res.json({ assignments: result });
+    })
+  );
+
   // Get assignment details with student's current attempt
   router.get(
     '/:assignmentId',

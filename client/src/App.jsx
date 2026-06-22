@@ -20,6 +20,9 @@ import StudentCourses from './pages/StudentCourses';
 import StudentCertificates from './pages/StudentCertificates';
 import StudentProgress from './pages/StudentProgress';
 import StudentCatalog from './pages/StudentCatalog';
+import StudentAssignments from './pages/StudentAssignments';
+import StudentDiscussions from './pages/StudentDiscussions';
+import StudentNotifications from './pages/StudentNotifications';
 import HeroManager from './pages/dashboard/HeroManager';
 import CourseManager from './pages/dashboard/CourseManager';
 import UserManager from './pages/dashboard/UserManager';
@@ -122,6 +125,30 @@ export default function App() {
           element={
             <RequireAuth roles={['student']}>
               <StudentCatalog />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/assignments"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentAssignments />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/discussion"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentDiscussions />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/notifications"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentNotifications />
             </RequireAuth>
           }
         />

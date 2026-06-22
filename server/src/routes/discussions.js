@@ -1,11 +1,61 @@
 const express = require('express');
 const { LessonComment } = require('../models/LessonComment');
 const { Lesson } = require('../models/Lesson');
+const { User } = require('../models/User');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { HttpError } = require('../utils/errors');
 
 function discussionsRouter({ requireAuth }) {
   const router = express.Router();
+
+  // GET /api/discussions/mine — recent discussions across enrolled courses
+  router.get(
+    '/mine',
+    requireAuth,
+    asyncHandler(async (req, res) => {
+      const user = await User.findById(req.user.sub).select('purchasedCourseIds completedCourseIds activeCourseId');
+      if (!user) throw new HttpError(401, 'Unauthorized');
+      const courseIds = [
+        ...(user.purchasedCourseIds || []),
+        ...(user.completedCourseIds || []),
+        ...(user.activeCourseId ? [user.activeCourseId] : []),
+      ];
+      const uniqueIds = [...new Set(courseIds.map((c) => String(c)))];
+      if (uniqueIds.length === 0) return res.json({ comments: [] });
+
+      const comments = await LessonComment.find({
+        courseId: { $in: uniqueIds },
+        parentId: null,
+      })
+        .populate('userId', 'name fullName avatarUrl')
+        .populate('courseId', 'title')
+        .populate('lessonId', 'title')
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean();
+
+      const ids = comments.map((c) => c._id);
+      const replyCounts = await LessonComment.aggregate([
+        { $match: { parentId: { $in: ids } } },
+        { $group: { _id: '$parentId', count: { $sum: 1 } } },
+      ]);
+      const byParent = new Map(replyCounts.map((r) => [String(r._id), r.count]));
+
+      res.json({
+        comments: comments.map((c) => ({
+          _id: c._id,
+          content: c.content,
+          createdAt: c.createdAt,
+          user: c.userId ? { name: c.userId.fullName || c.userId.name, avatarUrl: c.userId.avatarUrl } : null,
+          courseTitle: c.courseId?.title || 'Kursus',
+          lessonId: c.lessonId?._id || c.lessonId,
+          lessonTitle: c.lessonId?.title || '',
+          courseId: c.courseId?._id,
+          replies: byParent.get(String(c._id)) || 0,
+        })),
+      });
+    })
+  );
 
   // GET /api/discussions/lesson/:lessonId
   router.get(

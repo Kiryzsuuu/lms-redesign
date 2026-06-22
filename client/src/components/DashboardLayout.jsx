@@ -82,6 +82,8 @@ const STUDENT_NAV = [
     section: 'Belajar',
     items: [
       { to: '/dashboard/progress', icon: 'ti-chart-bar', label: 'Nilai & Progress' },
+      { to: '/dashboard/assignments', icon: 'ti-checklist', label: 'Tugas' },
+      { to: '/dashboard/discussion', icon: 'ti-message-circle', label: 'Diskusi' },
       { to: '/dashboard/certificates', icon: 'ti-certificate', label: 'Sertifikat' },
     ],
   },
@@ -89,6 +91,7 @@ const STUDENT_NAV = [
     section: 'Akun',
     items: [
       { to: '/my-profile', icon: 'ti-user-circle', label: 'Profil Saya' },
+      { to: '/dashboard/notifications', icon: 'ti-bell', label: 'Notifikasi' },
     ],
   },
 ];
