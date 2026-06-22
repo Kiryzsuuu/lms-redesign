@@ -45,6 +45,25 @@ function LessonCard({ l, onEdit, onToggle, onDelete, dragProps, isDragging, isDr
   );
 }
 
+/** Generic drag-to-reorder helper. onReorder(fromIdx, toIdx). */
+function useDndReorder(onReorder) {
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  const containerProps = (idx) => ({
+    onDragOver: (e) => { e.preventDefault(); if (overIdx !== idx) setOverIdx(idx); },
+    onDrop: (e) => { e.preventDefault(); if (dragIdx !== null && dragIdx !== idx) onReorder(dragIdx, idx); setDragIdx(null); setOverIdx(null); },
+    style: { borderTop: overIdx === idx && dragIdx !== null && dragIdx !== idx ? '2px solid #0C628D' : undefined, opacity: dragIdx === idx ? 0.4 : 1 },
+  });
+  const handleProps = (idx) => ({
+    draggable: true,
+    onDragStart: (e) => { setDragIdx(idx); e.dataTransfer.effectAllowed = 'move'; },
+    onDragEnd: () => { setDragIdx(null); setOverIdx(null); },
+    title: 'Geser untuk mengubah urutan',
+    style: { cursor: 'grab', color: '#9CA3AF', flexShrink: 0, touchAction: 'none' },
+  });
+  return { containerProps, handleProps };
+}
+
 /** Renders a drag-and-drop reorderable list of lessons within one group. */
 function LessonDndList({ lessons, onEdit, onToggle, onDelete, onReorder }) {
   const [dragIdx, setDragIdx] = useState(null);
@@ -570,6 +589,35 @@ export default function CourseManager() {
     }
   }
 
+  async function reorderModules(fromIdx, toIdx) {
+    if (!selected || fromIdx === toIdx) return;
+    const reordered = [...modules];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setModules(reordered); // optimistic
+    try {
+      await api.put(`/courses/${selected._id}/modules/reorder`, { orderedIds: reordered.map((m) => String(m._id)) });
+      await loadCourseDetails(selected._id);
+    } catch (e) {
+      setError(e?.response?.data?.error?.message || 'Gagal mengubah urutan modul');
+      await loadCourseDetails(selected._id);
+    }
+  }
+
+  async function reorderCourses(fromIdx, toIdx) {
+    if (fromIdx === toIdx) return;
+    const reordered = [...courses];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setCourses(reordered); // optimistic
+    try {
+      await api.put('/courses/reorder', { orderedIds: reordered.map((c) => String(c._id)) });
+    } catch (e) {
+      setError(e?.response?.data?.error?.message || 'Gagal mengubah urutan course');
+      await loadCourses();
+    }
+  }
+
   async function deleteLesson(lesson) {
     if (!selected) return;
     askConfirm({
@@ -815,22 +863,37 @@ export default function CourseManager() {
     });
   }
 
+  const courseDnd = useDndReorder(reorderCourses);
+  const canReorderCourses = role === 'admin';
+  const moduleDnd = useDndReorder(reorderModules);
+
   const renderSidebar = () => (
     <div className="grid gap-2">
-      {courses.map((c) => (
-        <button
+      {courses.map((c, idx) => {
+        const dnd = canReorderCourses ? courseDnd.containerProps(idx) : {};
+        return (
+        <div
           key={c._id}
+          {...dnd}
           onClick={() => {
             setSelectedId(c._id);
             setActiveTab('settings');
           }}
           className={
-            'px-3 py-2 text-left text-sm font-medium rounded-lg transition break-words ' +
+            'px-3 py-2 text-left text-sm font-medium rounded-lg transition break-words cursor-pointer ' +
             (selectedId === c._id ? 'bg-[#0C628D] text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200')
           }
+          style={dnd.style}
         >
           <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 font-semibold leading-snug line-clamp-2 break-words">{c.title}</div>
+            <div className="flex items-start gap-1.5 min-w-0">
+              {canReorderCourses && (
+                <span {...courseDnd.handleProps(idx)} onClick={(e) => e.stopPropagation()} style={{ ...courseDnd.handleProps(idx).style, color: selectedId === c._id ? 'rgba(255,255,255,.7)' : '#9CA3AF', marginTop: 1 }}>
+                  <i className="ti ti-grip-vertical" style={{ fontSize: 14 }} />
+                </span>
+              )}
+              <div className="min-w-0 font-semibold leading-snug line-clamp-2 break-words">{c.title}</div>
+            </div>
             <span
               className={
                 'mt-0.5 shrink-0 rounded border px-2 py-0.5 text-[10px] font-extrabold ' +
@@ -846,8 +909,9 @@ export default function CourseManager() {
               {c.isPublished ? 'PUBLISHED' : 'DRAFT'}
             </span>
           </div>
-        </button>
-      ))}
+        </div>
+        );
+      })}
       {!loading && courses.length === 0 ? <div className="text-sm text-slate-600">Belum ada course.</div> : null}
       {loading ? <div className="text-sm text-slate-600">Loading...</div> : null}
       <Button onClick={() => { setSelectedId(''); setActiveTab('new'); }} className="w-full mt-4">
@@ -1306,12 +1370,17 @@ export default function CourseManager() {
                       </form>
 
                       <div className="grid gap-3">
-                        {modules.map((mod) => {
+                        {modules.map((mod, idx) => {
                           const modLessons = lessons.filter((l) => String(l.moduleId) === String(mod._id));
+                          const mdnd = moduleDnd.containerProps(idx);
                           return (
-                            <div key={mod._id} className="border border-slate-200 rounded-lg p-4">
+                            <div key={mod._id} className="border border-slate-200 rounded-lg p-4" {...mdnd} style={mdnd.style}>
                               <div className="flex items-start justify-between gap-3">
-                                <div>
+                                <div className="flex items-start gap-2 min-w-0">
+                                  <span {...moduleDnd.handleProps(idx)} style={{ ...moduleDnd.handleProps(idx).style, marginTop: 2 }}>
+                                    <i className="ti ti-grip-vertical" style={{ fontSize: 16 }} />
+                                  </span>
+                                  <div className="min-w-0">
                                   <div className="font-semibold text-slate-900">{mod.title}</div>
                                   {mod.description && <div className="text-xs text-slate-500 mt-0.5">{mod.description}</div>}
                                   <div className="text-xs text-slate-400 mt-1">
@@ -1322,6 +1391,7 @@ export default function CourseManager() {
                                       {modLessons.map((l) => l.title).join(', ')}
                                     </div>
                                   )}
+                                  </div>
                                 </div>
                                 <div className="flex gap-2 shrink-0">
                                   <Button variant="outline" className="px-3 text-xs" onClick={() => beginEditModule(mod)}>

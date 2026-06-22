@@ -9,6 +9,7 @@ const courseSchema = new mongoose.Schema(
     priceIdr: { type: Number, default: 0, min: 0 },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     isPublished: { type: Boolean, default: false, index: true },
+    order: { type: Number, default: 0, index: true }, // urutan tampil (drag & drop)
     tags: [{ type: String, trim: true }], // keahlian/topik yang dicakup course ini
     whatYouLearn:  [{ type: String, trim: true }],
     requirements:  [{ type: String, trim: true }],

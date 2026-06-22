@@ -30,8 +30,20 @@ function coursesRouter({ requireAuth, requireRole }) {
     requireRole('admin', 'teacher'),
     asyncHandler(async (req, res) => {
       const filter = req.user.role === 'admin' ? {} : { ownerId: req.user.sub };
-      const courses = await Course.find(filter).sort({ createdAt: -1 }).populate('categoryId', 'name slug');
+      const courses = await Course.find(filter).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug');
       res.json({ courses });
+    })
+  );
+
+  // Reorder courses by an explicit ordered list of IDs (admin only)
+  router.put(
+    '/reorder',
+    requireAuth,
+    requireRole('admin'),
+    asyncHandler(async (req, res) => {
+      const orderedIds = Array.isArray(req.body.orderedIds) ? req.body.orderedIds : [];
+      await Promise.all(orderedIds.map((id, idx) => Course.updateOne({ _id: id }, { order: idx })));
+      res.json({ ok: true });
     })
   );
 
@@ -39,7 +51,7 @@ function coursesRouter({ requireAuth, requireRole }) {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
-      const courses = await Course.find({ isPublished: true }).sort({ createdAt: -1 }).populate('categoryId', 'name slug');
+      const courses = await Course.find({ isPublished: true }).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug');
       res.json({ courses });
     })
   );
@@ -255,7 +267,7 @@ function coursesRouter({ requireAuth, requireRole }) {
     requireRole('admin', 'teacher'),
     asyncHandler(async (req, res) => {
       const filter = req.user.role === 'admin' ? {} : { ownerId: req.user.sub };
-      const courses = await Course.find(filter).sort({ createdAt: -1 }).populate('categoryId', 'name slug');
+      const courses = await Course.find(filter).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug');
       res.json({ courses });
     })
   );
