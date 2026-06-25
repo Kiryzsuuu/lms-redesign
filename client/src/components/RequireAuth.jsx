@@ -11,12 +11,12 @@ export function RequireAuth({ children, roles }) {
       <div style={{ position: 'fixed', inset: 0, background: '#F5F6F8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, zIndex: 9999 }}>
         <img
           src="/logo-color.png"
-          alt="EduPoint"
+          alt="Edulyfe"
           style={{ height: 52, width: 'auto', objectFit: 'contain', animation: 'ep-heartbeat 0.9s ease-in-out infinite' }}
           onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'block'; }}
         />
         <div style={{ display: 'none', fontSize: 22, fontWeight: 800, color: '#1B3A5C', animation: 'ep-heartbeat 0.9s ease-in-out infinite' }}>
-          <span style={{ color: '#0C628D' }}>Edu</span>Point
+          <span style={{ color: '#0C628D' }}>Edu</span>lyfe
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           {[0, 1, 2].map(i => (

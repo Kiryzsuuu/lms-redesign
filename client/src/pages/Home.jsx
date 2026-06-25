@@ -143,14 +143,14 @@ export default function Home() {
               </p>
 
               <div className="flex items-center gap-3 flex-wrap mb-10">
-                <Link to="/courses">
+                <Link to={isAuthed ? '/dashboard' : '/register'}>
                   <button
                     className="inline-flex items-center gap-2 font-semibold text-white rounded-[16px] px-8 py-[0.95rem] text-[1rem] transition-all hover:-translate-y-px"
                     style={{ background: '#0C628D', boxShadow: '0 1px 2px rgba(12,98,141,.3),inset 0 1px 0 rgba(255,255,255,.08)' }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = '#0A527A'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(12,98,141,.4)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = '#0C628D'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(12,98,141,.3),inset 0 1px 0 rgba(255,255,255,.08)'; }}
                   >
-                    Mulai Belajar Gratis
+                    {isAuthed ? 'Dashboard' : 'Mulai Belajar Gratis'}
                   </button>
                 </Link>
                 <Link to="/courses">
@@ -550,7 +550,7 @@ export default function Home() {
                   <div style={{ position: 'absolute', inset: 0, left: '2.5%', top: '2.5%', padding: '4.5% 5.5% 4.5% 5%', display: 'flex', flexDirection: 'column' }}>
                     {/* Header: logo + cert number */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3%' }}>
-                      <img src="/logo-inspira.png" alt="EduPoint" style={{ height: '3.8em', width: 'auto', objectFit: 'contain' }} />
+                      <img src="/logo-inspira.png" alt="Edulyfe" style={{ height: '3.8em', width: 'auto', objectFit: 'contain' }} />
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '0.52em', fontWeight: 700, letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase' }}>No. Sertifikat</div>
                         <div style={{ fontSize: '0.56em', fontWeight: 600, color: '#374151', fontFamily: 'monospace', marginTop: 1 }}>CERT-M8P2R4-K7X9</div>
@@ -577,11 +577,11 @@ export default function Home() {
                         <div>
                           <div style={{ fontSize: '0.45em', fontWeight: 600, letterSpacing: '0.1em', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: 2 }}>Tanggal Penyelesaian</div>
                           <div style={{ fontSize: '0.62em', fontWeight: 600, color: '#374151' }}>1 Januari 2025</div>
-                          <div style={{ fontSize: '0.45em', color: '#9CA3AF', marginTop: 2 }}>Platform: EduPoint</div>
+                          <div style={{ fontSize: '0.45em', color: '#9CA3AF', marginTop: 2 }}>Platform: Edulyfe</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
                           <div style={{ width: '8em', height: 0.5, background: '#D1D5DB', margin: '0 auto 3px' }} />
-                          <div style={{ fontSize: '0.58em', fontWeight: 600, color: '#374151' }}>EduPoint</div>
+                          <div style={{ fontSize: '0.58em', fontWeight: 600, color: '#374151' }}>Edulyfe</div>
                           <div style={{ fontSize: '0.43em', letterSpacing: '0.1em', color: '#9CA3AF', textTransform: 'uppercase', marginTop: 1 }}>Instruktur / Authorized</div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
@@ -601,7 +601,7 @@ export default function Home() {
                               <div key={i} style={{ background: v ? '#0C628D' : '#fff', borderRadius: 0.5 }} />
                             ))}
                           </div>
-                          <div style={{ fontSize: '0.38em', color: '#9CA3AF' }}>EduPoint</div>
+                          <div style={{ fontSize: '0.38em', color: '#9CA3AF' }}>Edulyfe</div>
                         </div>
                       </div>
                     </div>
@@ -666,7 +666,7 @@ export default function Home() {
                 className="text-[1rem] leading-[1.7] italic p-5 rounded-[16px] mb-6"
                 style={{ color: '#374151', background: '#fff', border: '1px solid #E5E7EB', borderLeft: '3px solid #F3921B' }}
               >
-                "{S.testimonialQuote || 'Lulusan EduPoint 3× lebih cepat mendapat pekerjaan dibanding rata-rata fresh graduate Indonesia.'}"
+                "{S.testimonialQuote || 'Lulusan Edulyfe 3× lebih cepat mendapat pekerjaan dibanding rata-rata fresh graduate Indonesia.'}"
               </blockquote>
               <div className="flex items-center gap-3">
                 <span className="text-[1rem] tracking-[2px]" style={{ color: '#F59E0B' }}>★★★★★</span>

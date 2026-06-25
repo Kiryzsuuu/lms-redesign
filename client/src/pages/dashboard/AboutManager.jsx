@@ -6,7 +6,7 @@ import { SidebarShell } from '../../components/SidebarShell';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 const DEFAULT_ABOUT_TEXT = {
-  title: 'Tentang EduPoint',
+  title: 'Tentang Edulyfe',
   tagline: 'Platform Pembelajaran Terpadu',
   description: 'Kami menyediakan platform pembelajaran online yang inovatif dengan fitur quiz interaktif untuk mendukung pengembangan skill Anda.',
   mission: 'Memberdayakan individu melalui pendidikan berkualitas tinggi yang dapat diakses oleh semua orang.',
@@ -216,7 +216,7 @@ export default function AboutManager() {
         <Card className="p-6">
           <div className="mb-6">
             <h3 className="text-lg font-bold text-slate-900">Edit Info Platform</h3>
-            <p className="text-sm text-slate-600 mt-1">Ubah informasi tentang EduPoint yang ditampilkan di halaman Tentang Kami</p>
+            <p className="text-sm text-slate-600 mt-1">Ubah informasi tentang Edulyfe yang ditampilkan di halaman Tentang Kami</p>
           </div>
 
           <form onSubmit={saveAboutText} className="space-y-4">
@@ -227,7 +227,7 @@ export default function AboutManager() {
                 className="mt-1"
                 value={aboutText.title}
                 onChange={(e) => setAboutText({ ...aboutText, title: e.target.value })}
-                placeholder="Tentang EduPoint"
+                placeholder="Tentang Edulyfe"
               />
             </div>
 

@@ -7,34 +7,9 @@ function LogoMark() {
   return (
     <img
       src="/logo-color.png"
-      alt="EduPoint"
+      alt="Edulyfe"
       className="h-[36px] w-auto object-contain flex-shrink-0"
     />
-  );
-}
-
-function NavDropdown({ label, isOpen, onHover, children }) {
-  return (
-    <div className="relative" onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
-      <button
-        className="flex items-center gap-[0.3rem] text-[0.875rem] font-medium text-gray-600 px-[0.85rem] py-[0.45rem] rounded-[6px] transition-colors duration-150 hover:text-gray-900 hover:bg-gray-100"
-      >
-        {label}
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className="absolute top-full left-0 w-52 z-50 pt-1">
-          <div
-            className="bg-white rounded-[16px] py-1.5 overflow-hidden"
-            style={{ border: '1px solid #E5E7EB', boxShadow: '0 10px 15px rgba(0,0,0,.08), 0 4px 6px rgba(0,0,0,.05)' }}
-          >
-            {children}
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -79,7 +54,6 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [dropdownOpen, setDropdownOpen] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [exitConfirmOpen, setExitConfirmOpen] = useState(false);
   const confirmExitRef = useRef(() => {});
@@ -133,38 +107,6 @@ export function Navbar() {
           className="fixed inset-0 bg-white z-[999] flex flex-col pt-[var(--nav-h)] px-4 pb-6 overflow-y-auto"
           style={{ top: 'var(--nav-h)' }}
         >
-          <MobileMenuGroup label="Utama">
-            <MobileMenuItem onSelect={() => { closeMobile(); nav('/courses'); }}>Courses</MobileMenuItem>
-            {isAuthed && <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard'); }}>Dashboard</MobileMenuItem>}
-          </MobileMenuGroup>
-          {role === 'student' && (
-            <MobileMenuGroup label="Pembelajaran">
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/cart'); }}>
-                <span className="flex items-center justify-between">
-                  Keranjang
-                  {cartCount > 0 && <span className="h-2 w-2 rounded-full bg-rose-500" />}
-                </span>
-              </MobileMenuItem>
-            </MobileMenuGroup>
-          )}
-          {(role === 'admin' || role === 'teacher') && (
-            <MobileMenuGroup label="Pembelajaran">
-              {role === 'teacher' && <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/contracts'); }}>Kontrak Kerjasama</MobileMenuItem>}
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/courses'); }}>Kelola Kursus</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/question-bank'); }}>Bank Soal</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/student-progress'); }}>Monitor Siswa</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/heroes'); }}>Hero Carousel</MobileMenuItem>
-            </MobileMenuGroup>
-          )}
-          {role === 'admin' && (
-            <MobileMenuGroup label="Administrasi">
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/contracts'); }}>Kontrak Kerjasama</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/users'); }}>Kelola Pengguna</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/categories'); }}>Kelola Kategori</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/accounting'); }}>Pembukuan</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/coupons'); }}>Kelola Kupon</MobileMenuItem>
-            </MobileMenuGroup>
-          )}
           {!isAuthed && (
             <MobileMenuGroup label="Akun">
               <MobileMenuItem onSelect={() => { closeMobile(); nav('/login'); }}>Masuk</MobileMenuItem>
@@ -173,6 +115,7 @@ export function Navbar() {
           )}
           {isAuthed && (
             <MobileMenuGroup label="Akun">
+              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard'); }}>Dashboard</MobileMenuItem>
               <MobileMenuItem onSelect={() => { closeMobile(); nav('/my-profile'); }}>Profil Saya</MobileMenuItem>
               <MobileMenuItem onSelect={() => { closeMobile(); logout(); }}>Logout</MobileMenuItem>
             </MobileMenuGroup>
@@ -212,35 +155,8 @@ export function Navbar() {
                 <LogoMark />
               </Link>
 
-              {/* Desktop nav */}
-              <nav className="hidden md:flex items-center gap-[0.15rem] flex-1 justify-center">
-                <Link to="/courses" className="text-[0.875rem] font-medium text-gray-600 px-[0.85rem] py-[0.45rem] rounded-[6px] hover:text-gray-900 hover:bg-gray-100 transition-colors">
-                  Courses
-                </Link>
-
-                {(role === 'admin' || role === 'teacher') && (
-                  <NavDropdown label="Pembelajaran" isOpen={dropdownOpen === 'pembelajaran'} onHover={(o) => setDropdownOpen(o ? 'pembelajaran' : null)}>
-                    {role === 'teacher' && <DropLink to="/dashboard/contracts">Kontrak Kerjasama</DropLink>}
-                    <DropLink to="/dashboard/courses">Kelola Kursus</DropLink>
-                    <DropLink to="/dashboard/question-bank">Bank Soal</DropLink>
-                    <DropLink to="/dashboard/student-progress">Monitor Siswa</DropLink>
-                    <DropLink to="/dashboard/heroes">Hero Carousel</DropLink>
-                  </NavDropdown>
-                )}
-
-                {role === 'admin' && (
-                  <NavDropdown label="Administrasi" isOpen={dropdownOpen === 'admin'} onHover={(o) => setDropdownOpen(o ? 'admin' : null)}>
-                    <DropLink to="/dashboard/contracts">Kontrak Kerjasama</DropLink>
-                    <DropLink to="/dashboard/users">Kelola Pengguna</DropLink>
-                    <DropLink to="/dashboard/categories">Kelola Kategori</DropLink>
-                    <DropLink to="/dashboard/accounting">Pembukuan</DropLink>
-                    <DropLink to="/dashboard/coupons">Kelola Kupon</DropLink>
-                  </NavDropdown>
-                )}
-              </nav>
-
-              {/* Desktop actions */}
-              <div className="hidden md:flex items-center gap-[0.6rem]">
+              {/* Desktop actions (logo kiri, profil kanan) */}
+              <div className="hidden md:flex items-center gap-[0.6rem] ml-auto">
                 {!isAuthed ? (
                   <>
                     <Link to="/login">

@@ -32,7 +32,7 @@ export function PageLoader() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
         <img
           src="/logo-color.png"
-          alt="EduPoint"
+          alt="Edulyfe"
           style={{
             height: 48, width: 'auto', objectFit: 'contain',
             animation: 'ep-heartbeat 0.9s ease-in-out infinite',
@@ -48,7 +48,7 @@ export function PageLoader() {
           display: 'none', fontSize: 22, fontWeight: 800, color: '#1B3A5C',
           animation: 'ep-heartbeat 0.9s ease-in-out infinite',
         }}>
-          <span style={{ color: '#0C628D' }}>Edu</span>Point
+          <span style={{ color: '#0C628D' }}>Edu</span>lyfe
         </div>
         <div style={{ display: 'flex', gap: 5 }}>
           {[0, 1, 2].map(i => (

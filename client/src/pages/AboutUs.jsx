@@ -46,7 +46,7 @@ export default function AboutUs() {
         <Container>
           <div className="max-w-3xl">
             <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
-              {aboutText?.title || 'Tentang EduPoint'}
+              {aboutText?.title || 'Tentang Edulyfe'}
             </h1>
             <p className="text-xl text-slate-300">
               {aboutText?.tagline || 'Platform Pembelajaran Terpadu'}

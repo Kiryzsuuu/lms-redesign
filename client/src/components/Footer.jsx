@@ -23,7 +23,7 @@ const FOOTER_DEFAULTS = {
     ]},
     { title: 'Bantuan', links: [
       { label: 'FAQ', href: '/faq' },
-      { label: 'Hubungi Kami', href: 'mailto:support@edupoint.id' },
+      { label: 'Hubungi Kami', href: 'mailto:support@edulyfe.id' },
       { label: 'Kebijakan Privasi', href: '/kebijakan-privasi' },
       { label: 'Syarat & Ketentuan', href: '/' },
     ]},
@@ -33,7 +33,7 @@ const FOOTER_DEFAULTS = {
     { label: 'Syarat', href: '#' },
     { label: 'Cookie', href: '#' },
   ],
-  footerCopyright: 'EduPoint by Inspiratekno. All rights reserved.',
+  footerCopyright: 'Edulyfe by Inspiratekno. All rights reserved.',
 };
 
 function FooterLink({ href, label }) {
@@ -70,7 +70,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <img src="/logo-putih.png" alt="EduPoint" className="h-[30px] w-auto object-contain" />
+              <img src="/logo-putih.png" alt="Edulyfe" className="h-[30px] w-auto object-contain" />
             </div>
             <p className="text-[0.85rem] leading-[1.65] max-w-[260px] mb-6" style={{ color: 'rgba(255,255,255,.35)' }}>
               {s.footerTagline || FOOTER_DEFAULTS.footerTagline}

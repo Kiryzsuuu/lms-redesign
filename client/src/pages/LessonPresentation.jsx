@@ -306,7 +306,7 @@ export default function LessonPresentation() {
       {/* Topbar */}
       <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, height: TB_H, background: C.white, borderBottom: `1px solid ${C.n300}`, display: 'flex', alignItems: 'center', padding: '0 1.2rem', gap: '0.8rem' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/logo-color.png" alt="EduPoint" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo-color.png" alt="Edulyfe" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
         </Link>
         <div style={{ width: 1, height: 22, background: C.n300, flexShrink: 0 }} />
         <div className="pl-tb-mid" style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '1rem' }}>

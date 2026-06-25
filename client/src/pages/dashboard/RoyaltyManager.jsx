@@ -159,7 +159,7 @@ export default function RoyaltyManager() {
                 rows={2}
                 value={payNote}
                 onChange={(e) => setPayNote(e.target.value)}
-                placeholder="BCA 1234 atas nama Inspira..."
+                placeholder="BCA 1234 atas nama Edulyfe..."
               />
             </div>
             <div className="flex justify-end gap-2">

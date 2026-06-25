@@ -158,7 +158,7 @@ export function DashboardLayout({ children }) {
       >
         <img
           src="/logo-putih.png"
-          alt="EduPoint"
+          alt="Edulyfe"
           style={{ height: 28, width: 'auto', objectFit: 'contain', maxWidth: 140 }}
           onError={e => {
             e.currentTarget.style.display = 'none';
@@ -170,7 +170,7 @@ export function DashboardLayout({ children }) {
             <i className="ti ti-school" style={{ color: '#fff', fontSize: 15 }} />
           </div>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-            <span style={{ color: '#7EC8F5' }}>Edu</span>Point
+            <span style={{ color: '#7EC8F5' }}>Edu</span>lyfe
           </div>
         </div>
       </Link>
