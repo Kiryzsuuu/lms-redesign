@@ -68,14 +68,8 @@ export default function App() {
         <Route path="/courses/:id" element={<CourseDetail />} />
         <Route path="/courses/:id/lessons/:lessonId" element={<LessonPresentation />} />
         <Route path="/quiz/:quizId" element={<QuizPlay />} />
-        <Route
-          path="/cart"
-          element={
-            <RequireAuth roles={['student']}>
-              <Cart />
-            </RequireAuth>
-          }
-        />
+        {/* Cart kini hidup di dalam dashboard agar sidebar tetap tampil */}
+        <Route path="/cart" element={<Navigate to="/dashboard/cart" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -113,6 +107,14 @@ export default function App() {
           element={
             <RequireAuth roles={['student']}>
               <StudentCourses />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/cart"
+          element={
+            <RequireAuth roles={['student']}>
+              <Cart />
             </RequireAuth>
           }
         />

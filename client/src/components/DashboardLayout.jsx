@@ -78,7 +78,7 @@ const STUDENT_NAV = [
       { to: '/dashboard', icon: 'ti-layout-dashboard', label: 'Dashboard' },
       { to: '/dashboard/my-courses', icon: 'ti-book-2', label: 'Kursus Saya' },
       { to: '/dashboard/catalog', icon: 'ti-compass', label: 'Katalog Kursus' },
-      { to: '/cart', icon: 'ti-shopping-cart', label: 'Keranjang' },
+      { to: '/dashboard/cart', icon: 'ti-shopping-cart', label: 'Keranjang' },
     ],
   },
   {
@@ -356,7 +356,7 @@ export function DashboardLayout({ children }) {
             </Link>
             {role === 'student' && (
               <Link
-                to="/cart"
+                to="/dashboard/cart"
                 title="Keranjang"
                 style={{ position: 'relative', width: 30, height: 30, borderRadius: 8, border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#4B5563' }}
               >

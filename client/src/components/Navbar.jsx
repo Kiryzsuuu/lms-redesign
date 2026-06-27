@@ -178,7 +178,7 @@ export function Navbar() {
                 ) : (
                   <>
                     {role === 'student' && (
-                      <Link to="/cart" className="relative" aria-label="Keranjang">
+                      <Link to="/dashboard/cart" className="relative" aria-label="Keranjang">
                         <button className="p-2 rounded-[10px] text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
                             <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />

@@ -442,12 +442,12 @@ export default function CourseDetail() {
       const cartRes = await api.get('/cart');
       const already = (cartRes.data.items || []).some((i) => String(i.course?._id || i.courseId) === String(id));
       if (already) {
-        nav('/cart');
+        nav('/dashboard/cart');
         return;
       }
       await api.post('/cart/items', { courseId: id });
       window.dispatchEvent(new Event('cart:changed'));
-      nav('/cart');
+      nav('/dashboard/cart');
     } catch (e) {
       setLockError(e?.response?.data?.error?.message || 'Gagal tambah ke cart');
     }
@@ -860,7 +860,7 @@ export default function CourseDetail() {
                     {isStudent && isPaywalled ? (
                       <>
                         <Button className="w-full" onClick={addToCart}>Tambah ke Cart</Button>
-                        <Link to="/cart" className="block">
+                        <Link to="/dashboard/cart" className="block">
                           <Button variant="outline" className="w-full">Lihat Keranjang</Button>
                         </Link>
                       </>
