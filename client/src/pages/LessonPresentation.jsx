@@ -352,7 +352,7 @@ export default function LessonPresentation() {
               Sertifikat
             </Link>
           )}
-          <Link to={`/courses/${id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.77rem', fontWeight: 600, padding: '0.37rem 0.8rem', borderRadius: 7, background: 'transparent', color: C.n600, border: `1px solid ${C.n300}`, textDecoration: 'none' }}>
+          <Link to={`/courses/${id}${previewQs}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.77rem', fontWeight: 600, padding: '0.37rem 0.8rem', borderRadius: 7, background: 'transparent', color: C.n600, border: `1px solid ${C.n300}`, textDecoration: 'none' }}>
             Detail Kursus
           </Link>
           <button onClick={() => setSidebarOpen(v => !v)} style={{ width: 32, height: 32, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.n100, border: `1px solid ${C.n300}`, color: C.n600, fontSize: '0.85rem', cursor: 'pointer' }}>☰</button>
@@ -445,7 +445,7 @@ export default function LessonPresentation() {
         <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.white }}>
           {/* Breadcrumb */}
           <div className="pl-crumb" style={{ display: 'flex', alignItems: 'center', gap: '0.32rem', padding: '0.6rem 2rem', borderBottom: `1px solid ${C.n200}`, flexShrink: 0, flexWrap: 'wrap' }}>
-            <Link to={`/courses/${id}`} style={{ fontSize: '0.73rem', color: C.blue, fontWeight: 500, textDecoration: 'none' }}>{course.title}</Link>
+            <Link to={`/courses/${id}${previewQs}`} style={{ fontSize: '0.73rem', color: C.blue, fontWeight: 500, textDecoration: 'none' }}>{course.title}</Link>
             {view === 'module-overview' && viewingModule ? (
               <>
                 <span style={{ fontSize: '0.61rem', color: C.n400 }}>›</span>

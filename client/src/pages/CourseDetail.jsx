@@ -490,6 +490,11 @@ export default function CourseDetail() {
 
   function handleSelectLesson(lesson, globalIdx) {
     setLockError('');
+    if (isPreview) {
+      // Preview admin/teacher: buka materi langsung di tampilan lesson (read-only).
+      nav(`/courses/${id}/lessons/${lesson._id}?preview=1`);
+      return;
+    }
     if (isStudent) {
       api
         .post(`/courses/${id}/start`)
@@ -626,7 +631,7 @@ export default function CourseDetail() {
           <Container>
             <div className="flex items-center justify-between gap-3 text-sm text-amber-800">
               <span>Mode Preview — tampilan seperti yang dilihat siswa</span>
-              <button onClick={() => setSearchParams({})} className="text-xs font-semibold hover:underline">Kembali ke Edit</button>
+              <button onClick={() => { window.close(); nav('/dashboard/courses'); }} className="text-xs font-semibold hover:underline">Keluar</button>
             </div>
           </Container>
         </div>
