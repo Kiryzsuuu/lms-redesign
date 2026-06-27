@@ -209,19 +209,8 @@ export default function CategoryManager() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="block mb-1">Urutan</Label>
-              <Input
-                type="number"
-                value={form.order}
-                onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) }))}
-                min={0}
-              />
-            </div>
-            <div className="flex items-end gap-3 pb-1">
-              <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif (tampil di halaman utama)" />
-            </div>
+          <div className="pt-1">
+            <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif (tampil di halaman utama)" />
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -263,7 +252,6 @@ export default function CategoryManager() {
                 )}
               </div>
               {cat.subtitle && <div className="text-xs text-gray-400 mt-0.5">{cat.subtitle}</div>}
-              <div className="text-xs text-gray-400">Urutan: {cat.order}</div>
             </div>
 
             <div className="flex gap-2 flex-shrink-0">

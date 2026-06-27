@@ -79,6 +79,8 @@ function heroesRouter({ requireAuth, requireRole }) {
         isActive: z.coerce.boolean().optional().default(true),
       });
       const data = schema.parse(req.body);
+      // Urutan otomatis: slide baru ditaruh paling akhir.
+      if (!req.body.order) data.order = await HeroSlide.countDocuments();
       const slide = await HeroSlide.create(data);
       res.status(201).json({ slide });
     })
@@ -95,7 +97,7 @@ function heroesRouter({ requireAuth, requireRole }) {
         ctaText: z.string().optional().default('Mulai'),
         ctaHref: z.string().optional().default('/courses'),
         imageUrl: z.string().optional().default(''),
-        order: z.coerce.number().optional().default(0),
+        order: z.coerce.number().optional(),
         isActive: z.coerce.boolean().optional().default(true),
       });
       const data = schema.parse(req.body);

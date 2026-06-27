@@ -444,6 +444,25 @@ export default function CourseManager() {
     }
   }
 
+  // Toggle publish langsung dari daftar course (admin only).
+  async function toggleCoursePublish(c) {
+    setError('');
+    try {
+      await api.put(`/courses/${c._id}`, {
+        title: c.title,
+        description: c.description,
+        coverImageUrl: c.coverImageUrl,
+        priceIdr: c.priceIdr,
+        isPublished: !c.isPublished,
+        tags: c.tags ?? [],
+      });
+      await loadCourses();
+      if (String(selected?._id) === String(c._id)) await loadCourseDetails(c._id);
+    } catch (e) {
+      setError(e?.response?.data?.error?.message || 'Gagal update status publish');
+    }
+  }
+
   async function updateSelectedCourse(patch = {}) {
     if (!selected) return;
     // Guard: if called directly from onClick, patch is a MouseEvent — ignore it
@@ -916,29 +935,40 @@ export default function CourseManager() {
               )}
               <div className="min-w-0 font-semibold leading-snug line-clamp-2 break-words">{c.title}</div>
             </div>
-            <span
-              className={
-                'mt-0.5 shrink-0 rounded border px-2 py-0.5 text-[10px] font-extrabold ' +
-                (c.isPublished
-                  ? selectedId === c._id
-                    ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
-                    : 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                  : selectedId === c._id
-                    ? 'border-rose-300 bg-rose-50 text-rose-900'
+            {role === 'admin' ? (
+              <span
+                onClick={(e) => { e.stopPropagation(); toggleCoursePublish(c); }}
+                title={c.isPublished ? 'Klik untuk jadikan draft' : 'Klik untuk publish'}
+                className="mt-0.5 shrink-0 flex items-center gap-1.5"
+              >
+                <Toggle checked={!!c.isPublished} onChange={() => toggleCoursePublish(c)} />
+                <span className={'text-[10px] font-extrabold ' + (selectedId === c._id ? 'text-white' : c.isPublished ? 'text-emerald-700' : 'text-rose-700')}>
+                  {c.isPublished ? 'PUBLISHED' : 'DRAFT'}
+                </span>
+              </span>
+            ) : (
+              <span
+                className={
+                  'mt-0.5 shrink-0 rounded border px-2 py-0.5 text-[10px] font-extrabold ' +
+                  (c.isPublished
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
                     : 'border-rose-200 bg-rose-50 text-rose-900')
-              }
-            >
-              {c.isPublished ? 'PUBLISHED' : 'DRAFT'}
-            </span>
+                }
+              >
+                {c.isPublished ? 'PUBLISHED' : 'DRAFT'}
+              </span>
+            )}
           </div>
         </div>
         );
       })}
-      {!loading && courses.length === 0 ? <div className="text-sm text-slate-600">Belum ada course.</div> : null}
+      {!loading && courses.length === 0 ? <div className="text-sm text-slate-600">{role === 'teacher' ? 'Belum ada course kontrak. Course akan muncul setelah Anda menerima kontrak kerjasama.' : 'Belum ada course.'}</div> : null}
       {loading ? <div className="text-sm text-slate-600">Loading...</div> : null}
-      <Button onClick={() => { setSelectedId(''); setActiveTab('new'); }} className="w-full mt-4">
-        Tambah Course Baru
-      </Button>
+      {role === 'admin' && (
+        <Button onClick={() => { setSelectedId(''); setActiveTab('new'); }} className="w-full mt-4">
+          Tambah Course Baru
+        </Button>
+      )}
     </div>
   );
 
@@ -1075,23 +1105,25 @@ export default function CourseManager() {
                         </div>
                       )}
                     </div>
-                    {templates.length > 0 && (
-                      <div>
-                        <Label>Template Outline <span className="text-slate-400 font-normal">(opsional)</span></Label>
-                        <div className="mt-1">
-                          <select
-                            value={courseForm.templateId}
-                            onChange={(e) => setCourseForm((f) => ({ ...f, templateId: e.target.value }))}
-                            className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-                          >
-                            <option value="">Tanpa template</option>
-                            {templates.map((t) => (
-                              <option key={t._id} value={t._id}>{t.name}</option>
-                            ))}
-                          </select>
-                        </div>
+                    <div>
+                      <Label>Template Outline <span className="text-slate-400 font-normal">(opsional)</span></Label>
+                      <div className="mt-1">
+                        <select
+                          value={courseForm.templateId}
+                          onChange={(e) => setCourseForm((f) => ({ ...f, templateId: e.target.value }))}
+                          disabled={templates.length === 0}
+                          className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D] disabled:bg-slate-50 disabled:text-slate-400"
+                        >
+                          <option value="">{templates.length === 0 ? 'Belum ada template tersedia' : 'Tanpa template'}</option>
+                          {templates.map((t) => (
+                            <option key={t._id} value={t._id}>{t.name}</option>
+                          ))}
+                        </select>
+                        {templates.length === 0 && (
+                          <p className="text-xs text-slate-400 mt-1">Buat template di menu <span className="font-semibold">Template Outline</span> terlebih dahulu.</p>
+                        )}
                       </div>
-                    )}
+                    </div>
                     <Toggle
                       checked={courseForm.isPublished}
                       onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
@@ -1113,9 +1145,9 @@ export default function CourseManager() {
                         checked={selected.isPublished}
                         onChange={() => updateSelectedCourse({ isPublished: !selected.isPublished })}
                         label={selected.isPublished ? 'Published' : 'Draft'}
-                        disabled={role === 'teacher' && selected.contractId}
+                        disabled={role === 'teacher'}
                       />
-                      {role === 'teacher' && selected.contractId && (
+                      {role === 'teacher' && (
                         <div className="text-xs text-slate-400 mt-1">Publish dikontrol admin</div>
                       )}
                     </div>

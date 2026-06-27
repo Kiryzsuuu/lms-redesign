@@ -205,7 +205,7 @@ function contractsRouter({ requireAuth, requireRole }) {
 
       // Update the course ownerId to this teacher so they can edit it.
       // Seed the course description from the teacher's contract description.
-      const courseUpdate = { ownerId: contract.teacherId };
+      const courseUpdate = { ownerId: contract.teacherId, contractId: contract._id };
       if (contract.teacherDescription) courseUpdate.description = contract.teacherDescription;
       if (contract.teacherExpertise) {
         courseUpdate.tags = contract.teacherExpertise.split(',').map(s => s.trim()).filter(Boolean);

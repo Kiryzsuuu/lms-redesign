@@ -85,6 +85,8 @@ function aboutRouter({ requireAuth, requireRole }) {
         isActive: z.coerce.boolean().optional().default(true),
       });
       const data = schema.parse(req.body);
+      // Urutan otomatis: anggota baru ditaruh paling akhir.
+      if (!req.body.order) data.order = await Teacher.countDocuments();
       const teacher = await Teacher.create(data);
       res.status(201).json({ teacher });
     })
@@ -101,7 +103,7 @@ function aboutRouter({ requireAuth, requireRole }) {
         role: z.string().optional().default(''),
         bio: z.string().optional().default(''),
         imageUrl: z.string().optional().default(''),
-        order: z.coerce.number().optional().default(0),
+        order: z.coerce.number().optional(),
         isActive: z.coerce.boolean().optional().default(true),
       });
       const data = schema.parse(req.body);

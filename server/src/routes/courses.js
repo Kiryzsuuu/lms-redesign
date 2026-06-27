@@ -362,7 +362,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
   router.post(
     '/',
     requireAuth,
-    requireRole('admin', 'teacher'),
+    requireRole('admin'), // hanya admin yang boleh membuat course; teacher mengerjakan course dari kontrak
     asyncHandler(async (req, res) => {
       const schema = z.object({
         title: z.string().min(2),
@@ -420,6 +420,12 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         templateId: z.string().optional().nullable(),
       });
       const data = schema.parse(req.body);
+
+      // Publish/unpublish hanya boleh oleh admin (course kontrak teacher dikontrol admin).
+      if (req.user.role === 'teacher' && Boolean(data.isPublished) !== Boolean(course.isPublished)) {
+        throw new HttpError(403, 'Status publish course hanya dapat diubah oleh admin.');
+      }
+
       const before = course.toObject();
       const updated = await Course.findByIdAndUpdate(req.params.id, data, { new: true });
       await syncTeacherSkills(course.ownerId, data.tags);
@@ -459,7 +465,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
   router.delete(
     '/:id',
     requireAuth,
-    requireRole('admin', 'teacher'),
+    requireRole('admin'), // hanya admin yang boleh menghapus course
     asyncHandler(async (req, res) => {
       const course = await assertCanEditCourse(req.params.id, req.user);
       await Promise.all([

@@ -53,6 +53,8 @@ function categoriesRouter({ requireAuth, requireRole }) {
       });
       const data = schema.parse(req.body);
       if (!data.slug) data.slug = slugify(data.name);
+      // Urutan otomatis: item baru ditaruh paling akhir.
+      if (!req.body.order) data.order = await Category.countDocuments();
 
       const category = await Category.create(data);
       res.status(201).json({ category });

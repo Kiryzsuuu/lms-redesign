@@ -8,6 +8,7 @@ const courseSchema = new mongoose.Schema(
     previewVideoUrl: { type: String, default: '' },
     priceIdr: { type: Number, default: 0, min: 0 },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract', default: null }, // course yang dikerjakan teacher via kontrak kerjasama
     isPublished: { type: Boolean, default: false, index: true },
     newCourseNotifiedAt: { type: Date, default: null }, // set saat notifikasi "kursus baru" pertama dikirim
     order: { type: Number, default: 0, index: true }, // urutan tampil (drag & drop)

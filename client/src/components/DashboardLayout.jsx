@@ -13,6 +13,8 @@ const ADMIN_NAV = [
     section: 'Kursus & Kontrak',
     items: [
       { to: '/dashboard/courses', icon: 'ti-book-2', label: 'Kelola Kursus' },
+      { to: '/dashboard/question-bank', icon: 'ti-database', label: 'Bank Soal' },
+      { to: '/dashboard/student-progress', icon: 'ti-user-check', label: 'Monitor Siswa' },
       { to: '/dashboard/contracts', icon: 'ti-file-contract', label: 'Kontrak Kerjasama', badgeKey: 'contracts' },
       { to: '/dashboard/course-templates', icon: 'ti-template', label: 'Template Outline' },
       { to: '/dashboard/categories', icon: 'ti-category', label: 'Kategori' },
@@ -205,7 +207,7 @@ export function DashboardLayout({ children }) {
 
       {/* Nav */}
       <nav style={{ padding: '8px', flex: 1, overflowY: 'auto' }}>
-        {navSections.map(sec => (
+        {navSections.filter(sec => sec.items?.length > 0).map(sec => (
           <div key={sec.section}>
             <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,.35)', textTransform: 'uppercase', letterSpacing: '.08em', padding: '0 8px', margin: '12px 0 3px' }}>
               {sec.section}

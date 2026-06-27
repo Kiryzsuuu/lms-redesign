@@ -139,15 +139,6 @@ export default function HeroManager() {
                   placeholder="https://..."
                 />
               </div>
-              <div>
-                <Label className="block text-xs sm:text-sm">Order</Label>
-                <Input
-                  type="number"
-                  className="mt-1 text-xs sm:text-sm"
-                  value={form.order}
-                  onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) }))}
-                />
-              </div>
               <Toggle checked={form.isActive} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.checked }))} label="Aktif" />
               <Button type="submit" className="bg-[#F3921B] text-white hover:bg-[#D97C0D] mt-2">
                 Tambah Slide

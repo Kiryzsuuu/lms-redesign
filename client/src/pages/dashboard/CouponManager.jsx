@@ -83,7 +83,7 @@ export default function CouponManager() {
       return;
     }
 
-    if (couponForm.discountValue <= 0) {
+    if (couponForm.discountType !== 'free' && Number(couponForm.discountValue) <= 0) {
       setError('Nilai diskon harus lebih dari 0');
       return;
     }
@@ -207,10 +207,11 @@ export default function CouponManager() {
                       type="number"
                       min="0"
                       step={couponForm.discountType === 'percentage' ? '1' : '1000'}
-                      value={couponForm.discountValue}
-                      onChange={(e) => setCouponForm((f) => ({ ...f, discountValue: Number(e.target.value) }))}
+                      value={couponForm.discountValue === 0 ? '' : couponForm.discountValue}
+                      onChange={(e) => setCouponForm((f) => ({ ...f, discountValue: e.target.value === '' ? 0 : Number(e.target.value) }))}
                       placeholder={couponForm.discountType === 'percentage' ? '50' : '100000'}
-                      required
+                      disabled={couponForm.discountType === 'free'}
+                      required={couponForm.discountType !== 'free'}
                     />
                   </div>
 

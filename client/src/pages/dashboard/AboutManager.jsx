@@ -345,17 +345,6 @@ export default function AboutManager() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="order">Urutan</Label>
-              <Input
-                id="order"
-                type="number"
-                className="mt-1"
-                value={form.order}
-                onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
-              />
-            </div>
-
             <Toggle checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} label="Aktif (Tampilkan di halaman publik)" />
 
             <div className="flex gap-2 pt-4">
