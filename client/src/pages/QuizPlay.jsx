@@ -483,7 +483,7 @@ export default function QuizPlay() {
                               : isSelectedWrong
                                 ? 'border-rose-300 bg-rose-50 text-rose-900'
                                 : selected
-                                  ? 'border-slate-900 bg-slate-900 text-white'
+                                  ? 'border-[#0C628D] bg-[#0C628D] text-white'
                                   : 'border-slate-200 bg-white hover:bg-slate-50')
                           }
                         >
@@ -507,6 +507,15 @@ export default function QuizPlay() {
                       Previous
                     </Button>
                     <div className="flex flex-wrap gap-2">
+                      {quiz?.allowClearAnswers && isQuestionAnswered(currentQuestion) ? (
+                        <Button
+                          variant="outline"
+                          className="!text-rose-600 !border-rose-300 hover:!bg-rose-50"
+                          onClick={() => setAnswers((a) => { const next = { ...a }; delete next[currentQuestion._id]; return next; })}
+                        >
+                          Hapus Jawaban
+                        </Button>
+                      ) : null}
                       {!isLastQuestion ? (
                         <Button onClick={() => setCurrentIdx((i) => Math.min(lastIdx, i + 1))}>Next</Button>
                       ) : (

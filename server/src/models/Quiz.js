@@ -9,6 +9,7 @@ const quizSchema = new mongoose.Schema(
     description: { type: String, default: '' },
     timeLimitSec: { type: Number, default: 0 },
     randomizeQuestions: { type: Boolean, default: false },
+    allowClearAnswers: { type: Boolean, default: false }, // izinkan siswa menghapus/reset jawaban
     maxAttempts: { type: Number, default: 1, min: 1 },
     openedAt: { type: Date },
     closedAt: { type: Date },

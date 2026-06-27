@@ -183,6 +183,7 @@ export default function CourseManager() {
     description: '',
     timeLimitSec: 0,
     randomizeQuestions: false,
+    allowClearAnswers: false,
     isPublished: false,
     lessonId: '',
   });
@@ -685,7 +686,7 @@ export default function CourseManager() {
     setError('');
     try {
       const res = await api.post(`/quizzes/course/${selected._id}`, quizForm);
-      setQuizForm({ title: '', description: '', timeLimitSec: 0, randomizeQuestions: false, isPublished: false, lessonId: '' });
+      setQuizForm({ title: '', description: '', timeLimitSec: 0, randomizeQuestions: false, allowClearAnswers: false, isPublished: false, lessonId: '' });
       await loadCourseDetails(selected._id);
       setActiveQuizId(res.data.quiz._id);
     } catch (e) {
@@ -1828,6 +1829,7 @@ export default function CourseManager() {
                           <Input type="number" value={quizForm.timeLimitSec} onChange={(e) => setQuizForm((f) => ({ ...f, timeLimitSec: Number(e.target.value) }))} />
                         </div>
                       </div>
+                      <Toggle checked={quizForm.allowClearAnswers} onChange={(e) => setQuizForm((f) => ({ ...f, allowClearAnswers: e.target.checked }))} label="Izinkan siswa menghapus jawaban" />
                       <Toggle checked={quizForm.isPublished} onChange={(e) => setQuizForm((f) => ({ ...f, isPublished: e.target.checked }))} label="Publish" />
                       <Button type="submit">Tambah Quiz</Button>
                     </form>

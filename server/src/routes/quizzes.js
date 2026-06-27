@@ -82,6 +82,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
         description: z.string().optional().default(''),
         timeLimitSec: z.coerce.number().optional().default(0),
         randomizeQuestions: z.coerce.boolean().optional().default(false),
+        allowClearAnswers: z.coerce.boolean().optional().default(false),
         isPublished: z.coerce.boolean().optional().default(false),
         lessonId: z.string().optional().default(''),
       });
@@ -93,6 +94,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
         description: data.description,
         timeLimitSec: data.timeLimitSec,
         randomizeQuestions: data.randomizeQuestions,
+        allowClearAnswers: data.allowClearAnswers,
         isPublished: data.isPublished,
         lessonId: lessonId || undefined,
       });
@@ -115,6 +117,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
         description: z.string().optional().default(''),
         timeLimitSec: z.coerce.number().optional().default(0),
         randomizeQuestions: z.coerce.boolean().optional().default(false),
+        allowClearAnswers: z.coerce.boolean().optional().default(false),
         isPublished: z.coerce.boolean().optional().default(false),
         lessonId: z.string().optional().default(''),
       });
@@ -127,6 +130,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
           description: data.description,
           timeLimitSec: data.timeLimitSec,
           randomizeQuestions: data.randomizeQuestions,
+          allowClearAnswers: data.allowClearAnswers,
           isPublished: data.isPublished,
           lessonId: lessonId || undefined,
         },
@@ -467,6 +471,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
           description: quiz.description,
           timeLimitSec: quiz.timeLimitSec,
           randomizeQuestions: Boolean(quiz.randomizeQuestions),
+          allowClearAnswers: Boolean(quiz.allowClearAnswers),
         },
         attempt: {
           _id: attempt._id,
