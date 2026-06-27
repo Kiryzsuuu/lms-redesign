@@ -44,7 +44,17 @@ import ContractManager from './pages/dashboard/ContractManager';
 import AboutUs from './pages/AboutUs';
 import { InfoPage } from './pages/Info';
 import { RequireAuth } from './components/RequireAuth';
+import { AuthLoader } from './components/AuthLoader';
+import { useAuth } from './lib/auth';
 import { Container } from './components/ui';
+
+// Landing page hanya untuk yang belum login. Yang sudah login -> dashboard.
+function RootRoute() {
+  const { isAuthed, token, authLoading } = useAuth();
+  if (authLoading && token && !isAuthed) return <AuthLoader />;
+  if (isAuthed) return <Navigate to="/dashboard" replace />;
+  return <Home />;
+}
 
 export default function App() {
   const { pathname } = useLocation();
@@ -53,7 +63,7 @@ export default function App() {
 
   const routes = (
     <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<RootRoute />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetail />} />
         <Route path="/courses/:id/lessons/:lessonId" element={<LessonPresentation />} />

@@ -17,7 +17,7 @@ export default function Login() {
   const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const nextPath = location.state?.from?.pathname || '/courses';
+  const nextPath = location.state?.from?.pathname || '/dashboard';
 
   if (isAuthed) return <Navigate to={nextPath} replace />;
 
