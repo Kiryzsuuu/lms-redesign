@@ -84,7 +84,15 @@ export function Navbar() {
   const minimalHeader = /^\/courses\/.+/.test(path) || /^\/quiz\/.+/.test(path);
   const closeMobile = () => setMobileOpen(false);
 
+  // Mode preview (admin/teacher): keluar langsung kembali ke edit course tsb, tanpa konfirmasi.
+  const isPreview = new URLSearchParams(location?.search || '').get('preview') === '1';
+  const previewCourseId = (path.match(/^\/courses\/([^/]+)/) || [])[1];
+
   const handleExitClick = () => {
+    if (isPreview && previewCourseId) {
+      nav(`/dashboard/courses?course=${previewCourseId}`);
+      return;
+    }
     setExitConfirmOpen(true);
     confirmExitRef.current = () => nav('/');
   };

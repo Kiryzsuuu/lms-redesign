@@ -911,6 +911,17 @@ export default function CourseManager() {
     ? courses.filter((c) => (c.title || '').toLowerCase().includes(courseQuery))
     : courses;
 
+  // Auto-pilih course dari ?course=<id> (mis. saat keluar dari mode preview).
+  const courseParam = searchParams.get('course');
+  useEffect(() => {
+    if (!courseParam || !courses.length) return;
+    if (String(selectedId) === String(courseParam)) return;
+    if (courses.some((c) => String(c._id) === String(courseParam))) {
+      setSelectedId(courseParam);
+      setActiveTab('settings');
+    }
+  }, [courseParam, courses]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const courseDnd = useDndReorder(reorderCourses);
   const canReorderCourses = role === 'admin' && !courseQuery; // nonaktifkan reorder saat mencari
   const moduleDnd = useDndReorder(reorderModules);

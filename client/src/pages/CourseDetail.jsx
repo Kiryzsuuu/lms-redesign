@@ -631,7 +631,7 @@ export default function CourseDetail() {
           <Container>
             <div className="flex items-center justify-between gap-3 text-sm text-amber-800">
               <span>Mode Preview — tampilan seperti yang dilihat siswa</span>
-              <button onClick={() => { window.close(); nav('/dashboard/courses'); }} className="text-xs font-semibold hover:underline">Keluar</button>
+              <button onClick={() => nav(`/dashboard/courses?course=${id}`)} className="text-xs font-semibold hover:underline">Keluar</button>
             </div>
           </Container>
         </div>
@@ -797,11 +797,16 @@ export default function CourseDetail() {
                     </div>
                   ) : (
                     <div className="bg-white rounded-[14px] border border-gray-200 overflow-hidden">
-                      {lessons.map((l, i) => (
+                      {lessons.map((l, i) => {
+                        const clickable = (isEnrolled || isPreview) && !isPaywalled;
+                        return (
                         <div
                           key={l._id}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700"
-                          style={{ borderTop: i > 0 ? '1px solid #F3F4F6' : 'none' }}
+                          onClick={() => { if (clickable) handleSelectLesson(l, i); }}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors"
+                          style={{ borderTop: i > 0 ? '1px solid #F3F4F6' : 'none', cursor: clickable ? 'pointer' : 'default' }}
+                          onMouseEnter={(e) => { if (clickable) e.currentTarget.style.background = '#F9FAFB'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         >
                           <div
                             className="w-5 h-5 rounded-full flex items-center justify-center text-[0.68rem] font-bold shrink-0"
@@ -812,7 +817,8 @@ export default function CourseDetail() {
                           <span className="flex-1 truncate">{l.title}</span>
                           <MateriTypeIcon lesson={l} />
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
