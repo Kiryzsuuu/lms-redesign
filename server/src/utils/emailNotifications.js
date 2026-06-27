@@ -198,40 +198,66 @@ async function sendOTP(env, { userEmail, code, type }) {
     password: 'Reset Password',
   }[type] || 'Verifikasi';
 
-  const subject = `Kode OTP ${typeLabel} - Inspira Innovation`;
+  const subject = `${code} adalah kode verifikasi Edulyfe Anda`;
   const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-      <h2 style="color: #d76810;">Kode OTP ${typeLabel}</h2>
-      
-      <p>Halo,</p>
-      
-      <p>Berikut adalah kode OTP Anda untuk ${typeLabel.toLowerCase()}:</p>
-      
-      <div style="background-color: #f5f5f5; padding: 20px; border-left: 4px solid #d76810; margin: 20px 0; text-align: center;">
-        <h1 style="color: #d76810; letter-spacing: 5px; margin: 0;">${code}</h1>
-        <p style="color: #999; margin: 10px 0 0 0; font-size: 12px;">Kode berlaku selama 10 menit</p>
-      </div>
-      
-      <p><strong>PENTING:</strong></p>
-      <ul>
-        <li>Jangan bagikan kode ini kepada siapapun</li>
-        <li>Kode ini hanya berlaku selama 10 menit</li>
-        <li>Jika Anda tidak meminta kode ini, abaikan email ini</li>
-      </ul>
-      
-      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-      <p style="font-size: 12px; color: #888;">
-        Email ini dikirim secara otomatis. Silakan jangan membalas email ini.
-      </p>
-    </div>
-  `;
+  <!DOCTYPE html>
+  <html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <title>Kode Verifikasi Edulyfe</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#F4F6F9;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F4F6F9; padding:32px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px; background-color:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #E5E9F0;">
+            <tr>
+              <td style="background-color:#0C628D; padding:24px 32px;">
+                <span style="font-family:'Segoe UI',Arial,sans-serif; font-size:22px; font-weight:800; color:#ffffff; letter-spacing:-0.5px;">Edulyfe</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:32px;">
+                <p style="margin:0 0 8px; font-family:'Segoe UI',Arial,sans-serif; font-size:18px; font-weight:700; color:#1B2B3A;">Verifikasi ${typeLabel}</p>
+                <p style="margin:0 0 24px; font-family:'Segoe UI',Arial,sans-serif; font-size:14px; line-height:1.6; color:#5A6B7B;">
+                  Gunakan kode di bawah ini untuk melanjutkan. Kode berlaku selama <strong>10 menit</strong>.
+                </p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center" style="background-color:#F4F8FB; border:1px solid #DCE7F0; border-radius:12px; padding:20px;">
+                      <span style="font-family:'Segoe UI',Arial,sans-serif; font-size:34px; font-weight:800; letter-spacing:10px; color:#0C628D;">${code}</span>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:24px 0 0; font-family:'Segoe UI',Arial,sans-serif; font-size:13px; line-height:1.6; color:#8090A0;">
+                  Demi keamanan, jangan bagikan kode ini kepada siapa pun. Jika Anda tidak meminta kode ini, cukup abaikan email ini.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 32px; border-top:1px solid #EEF2F6; background-color:#FBFCFD;">
+                <p style="margin:0; font-family:'Segoe UI',Arial,sans-serif; font-size:12px; color:#9AA8B6;">
+                  &copy; ${new Date().getFullYear()} Edulyfe. Email otomatis, mohon tidak membalas.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>`;
+  const text = [
+    `Kode verifikasi Edulyfe Anda: ${code}`,
+    '',
+    'Kode berlaku selama 10 menit.',
+    'Jangan bagikan kode ini kepada siapa pun.',
+    'Jika Anda tidak meminta kode ini, abaikan email ini.',
+  ].join('\n');
 
-  await sendMail(env, {
-    to: userEmail,
-    subject,
-    html,
-    text: `Kode OTP ${typeLabel}: ${code} (berlaku 10 menit)`,
-  });
+  await sendMail(env, { to: userEmail, subject, html, text });
 }
 
 module.exports = {
