@@ -478,6 +478,7 @@ export default function CourseManager() {
         priceIdr: patch.priceIdr ?? selected.priceIdr,
         isPublished: patch.isPublished ?? selected.isPublished,
         tags: patch.tags ?? selected.tags ?? [],
+        categoryId: (patch.categoryId !== undefined ? patch.categoryId : (selected.categoryId?._id || selected.categoryId)) || null,
       };
       await api.put(`/courses/${selected._id}`, payload);
       await loadCourses();

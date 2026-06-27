@@ -387,8 +387,10 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         isPublished: z.coerce.boolean().optional().default(false),
         tags: z.array(z.string()).optional().default([]),
         templateId: z.string().optional(),
+        categoryId: z.string().optional().nullable(),
       });
       const data = schema.parse(req.body);
+      if (!data.categoryId) delete data.categoryId; // hindari cast '' ke ObjectId
       const ownerId = req.user.role === 'admin' && req.body.ownerId ? req.body.ownerId : req.user.sub;
       const course = await Course.create({ ...data, ownerId });
 
