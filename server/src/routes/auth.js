@@ -16,6 +16,10 @@ const { generateOTP, getOTPExpiration } = require('../utils/otp');
 function authRouter({ jwtSecret }) {
   const router = express.Router();
 
+  // Token berlaku 5 jam. Diperpanjang otomatis oleh client selama user aktif
+  // (sliding refresh). Jika idle 5 jam, token kedaluwarsa -> harus login + OTP.
+  const TOKEN_TTL = '5h';
+
   async function createAndSendOtp(env, { email, type, meta }) {
     const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!normalizedEmail) throw new HttpError(400, 'Email harus diisi');
@@ -50,7 +54,7 @@ function authRouter({ jwtSecret }) {
     }
 
     try {
-      await sendOTP(env, { userEmail: normalizedEmail, code, type: type === 'reset_password' ? 'password' : type === 'email_change' ? 'email' : type === 'password_change' ? 'password' : 'register' });
+      await sendOTP(env, { userEmail: normalizedEmail, code, type: type === 'login' ? 'login' : type === 'reset_password' ? 'password' : type === 'email_change' ? 'email' : type === 'password_change' ? 'password' : 'register' });
     } catch (e) {
       // Don't leak SMTP error details to the client.
       if (debugOtp) return { ok: true, devOtp: code, expiresAt };
@@ -181,16 +185,19 @@ function authRouter({ jwtSecret }) {
       }
 
       const token = jwt.sign({ sub: String(user._id), role: user.role, name: user.name }, jwtSecret, {
-        expiresIn: '7d',
+        expiresIn: TOKEN_TTL,
       });
 
       res.json({ ok: true, token });
     })
   );
 
+  // Langkah 1: verifikasi email+password, lalu kirim OTP login ke email.
+  // Token TIDAK diberikan di sini — wajib verifikasi OTP dulu.
   router.post(
     '/login',
     asyncHandler(async (req, res) => {
+      const env = getEnv();
       const schema = z.object({
         email: z.string().email(),
         password: z.string().min(1),
@@ -198,17 +205,37 @@ function authRouter({ jwtSecret }) {
       const { email, password } = schema.parse(req.body);
 
       const user = await User.findOne({ email: String(email).toLowerCase() });
-      if (!user) throw new HttpError(401, 'Invalid credentials');
+      if (!user) throw new HttpError(401, 'Email atau password salah');
 
       if (!user.emailVerified) {
         throw new HttpError(403, 'Email belum terverifikasi. Silakan cek OTP di email.');
       }
 
       const ok = await bcrypt.compare(password, user.passwordHash);
-      if (!ok) throw new HttpError(401, 'Invalid credentials');
+      if (!ok) throw new HttpError(401, 'Email atau password salah');
+
+      const otpResult = await createAndSendOtp(env, { email: user.email, type: 'login' });
+      res.json({ ok: true, requiresOtp: true, email: user.email, ...otpResult });
+    })
+  );
+
+  // Langkah 2: verifikasi OTP login -> terbitkan token (berlaku 5 jam).
+  router.post(
+    '/login/verify-otp',
+    asyncHandler(async (req, res) => {
+      const schema = z.object({
+        email: z.string().email(),
+        code: z.string().min(4).max(12),
+      });
+      const { email, code } = schema.parse(req.body);
+
+      await verifyOtp({ email, type: 'login', code });
+
+      const user = await User.findOne({ email: String(email).toLowerCase() });
+      if (!user) throw new HttpError(400, 'Akun tidak ditemukan');
 
       const token = jwt.sign({ sub: String(user._id), role: user.role, name: user.name }, jwtSecret, {
-        expiresIn: '7d',
+        expiresIn: TOKEN_TTL,
       });
 
       res.json({
@@ -222,6 +249,24 @@ function authRouter({ jwtSecret }) {
           emailVerified: user.emailVerified,
         },
       });
+    })
+  );
+
+  // Kirim ulang OTP login.
+  router.post(
+    '/login/resend-otp',
+    asyncHandler(async (req, res) => {
+      const env = getEnv();
+      const schema = z.object({ email: z.string().email() });
+      const { email } = schema.parse(req.body);
+
+      // Selalu balas ok untuk mencegah enumerasi akun.
+      const normalizedEmail = String(email).toLowerCase();
+      const user = await User.findOne({ email: normalizedEmail }).select('emailVerified');
+      if (!user || !user.emailVerified) return res.json({ ok: true });
+
+      const out = await createAndSendOtp(env, { email: normalizedEmail, type: 'login' });
+      return res.json({ ok: true, ...(out.devOtp ? { devOtp: out.devOtp } : {}) });
     })
   );
 
@@ -300,6 +345,22 @@ function authRouter({ jwtSecret }) {
   const { requireAuth } = require('../middleware/auth');
   const authMiddleware = requireAuth(jwtSecret);
 
+  // Sliding refresh: client memanggil ini saat user aktif untuk memperpanjang
+  // token 5 jam berikutnya. Jika idle 5 jam, token kedaluwarsa -> 401 -> logout.
+  router.post(
+    '/refresh',
+    authMiddleware,
+    asyncHandler(async (req, res) => {
+      const user = await User.findById(req.user.sub).select('name role');
+      if (!user) throw new HttpError(401, 'Unauthorized');
+
+      const token = jwt.sign({ sub: String(user._id), role: user.role, name: user.name }, jwtSecret, {
+        expiresIn: TOKEN_TTL,
+      });
+      res.json({ token });
+    })
+  );
+
   // PUT /auth/me - Update profile
   router.put(
     '/me',
@@ -371,7 +432,7 @@ function authRouter({ jwtSecret }) {
       ).select('name email role emailVerified');
 
       const newToken = jwt.sign({ sub: String(user._id), role: user.role, name: user.name }, jwtSecret, {
-        expiresIn: '7d',
+        expiresIn: TOKEN_TTL,
       });
 
       res.json({ ok: true, token: newToken, user });
