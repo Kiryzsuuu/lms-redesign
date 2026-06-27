@@ -31,6 +31,14 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  // Multer (upload) error -> 400 dengan pesan yang jelas.
+  if (err?.name === 'MulterError') {
+    const msg = err.code === 'LIMIT_FILE_SIZE'
+      ? 'Ukuran file melebihi batas maksimal (5MB)'
+      : 'Gagal mengunggah file';
+    return res.status(400).json({ error: { status: 400, message: msg } });
+  }
+
   // HttpError punya .status eksplisit & pesan aman -> tampilkan apa adanya.
   // Error tak terduga (tanpa .status) -> jangan bocorkan detail internal.
   const isKnown = typeof err.status === 'number';

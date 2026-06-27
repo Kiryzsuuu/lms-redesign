@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const multer = require('multer');
+const { HttpError } = require('../utils/errors');
 
 // Persisten di disk server (VPS). Bisa dioverride via env UPLOAD_DIR.
 // Vercel (serverless, fs read-only) hanya boleh menulis ke /tmp.
@@ -35,7 +36,7 @@ function uploadsRouter({ requireAuth, requireRole }) {
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
       if (!file.mimetype || !file.mimetype.startsWith('image/')) {
-        return cb(new Error('Only image uploads are allowed'));
+        return cb(new HttpError(400, 'Hanya file gambar yang diperbolehkan'));
       }
       cb(null, true);
     },
@@ -46,7 +47,7 @@ function uploadsRouter({ requireAuth, requireRole }) {
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
       if (file.mimetype !== 'application/pdf') {
-        return cb(new Error('Only PDF uploads are allowed'));
+        return cb(new HttpError(400, 'Hanya file PDF yang diperbolehkan'));
       }
       cb(null, true);
     },
