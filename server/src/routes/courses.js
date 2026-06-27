@@ -436,9 +436,15 @@ function coursesRouter({ requireAuth, requireRole, env }) {
       });
       const data = schema.parse(req.body);
 
-      // Publish/unpublish hanya boleh oleh admin (course kontrak teacher dikontrol admin).
-      if (req.user.role === 'teacher' && Boolean(data.isPublished) !== Boolean(course.isPublished)) {
-        throw new HttpError(403, 'Status publish course hanya dapat diubah oleh admin.');
+      // Teacher kontrak hanya boleh mengubah deskripsi, tags, dan kategori.
+      // Judul, harga, cover, preview, dan status publish dikunci ke nilai lama
+      // (hanya admin yang berhak mengubahnya).
+      if (req.user.role === 'teacher') {
+        data.title = course.title;
+        data.priceIdr = course.priceIdr;
+        data.coverImageUrl = course.coverImageUrl;
+        data.previewVideoUrl = course.previewVideoUrl;
+        data.isPublished = course.isPublished;
       }
 
       const before = course.toObject();

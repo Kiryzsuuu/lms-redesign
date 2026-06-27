@@ -3,6 +3,7 @@ import { Toggle } from '../../components/Toggle';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../lib/auth';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { RichTextEditor } from '../../components/RichTextEditor';
 
 function fmtDate(d) {
   if (!d) return '—';
@@ -70,7 +71,7 @@ function ContractModal({ contract, role, onClose, onAccept, onReject }) {
           {contract.scopeHtml && (
             <>
               <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-900)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6 }}>Lingkup Pekerjaan</div>
-              <div style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7, marginBottom: 14 }}
+              <div className="contract-richtext" style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7, marginBottom: 14, whiteSpace: 'pre-wrap' }}
                 dangerouslySetInnerHTML={{ __html: contract.scopeHtml }} />
             </>
           )}
@@ -79,7 +80,8 @@ function ContractModal({ contract, role, onClose, onAccept, onReject }) {
           {contract.ipClause && (
             <>
               <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gray-900)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 6 }}>Hak Kekayaan Intelektual</div>
-              <div style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7, marginBottom: 14 }}>{contract.ipClause}</div>
+              <div className="contract-richtext" style={{ fontSize: 12, color: 'var(--gray-600)', lineHeight: 1.7, marginBottom: 14, whiteSpace: 'pre-wrap' }}
+                dangerouslySetInnerHTML={{ __html: contract.ipClause }} />
             </>
           )}
 
@@ -300,12 +302,22 @@ function CreateContractModal({ onClose, onCreated, api }) {
             </div>
             <div className="divider" />
             <div style={{ marginBottom: 10 }}>
-              <div className="form-label">Lingkup Pekerjaan (HTML diperbolehkan)</div>
-              <textarea className="form-textarea" rows={4} value={form.scopeHtml} onChange={e => set('scopeHtml', e.target.value)} placeholder="• Min. 20 sesi video&#10;• 5 quiz per modul&#10;• Deadline: ..." />
+              <div className="form-label">Lingkup Pekerjaan</div>
+              <RichTextEditor
+                valueHtml={form.scopeHtml}
+                onChangeHtml={(html) => set('scopeHtml', html)}
+                editorClassName="min-h-[120px]"
+                placeholder="• Min. 20 sesi video • 5 quiz per modul • Deadline: ..."
+              />
             </div>
             <div style={{ marginBottom: 10 }}>
               <div className="form-label">Klausul HKI</div>
-              <textarea className="form-textarea" rows={2} value={form.ipClause} onChange={e => set('ipClause', e.target.value)} placeholder="Konten tetap milik instruktur. Perusahaan mendapat lisensi eksklusif 12 bulan..." />
+              <RichTextEditor
+                valueHtml={form.ipClause}
+                onChangeHtml={(html) => set('ipClause', html)}
+                editorClassName="min-h-[90px]"
+                placeholder="Konten tetap milik instruktur. Perusahaan mendapat lisensi eksklusif 12 bulan..."
+              />
             </div>
             <div style={{ marginBottom: 10 }}>
               <div className="form-label">Bonus & Klausul Tambahan</div>

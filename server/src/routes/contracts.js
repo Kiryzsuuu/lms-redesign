@@ -204,9 +204,9 @@ function contractsRouter({ requireAuth, requireRole }) {
       await contract.save();
 
       // Update the course ownerId to this teacher so they can edit it.
-      // Seed the course description from the teacher's contract description.
+      // NOTE: jangan menimpa deskripsi course dengan deskripsi pengajar — deskripsi
+      // course tetap dikelola manual. teacherDescription/Expertise tersimpan di kontrak.
       const courseUpdate = { ownerId: contract.teacherId, contractId: contract._id };
-      if (contract.teacherDescription) courseUpdate.description = contract.teacherDescription;
       if (contract.teacherExpertise) {
         courseUpdate.tags = contract.teacherExpertise.split(',').map(s => s.trim()).filter(Boolean);
       }

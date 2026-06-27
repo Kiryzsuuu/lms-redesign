@@ -1163,6 +1163,9 @@ export default function CourseManager() {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => window.open(`/courses/${selected._id}?preview=1`, '_blank')}>
+                      Preview
+                    </Button>
                     <Button variant="outline" onClick={() => window.open(`/dashboard/courses/${selected._id}/stats`, '_blank')}>
                       Lihat Statistik
                     </Button>
@@ -1225,11 +1228,12 @@ export default function CourseManager() {
 
                     <div className="mt-4 space-y-3">
                       <div>
-                        <Label>Judul Course</Label>
+                        <Label>Judul Course {role === 'teacher' && <span className="text-slate-400 font-normal normal-case">(hanya admin)</span>}</Label>
                         <div className="mt-1">
                           <Input
                             value={courseForm.title}
                             onChange={(e) => setCourseForm((f) => ({ ...f, title: e.target.value }))}
+                            disabled={role === 'teacher'}
                           />
                         </div>
                       </div>
@@ -1253,7 +1257,7 @@ export default function CourseManager() {
                         </div>
                       </div>
                       <div>
-                        <Label>Harga (Rp)</Label>
+                        <Label>Harga (Rp) {role === 'teacher' && <span className="text-slate-400 font-normal normal-case">(hanya admin)</span>}</Label>
                         <div className="mt-1">
                           <Input
                             type="number"
@@ -1261,6 +1265,7 @@ export default function CourseManager() {
                             value={courseForm.priceIdr}
                             onChange={(e) => setCourseForm((f) => ({ ...f, priceIdr: Number(e.target.value) || 0 }))}
                             placeholder="0 untuk gratis"
+                            disabled={role === 'teacher'}
                           />
                         </div>
                       </div>
@@ -1309,16 +1314,21 @@ export default function CourseManager() {
                           </div>
                         </div>
                       )}
-                      <Toggle
-                        checked={courseForm.isPublished}
-                        onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                        label="Publish"
-                      />
+                      <div>
+                        <Toggle
+                          checked={courseForm.isPublished}
+                          onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
+                          label="Publish"
+                          disabled={role === 'teacher'}
+                        />
+                        {role === 'teacher' && <div className="text-xs text-slate-400 mt-1">Publish dikontrol admin</div>}
+                      </div>
                       <div className="flex gap-2">
                         <Button onClick={() => updateSelectedCourse(courseForm)}>Simpan Perubahan</Button>
                       </div>
                     </div>
 
+                    {role === 'admin' && (
                     <div className="mt-6 border-t pt-4">
                       <div className="font-bold mb-3">Cover Image</div>
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -1388,6 +1398,7 @@ export default function CourseManager() {
                       </div>
                     </div>
                     </div>
+                    )}
                     </div>
                   )}
 
