@@ -1,6 +1,6 @@
 import { PageSpinner } from '../components/PageSpinner';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
 const C = {
@@ -63,6 +63,9 @@ export default function LessonPresentation() {
   const { id, lessonId } = useParams();
   const nav = useNavigate();
   const { api, role, user } = useAuth();
+  const [sp] = useSearchParams();
+  const isPreview = sp.get('preview') === '1' && (role === 'admin' || role === 'teacher');
+  const previewQs = isPreview ? '?preview=1' : '';
 
   const [course, setCourse] = useState(null);
   const [modules, setModules] = useState([]);
@@ -83,6 +86,7 @@ export default function LessonPresentation() {
   const [commentText, setCommentText] = useState('');
   const [commentPosting, setCommentPosting] = useState(false);
   const [courseError, setCourseError] = useState('');
+  const [previewQuestions, setPreviewQuestions] = useState([]);
 
   useEffect(() => {
     setCourseError('');
@@ -91,7 +95,7 @@ export default function LessonPresentation() {
     setLessons([]);
     setLessonProgress({});
     setCert({ eligible: false, completed: 0, total: 0 });
-    api.get(`/courses/${id}`)
+    api.get(isPreview ? `/courses/${id}/preview` : `/courses/${id}`)
       .then(res => {
         setCourse(res.data.course);
         const mods = res.data.modules || [];
@@ -106,7 +110,7 @@ export default function LessonPresentation() {
         if (err?.response?.status === 404) setCourseError('Course tidak ditemukan.');
         else setCourseError('Gagal memuat course. Silakan coba lagi.');
       });
-  }, [id, api]);
+  }, [id, api, isPreview]);
 
   useEffect(() => {
     if (role !== 'student') return;
@@ -148,6 +152,17 @@ export default function LessonPresentation() {
     }
   }, [lessonId, lessons]);
 
+  // Preview mode (admin/teacher): load quiz questions with correct answers for read-only review.
+  useEffect(() => {
+    setPreviewQuestions([]);
+    if (!isPreview) return;
+    const active = lessons.find(l => String(l._id) === String(lessonId));
+    if (!active?.quizId) return;
+    api.get(`/quizzes/${active.quizId}/questions`)
+      .then(r => setPreviewQuestions(r.data.questions || []))
+      .catch(() => setPreviewQuestions([]));
+  }, [isPreview, lessonId, lessons, api]);
+
   useEffect(() => {
     function onResize() {
       if (window.innerWidth > 768) setSidebarOpen(true);
@@ -186,7 +201,7 @@ export default function LessonPresentation() {
 
   const prevLessonId = activeIdx > 0 ? orderedLessons[activeIdx - 1]?._id : null;
   const nextLessonId = activeIdx >= 0 && activeIdx < orderedLessons.length - 1 ? orderedLessons[activeIdx + 1]?._id : null;
-  const allowed = isActiveCourse && !isPaywalled && activeIdx >= 0 && canOpen(activeIdx);
+  const allowed = isPreview ? activeIdx >= 0 : (isActiveCourse && !isPaywalled && activeIdx >= 0 && canOpen(activeIdx));
 
   const completedCount = Object.values(lessonProgress).filter(r => r.isCompleted).length;
   const totalCount = lessons.length;
@@ -387,7 +402,7 @@ export default function LessonPresentation() {
                     const lType = getLessonType(lesson);
                     return (
                       <div key={lesson._id} className="pl-mi"
-                        onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${lesson._id}`); }}
+                        onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${lesson._id}${previewQs}`); }}
                         style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem', padding: '0.58rem 1rem', borderBottom: `1px solid ${C.n100}`, cursor: 'pointer', background: isActive ? C.blueXs : 'transparent', borderLeft: isActive ? `3px solid ${C.blue}` : '3px solid transparent' }}>
                         <div style={{ width: 21, height: 21, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58rem', fontWeight: 800, flexShrink: 0, marginTop: 2, background: done ? C.teal : isActive ? C.blue : C.white, color: done || isActive ? '#fff' : C.n400, border: done || isActive ? 'none' : `1.5px solid ${C.n300}` }}>
                           {done ? '✓' : isActive ? '▶' : '—'}
@@ -480,7 +495,7 @@ export default function LessonPresentation() {
                       const lType = getLessonType(lesson);
                       return (
                         <div key={lesson._id} className="pl-mov-item"
-                          onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${lesson._id}`); }}
+                          onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${lesson._id}${previewQs}`); }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.58rem 0.82rem', borderRadius: 9, background: C.white, border: `1px solid ${C.n300}`, cursor: 'pointer', fontSize: '0.83rem', color: C.n700 }}>
                           <span style={{ ...BS[lType], fontSize: '0.61rem', fontWeight: 700, padding: '0.09rem 0.36rem', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0 }}>{TM[lType].lbl}</span>
                           {lesson.title}
@@ -493,7 +508,7 @@ export default function LessonPresentation() {
                 {(() => {
                   const first = lessons.find(l => String(l.moduleId) === String(viewingModule._id));
                   return first ? (
-                    <button onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${first._id}`); }}
+                    <button onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${first._id}${previewQs}`); }}
                       style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: C.blue, color: '#fff', padding: '0.68rem 1.4rem', borderRadius: 9, fontFamily: 'inherit', fontSize: '0.87rem', fontWeight: 700, cursor: 'pointer', border: 'none', boxShadow: `0 2px 8px rgba(12,98,141,.25)` }}>
                       Mulai Materi Pertama
                     </button>
@@ -560,12 +575,58 @@ export default function LessonPresentation() {
                             <iframe title="video" src={activeLesson.videoEmbedUrl} style={{ width: '100%', height: '100%', border: 'none' }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
                           </div>
                         )}
-                        {lType === 'quiz' && (
+                        {lType === 'quiz' && isPreview && (
+                          <div>
+                            <div style={{ display: 'flex', gap: '0.62rem', padding: '0.82rem 1rem', borderRadius: 9, borderLeft: `3px solid ${C.amber}`, background: C.amberXs, color: '#92400e', fontSize: '0.84rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>
+                              <span>👁️</span><div><strong>Mode Preview.</strong> Jawaban benar ditandai hijau. Quiz tidak bisa dikerjakan/submit dalam mode ini.</div>
+                            </div>
+                            {previewQuestions.length === 0 ? (
+                              <div style={{ color: C.n500, fontSize: '0.86rem' }}>Quiz belum memiliki pertanyaan.</div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                                {previewQuestions.map((q, qi) => (
+                                  <div key={q._id} style={{ border: `1px solid ${C.n300}`, borderRadius: 12, padding: '1rem 1.1rem' }}>
+                                    <div style={{ fontSize: '0.86rem', fontWeight: 700, color: C.n900, marginBottom: '0.65rem' }}>
+                                      {qi + 1}. {q.promptHtml ? <span dangerouslySetInnerHTML={{ __html: q.promptHtml }} /> : q.prompt}
+                                    </div>
+                                    {q.imageUrl && <img src={q.imageUrl} alt="" style={{ maxWidth: '100%', borderRadius: 8, marginBottom: '0.65rem' }} />}
+                                    {q.type === 'matching' ? (
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                        {(q.pairs || []).map((p, pi) => (
+                                          <div key={pi} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.82rem', color: C.n700 }}>
+                                            <span style={{ fontWeight: 600 }}>{p.left}</span>
+                                            <span style={{ color: C.n400 }}>→</span>
+                                            <span style={{ color: C.teal, fontWeight: 600 }}>{p.right}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : q.type === 'essay' ? (
+                                      <div style={{ fontSize: '0.82rem', color: C.n500, fontStyle: 'italic' }}>Pertanyaan esai (dinilai manual).</div>
+                                    ) : (
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                        {(q.choices || []).map((c) => {
+                                          const correct = String(q.correctChoiceId) === String(c.id);
+                                          return (
+                                            <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.7rem', borderRadius: 8, fontSize: '0.83rem', background: correct ? C.tealXs : C.n100, border: `1px solid ${correct ? C.tealS : C.n300}`, color: correct ? '#0a6060' : C.n700, fontWeight: correct ? 700 : 500 }}>
+                                              <span>{correct ? '✓' : '○'}</span>
+                                              <span>{c.text}</span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {lType === 'quiz' && !isPreview && (
                           <div>
                             <div style={{ display: 'flex', gap: '0.62rem', padding: '0.82rem 1rem', borderRadius: 9, borderLeft: `3px solid ${C.blue}`, background: C.blueXs, color: C.blueD, fontSize: '0.84rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>
                               <span>ℹ️</span><div>Kerjakan quiz untuk menyelesaikan materi ini dan lanjut ke materi berikutnya.</div>
                             </div>
-                            <Link to={`/quiz/${activeLesson.quizId}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: C.amber, color: '#fff', padding: '0.68rem 1.4rem', borderRadius: 9, fontFamily: 'inherit', fontSize: '0.87rem', fontWeight: 700, textDecoration: 'none', boxShadow: `0 2px 8px rgba(217,119,6,.3)` }}>Mulai Quiz</Link>
+                            <Link to={`/quiz/${activeLesson.quizId}${previewQs}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: C.amber, color: '#fff', padding: '0.68rem 1.4rem', borderRadius: 9, fontFamily: 'inherit', fontSize: '0.87rem', fontWeight: 700, textDecoration: 'none', boxShadow: `0 2px 8px rgba(217,119,6,.3)` }}>Mulai Quiz</Link>
                           </div>
                         )}
                         {lType === 'project' && (
@@ -697,7 +758,7 @@ export default function LessonPresentation() {
               onClick={() => {
                 if (view === 'module-overview') { setView('materi'); return; }
                 if (!prevLessonId) return;
-                nav(`/courses/${id}/lessons/${prevLessonId}`);
+                nav(`/courses/${id}/lessons/${prevLessonId}${previewQs}`);
               }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.42rem', fontSize: '0.82rem', fontWeight: 600, padding: '0.55rem 1.05rem', borderRadius: 8, background: 'transparent', color: prevDisabled ? C.n400 : C.n500, border: `1px solid ${C.n300}`, cursor: prevDisabled ? 'not-allowed' : 'pointer', opacity: prevDisabled ? 0.4 : 1, flexShrink: 0 }}>
               Sebelumnya
@@ -727,14 +788,14 @@ export default function LessonPresentation() {
                 onClick={async () => {
                   if (view === 'module-overview') {
                     const first = lessons.find(l => String(l.moduleId) === String(viewModId));
-                    if (first) { setView('materi'); nav(`/courses/${id}/lessons/${first._id}`); }
+                    if (first) { setView('materi'); nav(`/courses/${id}/lessons/${first._id}${previewQs}`); }
                     return;
                   }
                   if (!nextLessonId) return;
                   setLockError('');
                   const ok = await markComplete(activeLesson?._id);
                   if (!ok) return;
-                  nav(`/courses/${id}/lessons/${nextLessonId}`);
+                  nav(`/courses/${id}/lessons/${nextLessonId}${previewQs}`);
                 }}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.42rem', fontSize: '0.82rem', fontWeight: 600, padding: '0.55rem 1.05rem', borderRadius: 8, background: nextDisabled ? C.n300 : C.blue, color: '#fff', border: 'none', cursor: nextDisabled ? 'not-allowed' : 'pointer', opacity: nextDisabled ? 0.5 : 1, boxShadow: !nextDisabled ? `0 2px 6px rgba(12,98,141,.25)` : 'none', flexShrink: 0 }}>
                 Berikutnya

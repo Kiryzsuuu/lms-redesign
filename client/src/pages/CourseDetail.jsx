@@ -419,7 +419,7 @@ export default function CourseDetail() {
     try {
       await api.post(`/courses/${id}/start`);
       if (lessons.length > 0) {
-        nav(`/courses/${id}/lessons/${lessons[0]._id}`);
+        nav(`/courses/${id}/lessons/${lessons[0]._id}${isPreview ? '?preview=1' : ''}`);
       } else {
         const res = await api.get('/progress/me');
         setProgress(res.data);
@@ -494,7 +494,7 @@ export default function CourseDetail() {
       api
         .post(`/courses/${id}/start`)
         .then(() => {
-          nav(`/courses/${id}/lessons/${lesson._id}`);
+          nav(`/courses/${id}/lessons/${lesson._id}${isPreview ? '?preview=1' : ''}`);
         })
         .catch((e) => {
           setLockError(e?.response?.data?.error?.message || 'Gagal membuka materi');
@@ -781,11 +781,11 @@ export default function CourseDetail() {
                           module={mod}
                           lessons={mLessons}
                           selectedLesson={null}
-                          onSelectLesson={isEnrolled ? handleSelectLesson : () => {}}
-                          isPaywalled={isPaywalled}
+                          onSelectLesson={(isEnrolled || isPreview) ? handleSelectLesson : () => {}}
+                          isPaywalled={isPreview ? false : isPaywalled}
                           isStudent={isStudent}
                           lessonProgress={isEnrolled ? lessonProgress : {}}
-                          canOpenLessonByIndex={isEnrolled ? canOpenLessonByIndex : () => false}
+                          canOpenLessonByIndex={(isEnrolled || isPreview) ? canOpenLessonByIndex : () => false}
                           lessonIndexOffset={offset}
                         />
                       ))}
@@ -868,7 +868,7 @@ export default function CourseDetail() {
                       <Button
                         className="w-full"
                         onClick={() => {
-                          if (lessons.length > 0) nav(`/courses/${id}/lessons/${lessons[0]._id}`);
+                          if (lessons.length > 0) nav(`/courses/${id}/lessons/${lessons[0]._id}${isPreview ? '?preview=1' : ''}`);
                         }}
                       >
                         Lanjutkan Belajar
