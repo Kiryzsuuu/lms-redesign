@@ -155,6 +155,35 @@ function quizzesRouter({ requireAuth, requireRole }) {
     })
   );
 
+  // Teacher/Admin: quiz preview (meta + questions WITH correct answers, no attempt).
+  router.get(
+    '/:quizId/preview',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    asyncHandler(async (req, res) => {
+      const quiz = await Quiz.findById(req.params.quizId);
+      if (!quiz) throw new HttpError(404, 'Quiz not found');
+      await assertCanEditCourse(quiz.courseId, req.user);
+
+      let lessonId = quiz.lessonId || null;
+      if (!lessonId) {
+        const l = await Lesson.findOne({ quizId: quiz._id }).select('_id');
+        lessonId = l?._id || null;
+      }
+      const questions = await Question.find({ quizId: quiz._id }).sort({ order: 1, createdAt: 1 });
+      res.json({
+        quiz: {
+          _id: quiz._id,
+          title: quiz.title,
+          description: quiz.description,
+          courseId: quiz.courseId,
+          lessonId,
+        },
+        questions,
+      });
+    })
+  );
+
   // Teacher/Admin: questions CRUD
   router.get(
     '/:quizId/questions',

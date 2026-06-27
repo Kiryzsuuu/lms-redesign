@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Card, Container, Button } from '../components/ui';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useAuth } from '../lib/auth';
 
 export default function QuizPlay() {
   const { quizId } = useParams();
-  const { api, isAuthed } = useAuth();
+  const { api, isAuthed, role } = useAuth();
   const nav = useNavigate();
+  const [sp] = useSearchParams();
+  const isPreview = sp.get('preview') === '1' && (role === 'admin' || role === 'teacher');
 
   const [quiz, setQuiz] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -52,8 +54,36 @@ export default function QuizPlay() {
     return out;
   }
 
+  // Preview mode (admin/teacher): load quiz + questions WITH answers, no attempt,
+  // and render in review state so correct answers are highlighted and nothing submits.
   useEffect(() => {
-    if (!isAuthed) return;
+    if (!isAuthed || !isPreview) return;
+    api.get(`/quizzes/${quizId}/preview`)
+      .then((res) => {
+        const qz = res.data.quiz || {};
+        const ques = res.data.questions || [];
+        setQuiz(qz);
+        setQuestions(ques);
+        setAnswers({});
+        setCurrentIdx(0);
+        setNavInfo({ courseId: qz?.courseId || null, lessonId: qz?.lessonId || null, nextLessonId: null });
+        const grading = {};
+        for (const q of ques) {
+          grading[String(q._id)] = {
+            isAutoGradable: q.type === 'mcq',
+            correctChoiceId: q.correctChoiceId || null,
+          };
+        }
+        setGradingByQuestionId(grading);
+        setResult({ preview: true, score: 0, maxScore: ques.length });
+      })
+      .catch((e) => {
+        setQuizError(e?.response?.data?.error?.message || 'Gagal memuat quiz');
+      });
+  }, [quizId, isAuthed, isPreview]);
+
+  useEffect(() => {
+    if (!isAuthed || isPreview) return;
     api
       .get(`/quizzes/play/${quizId}`)
       .then((res) => {
@@ -293,7 +323,11 @@ export default function QuizPlay() {
             <h1 className="text-3xl font-extrabold tracking-tight">{quiz.title}</h1>
             {quiz.description ? <p className="mt-1 text-sm text-slate-600">{quiz.description}</p> : null}
           </div>
-          {result ? (
+          {isPreview ? (
+            <div className="text-right">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-800">👁️ Mode Preview</span>
+            </div>
+          ) : result ? (
             <div className="text-right">
               <div className="text-sm text-slate-600">Skor</div>
               <div className="text-2xl font-extrabold">{result.score} / {result.maxScore}</div>
@@ -333,7 +367,7 @@ export default function QuizPlay() {
                   ) : null}
                 </div>
 
-                {result && gradingByQuestionId?.[currentQuestion._id]?.isAutoGradable ? (
+                {result && !isPreview && gradingByQuestionId?.[currentQuestion._id]?.isAutoGradable ? (
                   <div
                     className={
                       'mt-2 inline-flex w-fit items-center border px-2 py-1 text-xs font-semibold ' +
@@ -495,15 +529,23 @@ export default function QuizPlay() {
                   {sidebarOpen ? 'Hide' : 'Show'}
                 </Button>
               </div>
-              <div className="mt-1 text-xs text-slate-600">
-                Kotak seperti kursi bioskop: hijau = terjawab, gelap = aktif.
-              </div>
-
               {!result ? (
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Button type="button" variant={pinMode ? 'primary' : 'outline'} className="px-3" onClick={() => setPinMode((v) => !v)}>
-                    {pinMode ? 'Mode Pin: ON' : 'Mode Pin'}
-                  </Button>
+                  {currentQuestion ? (
+                    <Button
+                      type="button"
+                      variant={pinnedById[currentQuestion._id] ? 'primary' : 'outline'}
+                      className={'px-3 ' + (pinnedById[currentQuestion._id] ? '!bg-rose-600 !border-rose-600 hover:!bg-rose-700' : '!text-rose-600 !border-rose-300 hover:!bg-rose-50')}
+                      onClick={() => setPinnedById((m) => {
+                        const next = { ...(m || {}) };
+                        if (next[currentQuestion._id]) delete next[currentQuestion._id];
+                        else next[currentQuestion._id] = true;
+                        return next;
+                      })}
+                    >
+                      ⚑ {pinnedById[currentQuestion._id] ? 'Hapus Flag' : 'Flag soal ini'}
+                    </Button>
+                  ) : null}
                   {unanswered.length > 0 ? (
                     <div className="text-xs font-semibold text-rose-800">Belum dijawab: {unanswered.length}</div>
                   ) : (
@@ -516,41 +558,28 @@ export default function QuizPlay() {
                 <div className="mt-4 grid grid-cols-8 gap-2 sm:grid-cols-10 lg:grid-cols-6 xl:grid-cols-8">
                   {questions.map((q, idx) => {
                     const answered = isQuestionAnswered(q);
-                    const pinned = Boolean(pinnedById[q._id]);
+                    const flagged = Boolean(pinnedById[q._id]);
                     const active = idx === currentIdx;
                     return (
                       <button
                         key={q._id}
                         type="button"
-                        onClick={() => {
-                          if (result) {
-                            setCurrentIdx(idx);
-                            return;
-                          }
-                          if (pinMode) {
-                            setPinnedById((m) => {
-                              const next = { ...(m || {}) };
-                              if (next[q._id]) delete next[q._id];
-                              else next[q._id] = true;
-                              return next;
-                            });
-                            return;
-                          }
-                          setCurrentIdx(idx);
-                        }}
+                        onClick={() => setCurrentIdx(idx)}
                         className={
                           'relative aspect-square border text-xs font-extrabold transition ' +
-                          (active
-                            ? 'border-slate-900 bg-slate-900 text-white'
-                            : answered
-                              ? 'border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100'
-                              : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50')
+                          (flagged
+                            ? 'border-rose-500 bg-rose-500 text-white hover:bg-rose-600'
+                            : active
+                              ? 'border-[#0C628D] bg-[#0C628D] text-white'
+                              : answered
+                                ? 'border-blue-200 bg-blue-50 text-[#0C628D] hover:bg-blue-100'
+                                : 'border-slate-200 bg-white text-slate-900 hover:bg-slate-50')
                         }
-                        title={pinned ? `Soal ${idx + 1} (PIN)` : `Soal ${idx + 1}`}
+                        title={flagged ? `Soal ${idx + 1} (FLAG)` : `Soal ${idx + 1}`}
                       >
                         {idx + 1}
-                        {pinned ? (
-                          <span className="absolute right-1 top-1 text-[10px] font-extrabold">P</span>
+                        {flagged ? (
+                          <span className="absolute right-1 top-1 text-[10px] font-extrabold">⚑</span>
                         ) : null}
                       </button>
                     );
@@ -568,26 +597,41 @@ export default function QuizPlay() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <Link to="/courses">
-            <Button variant="outline" className="w-full sm:w-auto">Kembali</Button>
-          </Link>
-          {result ? (
+          {isPreview ? (
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                if (navInfo.courseId && navInfo.lessonId) nav(`/courses/${navInfo.courseId}/lessons/${navInfo.lessonId}?preview=1`);
+                else if (navInfo.courseId) nav(`/courses/${navInfo.courseId}?preview=1`);
+                else nav('/dashboard/courses');
+              }}
+            >
+              ← Kembali ke Materi
+            </Button>
+          ) : (
             <>
-              {navInfo.courseId && navInfo.lessonId ? (
-                <Button variant="outline" className="w-full sm:w-auto" onClick={() => goToLesson(navInfo.lessonId)}>
-                  Kembali ke Materi
-                </Button>
+              <Link to="/courses">
+                <Button variant="outline" className="w-full sm:w-auto">Kembali</Button>
+              </Link>
+              {result ? (
+                <>
+                  {navInfo.courseId && navInfo.lessonId ? (
+                    <Button variant="outline" className="w-full sm:w-auto" onClick={() => goToLesson(navInfo.lessonId)}>
+                      Kembali ke Materi
+                    </Button>
+                  ) : null}
+                  {navInfo.courseId && navInfo.nextLessonId ? (
+                    <Button className="w-full sm:w-auto" onClick={() => goToLesson(navInfo.nextLessonId)}>
+                      Lanjut Materi Berikutnya
+                    </Button>
+                  ) : null}
+                  <Button className="w-full sm:w-auto" onClick={() => window.location.reload()}>
+                    Coba Lagi
+                  </Button>
+                </>
               ) : null}
-              {navInfo.courseId && navInfo.nextLessonId ? (
-                <Button className="w-full sm:w-auto" onClick={() => goToLesson(navInfo.nextLessonId)}>
-                  Lanjut Materi Berikutnya
-                </Button>
-              ) : null}
-              <Button className="w-full sm:w-auto" onClick={() => window.location.reload()}>
-                Coba Lagi
-              </Button>
             </>
-          ) : null}
+          )}
         </div>
       </Container>
     </section>

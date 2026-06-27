@@ -86,7 +86,6 @@ export default function LessonPresentation() {
   const [commentText, setCommentText] = useState('');
   const [commentPosting, setCommentPosting] = useState(false);
   const [courseError, setCourseError] = useState('');
-  const [previewQuestions, setPreviewQuestions] = useState([]);
 
   useEffect(() => {
     setCourseError('');
@@ -151,17 +150,6 @@ export default function LessonPresentation() {
       setOpenMods(prev => { const n = new Set(prev); n.add(String(active.moduleId)); return n; });
     }
   }, [lessonId, lessons]);
-
-  // Preview mode (admin/teacher): load quiz questions with correct answers for read-only review.
-  useEffect(() => {
-    setPreviewQuestions([]);
-    if (!isPreview) return;
-    const active = lessons.find(l => String(l._id) === String(lessonId));
-    if (!active?.quizId) return;
-    api.get(`/quizzes/${active.quizId}/questions`)
-      .then(r => setPreviewQuestions(r.data.questions || []))
-      .catch(() => setPreviewQuestions([]));
-  }, [isPreview, lessonId, lessons, api]);
 
   useEffect(() => {
     function onResize() {
@@ -578,47 +566,9 @@ export default function LessonPresentation() {
                         {lType === 'quiz' && isPreview && (
                           <div>
                             <div style={{ display: 'flex', gap: '0.62rem', padding: '0.82rem 1rem', borderRadius: 9, borderLeft: `3px solid ${C.amber}`, background: C.amberXs, color: '#92400e', fontSize: '0.84rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>
-                              <span>👁️</span><div><strong>Mode Preview.</strong> Jawaban benar ditandai hijau. Quiz tidak bisa dikerjakan/submit dalam mode ini.</div>
+                              <span>👁️</span><div><strong>Mode Preview.</strong> Lihat quiz per soal dengan jawaban benar ditandai. Tidak bisa dikerjakan/submit.</div>
                             </div>
-                            {previewQuestions.length === 0 ? (
-                              <div style={{ color: C.n500, fontSize: '0.86rem' }}>Quiz belum memiliki pertanyaan.</div>
-                            ) : (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
-                                {previewQuestions.map((q, qi) => (
-                                  <div key={q._id} style={{ border: `1px solid ${C.n300}`, borderRadius: 12, padding: '1rem 1.1rem' }}>
-                                    <div style={{ fontSize: '0.86rem', fontWeight: 700, color: C.n900, marginBottom: '0.65rem' }}>
-                                      {qi + 1}. {q.promptHtml ? <span dangerouslySetInnerHTML={{ __html: q.promptHtml }} /> : q.prompt}
-                                    </div>
-                                    {q.imageUrl && <img src={q.imageUrl} alt="" style={{ maxWidth: '100%', borderRadius: 8, marginBottom: '0.65rem' }} />}
-                                    {q.type === 'matching' ? (
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                        {(q.pairs || []).map((p, pi) => (
-                                          <div key={pi} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.82rem', color: C.n700 }}>
-                                            <span style={{ fontWeight: 600 }}>{p.left}</span>
-                                            <span style={{ color: C.n400 }}>→</span>
-                                            <span style={{ color: C.teal, fontWeight: 600 }}>{p.right}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    ) : q.type === 'essay' ? (
-                                      <div style={{ fontSize: '0.82rem', color: C.n500, fontStyle: 'italic' }}>Pertanyaan esai (dinilai manual).</div>
-                                    ) : (
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                        {(q.choices || []).map((c) => {
-                                          const correct = String(q.correctChoiceId) === String(c.id);
-                                          return (
-                                            <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.7rem', borderRadius: 8, fontSize: '0.83rem', background: correct ? C.tealXs : C.n100, border: `1px solid ${correct ? C.tealS : C.n300}`, color: correct ? '#0a6060' : C.n700, fontWeight: correct ? 700 : 500 }}>
-                                              <span>{correct ? '✓' : '○'}</span>
-                                              <span>{c.text}</span>
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                            <Link to={`/quiz/${activeLesson.quizId}?preview=1`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: C.amber, color: '#fff', padding: '0.68rem 1.4rem', borderRadius: 9, fontFamily: 'inherit', fontSize: '0.87rem', fontWeight: 700, textDecoration: 'none', boxShadow: `0 2px 8px rgba(217,119,6,.3)` }}>Lihat Quiz (Preview)</Link>
                           </div>
                         )}
                         {lType === 'quiz' && !isPreview && (
