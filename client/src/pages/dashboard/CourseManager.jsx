@@ -1,5 +1,6 @@
 import { Toggle } from '../../components/Toggle';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, Container, Button, Input, Label, Textarea } from '../../components/ui';
 import { SidebarShell } from '../../components/SidebarShell';
 import { useAuth } from '../../lib/auth';
@@ -904,13 +905,22 @@ export default function CourseManager() {
     });
   }
 
+  const [searchParams] = useSearchParams();
+  const courseQuery = (searchParams.get('q') || '').trim().toLowerCase();
+  const visibleCourses = courseQuery
+    ? courses.filter((c) => (c.title || '').toLowerCase().includes(courseQuery))
+    : courses;
+
   const courseDnd = useDndReorder(reorderCourses);
-  const canReorderCourses = role === 'admin';
+  const canReorderCourses = role === 'admin' && !courseQuery; // nonaktifkan reorder saat mencari
   const moduleDnd = useDndReorder(reorderModules);
 
   const renderSidebar = () => (
     <div className="grid gap-2">
-      {courses.map((c, idx) => {
+      {courseQuery && (
+        <div className="text-xs text-slate-500 px-1 pb-1">Hasil pencarian "{courseQuery}": {visibleCourses.length} course</div>
+      )}
+      {visibleCourses.map((c, idx) => {
         const dnd = canReorderCourses ? courseDnd.containerProps(idx) : {};
         return (
         <div

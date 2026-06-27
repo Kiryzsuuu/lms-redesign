@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { DsPage, DsCourseCard, DsEmpty } from '../components/ds';
 import { PageSpinner } from '../components/PageSpinner';
@@ -13,7 +14,13 @@ export default function StudentCatalog() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState('Semua');
-  const [q, setQ] = useState('');
+  const [searchParams] = useSearchParams();
+  const [q, setQ] = useState(searchParams.get('q') || '');
+
+  // Sinkronkan dengan pencarian dari topbar (?q=)
+  useEffect(() => {
+    setQ(searchParams.get('q') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     if (!api) return;

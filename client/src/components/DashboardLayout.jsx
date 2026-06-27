@@ -78,6 +78,7 @@ const STUDENT_NAV = [
       { to: '/dashboard', icon: 'ti-layout-dashboard', label: 'Dashboard' },
       { to: '/dashboard/my-courses', icon: 'ti-book-2', label: 'Kursus Saya' },
       { to: '/dashboard/catalog', icon: 'ti-compass', label: 'Katalog Kursus' },
+      { to: '/cart', icon: 'ti-shopping-cart', label: 'Keranjang' },
     ],
   },
   {
@@ -112,6 +113,28 @@ export function DashboardLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [badges, setBadges] = useState({});
   const [unreadNotif, setUnreadNotif] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (!api || role !== 'student') { setCartCount(0); return; }
+    let alive = true;
+    const loadCart = () => {
+      api.get('/cart')
+        .then(r => { if (alive) setCartCount(Array.isArray(r.data?.items) ? r.data.items.length : 0); })
+        .catch(() => {});
+    };
+    loadCart();
+    window.addEventListener('cart:changed', loadCart);
+    return () => { alive = false; window.removeEventListener('cart:changed', loadCart); };
+  }, [api, role]);
+
+  function submitSearch() {
+    const q = searchTerm.trim();
+    if (!q) return;
+    const dest = role === 'student' ? '/dashboard/catalog' : '/dashboard/courses';
+    navigate(`${dest}?q=${encodeURIComponent(q)}`);
+  }
 
   useEffect(() => {
     if (!api) return;
@@ -311,7 +334,10 @@ export function DashboardLayout({ children }) {
             <i className="ti ti-search" style={{ fontSize: 13, color: '#9CA3AF', flexShrink: 0 }} />
             <input
               type="text"
-              placeholder="Cari kursus, pengguna, kontrak…"
+              placeholder={role === 'student' ? 'Cari kursus…' : 'Cari kursus…'}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') submitSearch(); }}
               style={{ border: 'none', background: 'none', fontSize: 12, color: '#111827', outline: 'none', width: '100%' }}
             />
           </div>
@@ -328,6 +354,20 @@ export function DashboardLayout({ children }) {
               <i className="ti ti-home" style={{ fontSize: 13 }} />
               <span className="dash-beranda-label">Beranda</span>
             </Link>
+            {role === 'student' && (
+              <Link
+                to="/cart"
+                title="Keranjang"
+                style={{ position: 'relative', width: 30, height: 30, borderRadius: 8, border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#4B5563' }}
+              >
+                <i className="ti ti-shopping-cart" style={{ fontSize: 15 }} />
+                {cartCount > 0 && (
+                  <span style={{ position: 'absolute', top: -5, right: -5, minWidth: 16, height: 16, padding: '0 4px', borderRadius: 99, background: '#0C628D', color: '#fff', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <Link
               to="/dashboard/notifications"
               title="Notifikasi"
