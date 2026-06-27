@@ -138,8 +138,8 @@ export default function Accounting() {
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
-      <Container>
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="px-6 py-8">
+      <Container style={{ maxWidth: 'none' }} className="!px-0">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">Pembukuan / Accounting</h1>

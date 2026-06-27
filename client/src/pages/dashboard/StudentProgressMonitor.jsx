@@ -98,8 +98,8 @@ export default function StudentProgressMonitor() {
   };
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
-      <Container>
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="px-6 py-8">
+      <div className="w-full">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-6">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">Monitor Progres Siswa</h1>
@@ -390,7 +390,7 @@ export default function StudentProgressMonitor() {
             )}
           </div>
         </div>
-      </Container>
+      </div>
     </section></div>
   );
 }

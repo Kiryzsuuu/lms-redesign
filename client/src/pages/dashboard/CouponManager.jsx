@@ -156,8 +156,8 @@ export default function CouponManager() {
 
   return (
     <SidebarShell>
-      <section className="bg-slate-50 py-10">
-        <Container>
+      <section className="bg-slate-50 px-6 py-8">
+        <Container style={{ maxWidth: 'none' }} className="!px-0">
           <div className="grid gap-6">
             {/* Header */}
             <div className="flex items-center justify-between">

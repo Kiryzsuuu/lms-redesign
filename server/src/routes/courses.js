@@ -69,8 +69,23 @@ function coursesRouter({ requireAuth, requireRole, env }) {
     requireRole('admin', 'teacher'),
     asyncHandler(async (req, res) => {
       const filter = req.user.role === 'admin' ? {} : { ownerId: req.user.sub };
-      const courses = await Course.find(filter).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug');
-      res.json({ courses });
+      const courses = await Course.find(filter).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug').lean();
+
+      // Hitung jumlah siswa per course (kriteria sama dengan endpoint daftar siswa).
+      const withCounts = await Promise.all(
+        courses.map(async (c) => {
+          const studentCount = await User.countDocuments({
+            $or: [
+              { activeCourseId: c._id },
+              { completedCourseIds: c._id },
+              { purchasedCourseIds: c._id },
+            ],
+          });
+          return { ...c, studentCount };
+        })
+      );
+
+      res.json({ courses: withCounts });
     })
   );
 

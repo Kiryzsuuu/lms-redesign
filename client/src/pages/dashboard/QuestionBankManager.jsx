@@ -364,8 +364,8 @@ export default function QuestionBankManager() {
   };
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto' }}><section className="py-10">
-      <Container>
+    <div style={{ height: '100%', overflowY: 'auto' }}><section className="px-6 py-8">
+      <Container style={{ maxWidth: 'none' }} className="!px-0">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">Bank Soal</h1>
