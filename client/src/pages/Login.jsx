@@ -177,7 +177,7 @@ export default function Login() {
                   className="font-semibold"
                   style={{ color: '#0C628D' }}
                 >
-                  ← Ganti email
+                  Ganti email
                 </button>
                 <button
                   type="button"

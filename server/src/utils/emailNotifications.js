@@ -188,7 +188,8 @@ async function sendWelcomeEmail(env, { userEmail, userName }) {
  * Send OTP code to user email
  */
 async function sendOTP(env, { userEmail, code, type }) {
-  if (!hasSmtpConfigured(env)) return;
+  // Jangan gate di sini: sendMail() membaca config dari DB lebih dulu, baru env,
+  // dan akan melempar error sendiri jika benar-benar belum dikonfigurasi.
 
   const typeLabel = {
     register: 'Registrasi Akun',

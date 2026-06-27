@@ -7,7 +7,7 @@ const { asyncHandler } = require('../utils/asyncHandler');
 const { HttpError } = require('../utils/errors');
 const { getEnv } = require('../utils/env');
 const { sha256Hex, randomTokenHex } = require('../utils/crypto');
-const { hasSmtpConfigured, sendMail } = require('../utils/mailer');
+const { hasSmtpConfigured, sendMail, getSmtpConfig } = require('../utils/mailer');
 const { sendWelcomeEmail, sendOTP } = require('../utils/emailNotifications');
 const { buildClientUrl } = require('../utils/urls');
 const { OTP } = require('../models/OTP');
@@ -45,7 +45,10 @@ function authRouter({ jwtSecret }) {
     // accidentally not running in "production" mode can never leak codes.
     const debugOtp = process.env.DEBUG_OTP === 'true';
 
-    if (!hasSmtpConfigured(env)) {
+    // Cek config sebenarnya: DB lebih dulu, lalu env (bukan env-only).
+    const smtpCfg = await getSmtpConfig();
+    const smtpReady = Boolean(smtpCfg.host && smtpCfg.user && smtpCfg.pass);
+    if (!smtpReady) {
       // No email transport. In debug mode return the code for local testing;
       // otherwise fail loudly so the email service gets configured instead of
       // silently leaving users with no way to receive their code.
