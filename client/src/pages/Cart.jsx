@@ -176,7 +176,7 @@ export default function Cart() {
   }
 
   return (
-    <section className="py-8 sm:py-10" style={{ background: '#F7F8FA' }}>
+    <section className="py-8 sm:py-10" style={{ background: '#F7F8FA', height: '100%', overflowY: 'auto' }}>
       <Container className="max-w-6xl space-y-6">
         <Card className="overflow-hidden">
           <div className="px-6 py-8 text-white sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 60%, #0C628D 100%)' }}>
