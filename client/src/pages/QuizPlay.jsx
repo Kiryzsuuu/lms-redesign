@@ -249,6 +249,115 @@ export default function QuizPlay() {
     return `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
   }
 
+  function QuestionCard({ q, idx }) {
+    const g = gradingByQuestionId?.[q._id];
+    const qType = q.type || 'mcq';
+    return (
+      <Card className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="text-sm font-semibold text-slate-500">Soal {idx + 1} / {questions.length}</div>
+          {!result ? (
+            <div className={'inline-flex items-center border px-2 py-1 text-xs font-semibold ' + (isQuestionAnswered(q) ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-700')}>
+              {isQuestionAnswered(q) ? 'TERJAWAB' : 'BELUM'}
+            </div>
+          ) : null}
+        </div>
+
+        {result && !isPreview && g?.isAutoGradable ? (
+          <div className={'mt-2 inline-flex w-fit items-center border px-2 py-1 text-xs font-semibold ' + (g.isCorrect ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-800')}>
+            {g.isCorrect ? 'BENAR' : 'SALAH'}
+          </div>
+        ) : null}
+
+        {q.promptHtml ? (
+          <div className="mt-2 text-lg font-bold text-slate-900" dangerouslySetInnerHTML={{ __html: q.promptHtml }} />
+        ) : (
+          <div className="mt-2 text-lg font-bold text-slate-900">{q.prompt}</div>
+        )}
+
+        {q.imageUrl && (
+          <div className="mt-4">
+            <img src={q.imageUrl} alt="Question" className="max-w-full h-auto rounded border border-slate-200" style={{ maxHeight: '400px' }} />
+          </div>
+        )}
+
+        {qType === 'essay' ? (
+          <div className="mt-4">
+            <textarea
+              className="w-full border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+              rows={6}
+              value={answers[q._id]?.textAnswer || ''}
+              disabled={Boolean(result)}
+              onChange={(e) => setAnswers((a) => ({ ...a, [q._id]: { ...(a[q._id] || {}), textAnswer: e.target.value } }))}
+              placeholder="Tulis jawabanmu..."
+            />
+            <div className="mt-1 text-xs text-slate-500">Essay tidak otomatis dinilai.</div>
+          </div>
+        ) : qType === 'matching' ? (
+          <div className="mt-4 grid gap-2">
+            {(() => {
+              const pairs = q.pairs || [];
+              const rights = pairs.map((p) => p.right);
+              const current = answers[q._id]?.matchingAnswer;
+              const init = Array.isArray(current) ? current : pairs.map((p) => ({ left: p.left, right: '' }));
+              return pairs.map((p, rowIdx) => (
+                <div key={rowIdx} className="grid gap-2 sm:grid-cols-2">
+                  <div className="border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900">{p.left}</div>
+                  <select
+                    className="w-full border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    disabled={Boolean(result)}
+                    value={init[rowIdx]?.right || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setAnswers((a) => {
+                        const base = Array.isArray(a[q._id]?.matchingAnswer) ? [...a[q._id].matchingAnswer] : pairs.map((x) => ({ left: x.left, right: '' }));
+                        base[rowIdx] = { left: p.left, right: val };
+                        return { ...a, [q._id]: { ...(a[q._id] || {}), matchingAnswer: base } };
+                      });
+                    }}
+                  >
+                    <option value="">Pilih pasangan...</option>
+                    {rights.map((r, i) => (<option key={i} value={r}>{r}</option>))}
+                  </select>
+                </div>
+              ));
+            })()}
+            <div className="text-xs text-slate-500">Matching tidak otomatis dinilai.</div>
+          </div>
+        ) : (
+          <div className="mt-4 grid gap-2">
+            {q.choices.map((c) => {
+              const selected = answers[q._id]?.choiceId === c.id;
+              const isCorrectChoice = Boolean(result && g?.isAutoGradable && g.correctChoiceId === c.id);
+              const isSelectedWrong = Boolean(result && !isPreview && g?.isAutoGradable && selected && g.correctChoiceId !== c.id);
+              return (
+                <button
+                  key={c.id}
+                  disabled={Boolean(result)}
+                  onClick={() => setAnswers((a) => ({ ...a, [q._id]: { ...(a[q._id] || {}), choiceId: c.id } }))}
+                  className={'border px-4 py-3 text-left text-sm transition ' + (isCorrectChoice ? 'border-emerald-300 bg-emerald-50 text-emerald-900' : isSelectedWrong ? 'border-rose-300 bg-rose-50 text-rose-900' : selected ? 'border-[#0C628D] bg-[#0C628D] text-white' : 'border-slate-200 bg-white hover:bg-slate-50')}
+                >
+                  <div>{c.text}</div>
+                  {c.imageUrl ? (<img src={c.imageUrl} alt={`Opsi ${c.id}`} className="mt-3 max-h-40 rounded-xl border border-slate-200 object-contain" />) : null}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {quiz?.allowClearAnswers && !result && isQuestionAnswered(q) ? (
+          <div className="mt-4">
+            <Button variant="outline" className="!text-rose-600 !border-rose-300 hover:!bg-rose-50" onClick={() => setAnswers((a) => { const next = { ...a }; delete next[q._id]; return next; })}>
+              Hapus Jawaban
+            </Button>
+          </div>
+        ) : null}
+      </Card>
+    );
+  }
+
+  const showStackedResult = Boolean(result) && !isPreview;
+
   if (!isAuthed) {
     return (
       <section className="py-10">
@@ -344,11 +453,15 @@ export default function QuizPlay() {
         </div>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+          <div className={showStackedResult ? 'lg:col-span-3' : 'lg:col-span-2'}>
             {!hasQuestions ? (
               <Card className="p-8">
                 <div className="text-sm text-slate-600">Belum ada soal.</div>
               </Card>
+            ) : showStackedResult ? (
+              <div className="grid gap-4">
+                {questions.map((q, sIdx) => (<QuestionCard key={q._id} q={q} idx={sIdx} />))}
+              </div>
             ) : currentQuestion ? (
               <Card className="p-5">
                 <div className="flex items-start justify-between gap-3">
@@ -530,6 +643,7 @@ export default function QuizPlay() {
             ) : null}
           </div>
 
+          {!showStackedResult && (
           <div>
             <Card className="p-5">
               <div className="flex items-center justify-between gap-3">
@@ -603,6 +717,7 @@ export default function QuizPlay() {
               ) : null}
             </Card>
           </div>
+          )}
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
