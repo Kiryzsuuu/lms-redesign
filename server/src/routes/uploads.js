@@ -4,9 +4,13 @@ const fs = require('fs');
 const crypto = require('crypto');
 const multer = require('multer');
 
-const UPLOAD_DIR = process.env.NODE_ENV === 'production'
-  ? '/tmp/uploads'
-  : path.resolve(__dirname, '../../uploads');
+// Persisten di disk server (VPS). Bisa dioverride via env UPLOAD_DIR.
+// Vercel (serverless, fs read-only) hanya boleh menulis ke /tmp.
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.resolve(process.env.UPLOAD_DIR)
+  : process.env.VERCEL
+    ? '/tmp/uploads'
+    : path.resolve(__dirname, '../../uploads');
 
 function ensureUploadDir() {
   if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
