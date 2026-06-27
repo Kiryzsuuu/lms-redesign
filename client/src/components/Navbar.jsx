@@ -116,7 +116,7 @@ export function Navbar() {
           {isAuthed && (
             <MobileMenuGroup label="Akun">
               <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard'); }}>Dashboard</MobileMenuItem>
-              <MobileMenuItem onSelect={() => { closeMobile(); nav('/my-profile'); }}>Profil Saya</MobileMenuItem>
+              <MobileMenuItem onSelect={() => { closeMobile(); nav('/dashboard/profile'); }}>Profil Saya</MobileMenuItem>
               <MobileMenuItem onSelect={() => { closeMobile(); logout(); }}>Logout</MobileMenuItem>
             </MobileMenuGroup>
           )}
@@ -218,7 +218,7 @@ export function Navbar() {
                             style={{ border: '1px solid #E5E7EB', boxShadow: '0 10px 15px rgba(0,0,0,.08), 0 4px 6px rgba(0,0,0,.05)' }}
                           >
                             <DropLink to="/dashboard">Dashboard</DropLink>
-                            <DropLink to="/my-profile">Profil Saya</DropLink>
+                            <DropLink to="/dashboard/profile">Profil Saya</DropLink>
                             <div className="border-t border-gray-100 mt-1 pt-1">
                               <button
                                 type="button"

@@ -10,6 +10,7 @@ const { requireAuth, requireRole } = require('./middleware/auth');
 const { authRouter } = require('./routes/auth');
 const { heroesRouter } = require('./routes/heroes');
 const { coursesRouter } = require('./routes/courses');
+const { notificationsRouter } = require('./routes/notifications');
 const { quizzesRouter } = require('./routes/quizzes');
 const { adminRouter } = require('./routes/admin');
 const { progressRouter } = require('./routes/progress');
@@ -83,7 +84,8 @@ async function createApp() {
   app.use('/api/auth', authRouter({ jwtSecret: env.JWT_SECRET }));
   app.use('/api/heroes', heroesRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
   app.use('/api/about', aboutRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
-  app.use('/api/courses', coursesRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
+  app.use('/api/courses', coursesRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole, env }));
+  app.use('/api/notifications', notificationsRouter({ requireAuth: requireAuth(env.JWT_SECRET) }));
   app.use('/api/quizzes', quizzesRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
   app.use('/api/admin', adminRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
   app.use('/api/progress', progressRouter({ requireAuth: requireAuth(env.JWT_SECRET) }));

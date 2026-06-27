@@ -492,7 +492,7 @@ function StudentDashboard({ user, stats, student }) {
               <div className="ds-res-info"><div className="ds-res-name">Sertifikat</div><div className="ds-res-meta">{student.certificates || 0} diterbitkan</div></div>
               <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />
             </div>
-            <div className="ds-res-item" style={{ marginBottom: 0 }} onClick={() => { window.location.href = '/my-profile'; }}>
+            <div className="ds-res-item" style={{ marginBottom: 0 }} onClick={() => { window.location.href = '/dashboard/profile'; }}>
               <div className="ds-res-icon"><i className="ti ti-user-circle" /></div>
               <div className="ds-res-info"><div className="ds-res-name">Profil Saya</div><div className="ds-res-meta">Kelola akun</div></div>
               <i className="ti ti-chevron-right" style={{ color: '#9CA3AF' }} />

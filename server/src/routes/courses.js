@@ -11,6 +11,45 @@ const { User } = require('../models/User');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { HttpError } = require('../utils/errors');
 const { audit, diffFields } = require('../utils/audit');
+const { notifyStudentsNewCourse } = require('../utils/notify');
+
+// Create modules + (empty draft) lessons on a course from a template outline.
+// Appends after any existing modules so it is safe on courses that already have content.
+// Returns { modulesCreated, lessonsCreated }.
+async function applyTemplateToCourse(courseId, templateId) {
+  const tpl = await CourseTemplate.findById(templateId);
+  if (!tpl || !Array.isArray(tpl.modules)) return { modulesCreated: 0, lessonsCreated: 0 };
+
+  const existingModules = await Module.countDocuments({ courseId });
+  let modulesCreated = 0;
+  let lessonsCreated = 0;
+
+  for (let mi = 0; mi < tpl.modules.length; mi++) {
+    const m = tpl.modules[mi];
+    const mod = await Module.create({
+      courseId,
+      title: m.title || `Modul ${existingModules + mi + 1}`,
+      order: existingModules + mi,
+      isPublished: false,
+    });
+    modulesCreated += 1;
+
+    const lessons = Array.isArray(m.lessons) ? m.lessons : [];
+    for (let li = 0; li < lessons.length; li++) {
+      const l = lessons[li];
+      await Lesson.create({
+        courseId,
+        moduleId: mod._id,
+        title: l.title || `Materi ${li + 1}`,
+        order: li,
+        isPublished: false,
+      });
+      lessonsCreated += 1;
+    }
+  }
+
+  return { modulesCreated, lessonsCreated };
+}
 
 async function assertCanEditCourse(courseId, user) {
   const course = await Course.findById(courseId);
@@ -20,7 +59,7 @@ async function assertCanEditCourse(courseId, user) {
   throw new HttpError(403, 'Forbidden');
 }
 
-function coursesRouter({ requireAuth, requireRole }) {
+function coursesRouter({ requireAuth, requireRole, env }) {
   const router = express.Router();
 
   // Authenticated: list courses owned by the current teacher (or all courses for admin)
@@ -66,15 +105,51 @@ function coursesRouter({ requireAuth, requireRole }) {
 
       const courseIds = [
         ...(user.purchasedCourseIds || []),
+        ...(user.enrolledCourseIds || []),
         ...(user.completedCourseIds || []),
         ...(user.activeCourseId ? [user.activeCourseId] : []),
       ];
-      
+
       // Remove duplicates
       const uniqueIds = [...new Set(courseIds.map(id => String(id)))];
-      
-      const courses = await Course.find({ _id: { $in: uniqueIds } }).sort({ createdAt: -1 });
-      res.json({ courses });
+
+      const courses = await Course.find({ _id: { $in: uniqueIds } })
+        .sort({ createdAt: -1 })
+        .populate('categoryId', 'name slug')
+        .lean();
+
+      // Compute progressPercent per course from published lessons + this user's completions.
+      const lessons = await Lesson.find({ courseId: { $in: uniqueIds }, isPublished: true }).select('_id courseId');
+      const totalByCourse = new Map();
+      for (const l of lessons) {
+        const k = String(l.courseId);
+        totalByCourse.set(k, (totalByCourse.get(k) || 0) + 1);
+      }
+      const completedRows = await LessonProgress.find({
+        userId: req.user.sub,
+        courseId: { $in: uniqueIds },
+        isCompleted: true,
+        lessonId: { $in: lessons.map((l) => l._id) },
+      }).select('courseId');
+      const doneByCourse = new Map();
+      for (const r of completedRows) {
+        const k = String(r.courseId);
+        doneByCourse.set(k, (doneByCourse.get(k) || 0) + 1);
+      }
+
+      const withProgress = courses.map((c) => {
+        const k = String(c._id);
+        const total = totalByCourse.get(k) || 0;
+        const done = doneByCourse.get(k) || 0;
+        return {
+          ...c,
+          lessonCount: total,
+          completedLessonCount: done,
+          progressPercent: total ? Math.round((done / total) * 100) : 0,
+        };
+      });
+
+      res.json({ courses: withProgress });
     })
   );
 
@@ -137,6 +212,10 @@ function coursesRouter({ requireAuth, requireRole }) {
       // Allow switching active course among enrolled/purchased courses.
       // Keeps a single activeCourseId, but user can choose which one is active.
       user.activeCourseId = course._id;
+      // Track every started course (including free ones) so "Kursus Saya" shows all of them.
+      if (!(user.enrolledCourseIds || []).some((x) => String(x) === String(course._id))) {
+        user.enrolledCourseIds = [...(user.enrolledCourseIds || []), course._id];
+      }
       await user.save();
 
       res.json({ ok: true, activeCourseId: user.activeCourseId });
@@ -301,29 +380,7 @@ function coursesRouter({ requireAuth, requireRole }) {
       // Apply outline template: create modules + lessons from the chosen template.
       if (data.templateId) {
         try {
-          const tpl = await CourseTemplate.findById(data.templateId);
-          if (tpl && Array.isArray(tpl.modules)) {
-            for (let mi = 0; mi < tpl.modules.length; mi++) {
-              const m = tpl.modules[mi];
-              const mod = await Module.create({
-                courseId: course._id,
-                title: m.title || `Modul ${mi + 1}`,
-                order: mi,
-                isPublished: false,
-              });
-              const lessons = Array.isArray(m.lessons) ? m.lessons : [];
-              for (let li = 0; li < lessons.length; li++) {
-                const l = lessons[li];
-                await Lesson.create({
-                  courseId: course._id,
-                  moduleId: mod._id,
-                  title: l.title || `Materi ${li + 1}`,
-                  order: li,
-                  isPublished: false,
-                });
-              }
-            }
-          }
+          await applyTemplateToCourse(course._id, data.templateId);
         } catch (e) {
           // Non-fatal: course is created even if template application fails.
         }
@@ -331,6 +388,13 @@ function coursesRouter({ requireAuth, requireRole }) {
 
       await syncTeacherSkills(ownerId, data.tags);
       audit({ actor: req.user, action: 'create', resource: 'course', resourceId: course._id, resourceName: course.title, req });
+
+      // Created already published → notify all students once.
+      if (course.isPublished && !course.newCourseNotifiedAt) {
+        await Course.updateOne({ _id: course._id }, { newCourseNotifiedAt: new Date() });
+        notifyStudentsNewCourse(env, course); // fire-and-forget
+      }
+
       res.status(201).json({ course });
     })
   );
@@ -362,7 +426,33 @@ function coursesRouter({ requireAuth, requireRole }) {
       const changed = diffFields(before, data);
       const action = changed.includes('isPublished') ? (data.isPublished ? 'publish' : 'unpublish') : 'update';
       audit({ actor: req.user, action, resource: 'course', resourceId: updated._id, resourceName: updated.title, changedFields: changed, req });
+
+      // First-ever publish → notify all students (in-app + email), once.
+      if (action === 'publish' && !updated.newCourseNotifiedAt) {
+        await Course.updateOne({ _id: updated._id }, { newCourseNotifiedAt: new Date() });
+        notifyStudentsNewCourse(env, updated); // fire-and-forget
+      }
+
       res.json({ course: updated });
+    })
+  );
+
+  // Apply a template outline to an existing course (appends modules + draft lessons).
+  router.post(
+    '/:id/apply-template',
+    requireAuth,
+    requireRole('admin', 'teacher'),
+    asyncHandler(async (req, res) => {
+      const course = await assertCanEditCourse(req.params.id, req.user);
+      const templateId = String(req.body.templateId || '');
+      if (!templateId) throw new HttpError(400, 'templateId wajib diisi');
+
+      const tpl = await CourseTemplate.findById(templateId);
+      if (!tpl) throw new HttpError(404, 'Template tidak ditemukan');
+
+      const result = await applyTemplateToCourse(course._id, templateId);
+      audit({ actor: req.user, action: 'apply-template', resource: 'course', resourceId: course._id, resourceName: course.title, req });
+      res.json({ ok: true, ...result });
     })
   );
 

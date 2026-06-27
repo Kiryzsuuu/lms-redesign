@@ -89,8 +89,10 @@ export default function App() {
         <Route path="/kebijakan-privasi" element={<InfoPage type="privacy" />} />
         <Route path="/tentang-kami" element={<AboutUs />} />
 
+        {/* Profil kini hidup di dalam dashboard agar seragam dengan halaman lain. */}
+        <Route path="/my-profile" element={<Navigate to="/dashboard/profile" replace />} />
         <Route
-          path="/my-profile"
+          path="/dashboard/profile"
           element={
             <RequireAuth>
               <MyProfile />

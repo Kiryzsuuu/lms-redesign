@@ -185,6 +185,48 @@ async function sendWelcomeEmail(env, { userEmail, userName }) {
 }
 
 /**
+ * Send "new course available" notification to a user
+ */
+async function sendNewCourseNotification(env, { userEmail, userName, courseName, courseId, coursePrice }) {
+  if (!hasSmtpConfigured(env)) return;
+
+  const base = env.CLIENT_URL || 'https://inspira.app';
+  const link = `${base}/courses/${courseId}`;
+  const priceLabel = coursePrice > 0 ? `Rp ${Number(coursePrice).toLocaleString('id-ID')}` : 'Gratis';
+  const subject = `Kursus Baru: ${courseName}`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+      <h2 style="color: #0C628D;">✨ Kursus Baru Telah Tersedia!</h2>
+
+      <p>Halo <strong>${userName}</strong>,</p>
+
+      <p>Kabar gembira! Sebuah kursus baru baru saja ditambahkan di Edulyfe:</p>
+
+      <div style="background-color: #f0f9ff; padding: 15px; border-left: 4px solid #0C628D; margin: 15px 0;">
+        <p><strong>Kursus:</strong> ${courseName}</p>
+        <p><strong>Harga:</strong> ${priceLabel}</p>
+      </div>
+
+      <a href="${link}" style="display: inline-block; background-color: #0C628D; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-top: 8px;">
+        Lihat Kursus
+      </a>
+
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      <p style="font-size: 12px; color: #888;">
+        Email ini dikirim secara otomatis. Silakan jangan membalas email ini.
+      </p>
+    </div>
+  `;
+
+  await sendMail(env, {
+    to: userEmail,
+    subject,
+    html,
+    text: `Kursus baru tersedia: ${courseName} (${priceLabel}). Lihat di ${link}`,
+  });
+}
+
+/**
  * Send OTP code to user email
  */
 async function sendOTP(env, { userEmail, code, type }) {
@@ -265,5 +307,6 @@ module.exports = {
   sendPurchaseConfirmation,
   sendProgressReport,
   sendWelcomeEmail,
+  sendNewCourseNotification,
   sendOTP,
 };

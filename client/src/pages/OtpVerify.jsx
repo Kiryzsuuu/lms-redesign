@@ -45,7 +45,7 @@ export default function OtpVerify() {
         const res = await api.post('/auth/email/verify-otp', { newEmail: email, code });
         setToken(res.data.token);
         await refreshUser();
-        nav('/my-profile', { replace: true });
+        nav('/dashboard/profile', { replace: true });
         return;
       }
 
@@ -53,7 +53,7 @@ export default function OtpVerify() {
         if (!token) throw new Error('Silakan login terlebih dahulu');
         await api.post('/auth/password/verify-otp', { code });
         setStatus('Password berhasil diperbarui');
-        setTimeout(() => nav('/my-profile', { replace: true }), 700);
+        setTimeout(() => nav('/dashboard/profile', { replace: true }), 700);
         return;
       }
 

@@ -90,7 +90,7 @@ const STUDENT_NAV = [
   {
     section: 'Akun',
     items: [
-      { to: '/my-profile', icon: 'ti-user-circle', label: 'Profil Saya' },
+      { to: '/dashboard/profile', icon: 'ti-user-circle', label: 'Profil Saya' },
       { to: '/dashboard/notifications', icon: 'ti-bell', label: 'Notifikasi' },
     ],
   },
@@ -109,6 +109,21 @@ export function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [badges, setBadges] = useState({});
+  const [unreadNotif, setUnreadNotif] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    let alive = true;
+    const loadUnread = () => {
+      api.get('/notifications/me/unread-count')
+        .then(r => { if (alive) setUnreadNotif(r.data.unreadCount || 0); })
+        .catch(() => {});
+    };
+    loadUnread();
+    window.addEventListener('notifications:changed', loadUnread);
+    const iv = setInterval(loadUnread, 60000);
+    return () => { alive = false; window.removeEventListener('notifications:changed', loadUnread); clearInterval(iv); };
+  }, [api]);
 
   useEffect(() => {
     if (!api) return;
@@ -232,7 +247,7 @@ export function DashboardLayout({ children }) {
       {/* Bottom */}
       <div style={{ padding: 8, borderTop: '1px solid rgba(255,255,255,.1)', flexShrink: 0 }}>
         <Link
-          to="/my-profile"
+          to="/dashboard/profile"
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.65)', textDecoration: 'none', marginBottom: 2 }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.1)'; e.currentTarget.style.color = '#fff'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,.65)'; }}
@@ -311,11 +326,23 @@ export function DashboardLayout({ children }) {
               <i className="ti ti-home" style={{ fontSize: 13 }} />
               <span className="dash-beranda-label">Beranda</span>
             </Link>
+            <Link
+              to="/dashboard/notifications"
+              title="Notifikasi"
+              style={{ position: 'relative', width: 30, height: 30, borderRadius: 8, border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#4B5563' }}
+            >
+              <i className="ti ti-bell" style={{ fontSize: 15 }} />
+              {unreadNotif > 0 && (
+                <span style={{ position: 'absolute', top: -5, right: -5, minWidth: 16, height: 16, padding: '0 4px', borderRadius: 99, background: '#EF4444', color: '#fff', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                  {unreadNotif > 9 ? '9+' : unreadNotif}
+                </span>
+              )}
+            </Link>
             <div style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: role === 'admin' ? '#FEE2E2' : role === 'teacher' ? '#FEF3E2' : '#EBF5FF', color: role === 'admin' ? '#B91C1C' : role === 'teacher' ? '#F3921B' : '#0C628D' }}>
               {roleLabel}
             </div>
             <Link
-              to="/my-profile"
+              to="/dashboard/profile"
               style={{ width: 30, height: 30, borderRadius: '50%', background: '#1B3A5C', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
               title="Profil Saya"
             >

@@ -2,9 +2,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, Button, Input, Label } from '../components/ui';
 import { PageSpinner } from '../components/PageSpinner';
-import { SidebarShell } from '../components/SidebarShell';
+import { DsPage } from '../components/ds';
 import { useAuth } from '../lib/auth';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+
+const TABS = [
+  { key: 'profile', label: 'Informasi Pribadi' },
+  { key: 'courses', label: 'Riwayat Courses' },
+  { key: 'certificates', label: 'Sertifikat' },
+  { key: 'testimonial', label: 'Testimoni' },
+];
 
 function cleanCourseHtml(html) {
   let s = String(html || '');
@@ -302,72 +309,25 @@ export default function MyProfile() {
   const completedCourses = courses.filter((c) => user.completedCourseIds?.includes(c._id));
   const activeCourse = user.activeCourseId ? courses.find((c) => c._id === user.activeCourseId) : null;
 
-  const renderProfileSidebar = (closeDrawer) => (
-    <div className="space-y-2">
-      <button
-        onClick={() => {
-          setActiveTab('profile');
-          closeDrawer();
-        }}
-        className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-          activeTab === 'profile'
-            ? 'bg-orange-100 text-orange-900 shadow-sm'
-            : 'text-slate-700 hover:bg-white hover:shadow-sm'
-        }`}
-      >
-        Informasi Pribadi
-      </button>
-      <button
-        onClick={() => {
-          setActiveTab('courses');
-          closeDrawer();
-        }}
-        className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-          activeTab === 'courses'
-            ? 'bg-orange-100 text-orange-900 shadow-sm'
-            : 'text-slate-700 hover:bg-white hover:shadow-sm'
-        }`}
-      >
-        Riwayat Courses
-      </button>
-      <button
-        onClick={() => {
-          setActiveTab('certificates');
-          closeDrawer();
-        }}
-        className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-          activeTab === 'certificates'
-            ? 'bg-orange-100 text-orange-900 shadow-sm'
-            : 'text-slate-700 hover:bg-white hover:shadow-sm'
-        }`}
-      >
-        Sertifikat
-      </button>
-      <button
-        onClick={() => {
-          setActiveTab('testimonial');
-          closeDrawer();
-        }}
-        className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-          activeTab === 'testimonial'
-            ? 'bg-orange-100 text-orange-900 shadow-sm'
-            : 'text-slate-700 hover:bg-white hover:shadow-sm'
-        }`}
-      >
-        Testimoni
-      </button>
-    </div>
-  );
-
   return (
-    <SidebarShell
+    <DsPage
       title="Profil Saya"
-      description="Kelola informasi pribadi, pantau course yang sedang dipelajari, dan akses sertifikat Anda dalam satu tampilan yang lebih rapi."
-      sidebarTitle="Navigasi profil"
-      renderSidebar={renderProfileSidebar}
+      subtitle="Kelola informasi pribadi, pantau course yang sedang dipelajari, dan akses sertifikat Anda."
     >
-      {error ? <div className="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-      {success ? <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
+      <div className="ds-tabs">
+        {TABS.map((t) => (
+          <div
+            key={t.key}
+            className={`ds-tab${activeTab === t.key ? ' active' : ''}`}
+            onClick={() => setActiveTab(t.key)}
+          >
+            {t.label}
+          </div>
+        ))}
+      </div>
+
+      {error ? <div className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+      {success ? <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div> : null}
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="space-y-6">
@@ -519,7 +479,7 @@ export default function MyProfile() {
                         <select
                           value={profileData.referralSource || ''}
                           onChange={(e) => setProfileData((p) => ({ ...p, referralSource: e.target.value }))}
-                          className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
+                          className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D]"
                         >
                           <option value="">Pilih sumber</option>
                           {REFERRAL_SOURCES.map((src) => (
@@ -534,7 +494,7 @@ export default function MyProfile() {
                         <textarea
                           value={profileData.reason || ''}
                           onChange={(e) => setProfileData((p) => ({ ...p, reason: e.target.value }))}
-                          className="w-full border border-slate-200 px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
+                          className="w-full border border-slate-200 px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D]"
                           rows={3}
                         />
                       </div>
@@ -543,7 +503,7 @@ export default function MyProfile() {
                         <select
                           value={profileData.educationLevel || ''}
                           onChange={(e) => setProfileData((p) => ({ ...p, educationLevel: e.target.value }))}
-                          className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
+                          className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D]"
                         >
                           <option value="">Pilih tingkat pendidikan</option>
                           {EDUCATION_LEVELS.map((level) => (
@@ -557,7 +517,7 @@ export default function MyProfile() {
                         <Button
                           onClick={saveProfile}
                           disabled={loading}
-                          className="bg-[#F3921B] text-white hover:bg-[#D97C0D]"
+                          className="bg-[#0C628D] text-white hover:bg-[#0A527A]"
                         >
                           {loading ? 'Menyimpan...' : 'Simpan Profil'}
                         </Button>
@@ -604,7 +564,7 @@ export default function MyProfile() {
                           <Button
                             onClick={updateEmail}
                             disabled={loading}
-                            className="bg-[#F3921B] text-white hover:bg-[#D97C0D]"
+                            className="bg-[#0C628D] text-white hover:bg-[#0A527A]"
                           >
                             Simpan
                           </Button>
@@ -682,7 +642,7 @@ export default function MyProfile() {
                           <Button
                             onClick={updatePassword}
                             disabled={loading}
-                            className="bg-[#F3921B] text-white hover:bg-[#D97C0D]"
+                            className="bg-[#0C628D] text-white hover:bg-[#0A527A]"
                           >
                             Simpan
                           </Button>
@@ -898,6 +858,6 @@ export default function MyProfile() {
               </div>
             </div>
           )}
-    </SidebarShell>
+    </DsPage>
   );
 }

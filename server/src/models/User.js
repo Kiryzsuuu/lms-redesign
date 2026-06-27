@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
     skills: [{ type: String, trim: true }], // keahlian/bidang yang dikuasai
 
     activeCourseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+    enrolledCourseIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }], // semua course yang pernah dimulai (termasuk gratis)
     completedCourseIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     purchasedCourseIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
 

@@ -46,7 +46,7 @@ export default function StudentCourses() {
               title={c.title}
               progress={progressOf(c)}
               metaLeft={c.categoryId?.name || 'Kursus'}
-              metaRight={`${(c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0)} materi`}
+              metaRight={`${c.lessonCount ?? (c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0)} materi`}
             />
           ))}
           <Link to="/dashboard/catalog" className="ds-add-card">

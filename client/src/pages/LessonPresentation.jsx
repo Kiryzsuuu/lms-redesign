@@ -162,17 +162,30 @@ export default function LessonPresentation() {
   const isPaywalled = isStudent && (course?.priceIdr || 0) > 0 && !hasPurchased;
   const isActiveCourse = !isStudent || (progress?.activeCourseId && String(progress.activeCourseId) === String(id));
 
+  // Navigation order: follow module order, then lesson order within each module,
+  // so "Berikutnya" advances within the current module before moving to the next.
+  const orderedLessons = useMemo(() => {
+    if (!modules.length) return lessons;
+    const out = [];
+    for (const mod of modules) {
+      out.push(...lessons.filter(l => String(l.moduleId) === String(mod._id)));
+    }
+    // Lessons without a matching module go last (preserve their existing order).
+    out.push(...lessons.filter(l => !modules.some(m => String(m._id) === String(l.moduleId))));
+    return out;
+  }, [modules, lessons]);
+
   const activeLesson = useMemo(() => lessons.find(l => String(l._id) === String(lessonId)) || null, [lessons, lessonId]);
-  const activeIdx = useMemo(() => activeLesson ? lessons.findIndex(l => String(l._id) === String(activeLesson._id)) : -1, [lessons, activeLesson]);
+  const activeIdx = useMemo(() => activeLesson ? orderedLessons.findIndex(l => String(l._id) === String(activeLesson._id)) : -1, [orderedLessons, activeLesson]);
 
   const isDone = (lId) => Boolean(lessonProgress[String(lId)]?.isCompleted);
   const canOpen = (idx) => {
     if (!isStudent || idx <= 0) return true;
-    return isDone(lessons[idx - 1]?._id);
+    return isDone(orderedLessons[idx - 1]?._id);
   };
 
-  const prevLessonId = activeIdx > 0 ? lessons[activeIdx - 1]?._id : null;
-  const nextLessonId = activeIdx >= 0 && activeIdx < lessons.length - 1 ? lessons[activeIdx + 1]?._id : null;
+  const prevLessonId = activeIdx > 0 ? orderedLessons[activeIdx - 1]?._id : null;
+  const nextLessonId = activeIdx >= 0 && activeIdx < orderedLessons.length - 1 ? orderedLessons[activeIdx + 1]?._id : null;
   const allowed = isActiveCourse && !isPaywalled && activeIdx >= 0 && canOpen(activeIdx);
 
   const completedCount = Object.values(lessonProgress).filter(r => r.isCompleted).length;

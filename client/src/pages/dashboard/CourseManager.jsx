@@ -116,6 +116,9 @@ export default function CourseManager() {
   const [categories, setCategories] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [templates, setTemplates] = useState([]);
+  const [applyTemplateId, setApplyTemplateId] = useState('');
+  const [applyingTemplate, setApplyingTemplate] = useState(false);
+  const [applyTemplateMsg, setApplyTemplateMsg] = useState('');
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverUploadingForSelected, setCoverUploadingForSelected] = useState(false);
   const [selectedCoverDraft, setSelectedCoverDraft] = useState('');
@@ -395,6 +398,25 @@ export default function CourseManager() {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data.url;
+  }
+
+  async function applyTemplate() {
+    if (!selected?._id || !applyTemplateId) return;
+    const tplName = templates.find((t) => String(t._id) === String(applyTemplateId))?.name || 'template';
+    if (!window.confirm(`Terapkan outline "${tplName}" ke course ini? Modul & materi baru akan ditambahkan (draft).`)) return;
+    setApplyingTemplate(true);
+    setError('');
+    try {
+      const res = await api.post(`/courses/${selected._id}/apply-template`, { templateId: applyTemplateId });
+      await loadCourseDetails(selected._id);
+      setApplyTemplateId('');
+      setApplyTemplateMsg(`Berhasil menambahkan ${res.data.modulesCreated || 0} modul & ${res.data.lessonsCreated || 0} materi dari template.`);
+      setTimeout(() => setApplyTemplateMsg(''), 5000);
+    } catch (e) {
+      setError(e?.response?.data?.error?.message || 'Gagal menerapkan template');
+    } finally {
+      setApplyingTemplate(false);
+    }
   }
 
   async function uploadLessonPdf(file) {
@@ -1330,6 +1352,36 @@ export default function CourseManager() {
                   {activeTab === 'modules' && (
                     <div>
                       <div className="font-bold mb-4">Modul Kursus</div>
+
+                      {templates.length > 0 && (
+                        <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                          <div className="text-sm font-semibold text-slate-800">Terapkan Template Outline</div>
+                          <p className="text-xs text-slate-500 mt-0.5 mb-3">Tambahkan modul & materi (draft) dari template ke course ini.</p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <select
+                              value={applyTemplateId}
+                              onChange={(e) => setApplyTemplateId(e.target.value)}
+                              className="border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D] min-w-[200px]"
+                            >
+                              <option value="">Pilih template…</option>
+                              {templates.map((t) => (
+                                <option key={t._id} value={t._id}>{t.name}</option>
+                              ))}
+                            </select>
+                            <Button
+                              type="button"
+                              onClick={applyTemplate}
+                              disabled={!applyTemplateId || applyingTemplate}
+                            >
+                              {applyingTemplate ? 'Menerapkan…' : 'Terapkan'}
+                            </Button>
+                          </div>
+                          {applyTemplateMsg && (
+                            <div className="mt-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-3 py-2">{applyTemplateMsg}</div>
+                          )}
+                        </div>
+                      )}
+
                       <form className="grid gap-3 mb-6 border-b border-slate-200 pb-6" onSubmit={createOrUpdateModule}>
                         <div>
                           <Label>Nama Modul</Label>

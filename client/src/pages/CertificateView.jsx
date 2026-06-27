@@ -161,7 +161,7 @@ export default function CertificateView() {
       {!user?.fullName && (
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-center text-sm text-amber-800">
           Nama lengkap Anda belum diisi.{' '}
-          <a href="/my-profile" className="font-semibold underline hover:text-amber-900">
+          <a href="/dashboard/profile" className="font-semibold underline hover:text-amber-900">
             Lengkapi profil Anda
           </a>{' '}
           agar nama yang benar muncul di sertifikat ini.

@@ -32,6 +32,7 @@ export function SidebarShell({
   }, []);
 
   const sbPx = SB_PX[sidebarWidth] || 288;
+  const hasSidebar = Boolean(renderSidebar || sidebar);
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#F5F6F8' }}>
@@ -54,7 +55,8 @@ export function SidebarShell({
 
         {/* Body */}
         <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
-          {/* Desktop sidebar */}
+          {/* Desktop sidebar — only when there is sidebar content */}
+          {hasSidebar && (
           <aside
             style={{
               width: collapsed ? 0 : sbPx,
@@ -84,8 +86,10 @@ export function SidebarShell({
               </div>
             </div>
           </aside>
+          )}
 
-          {/* Collapse toggle */}
+          {/* Collapse toggle — only when there is a sidebar to collapse */}
+          {hasSidebar && (
           <button
             onClick={() => setCollapsed(c => !c)}
             title={collapsed ? 'Buka sidebar' : 'Tutup sidebar'}
@@ -112,15 +116,18 @@ export function SidebarShell({
               </svg>
             </div>
           </button>
+          )}
 
           {/* Main content */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            {/* Mobile menu toggle */}
+            {/* Mobile menu toggle — only when there is a sidebar */}
+            {hasSidebar && (
             <div className="lg:hidden" style={{ flexShrink: 0, borderBottom: '1px solid #E5E7EB', padding: '0.6rem 1rem' }}>
               <Button variant="outline" className="w-full justify-center" size="sm" onClick={() => setSidebarOpen(true)}>
                 ☰ Buka Menu
               </Button>
             </div>
+            )}
             <div style={{ flex: 1, overflowY: 'auto' }}>
               <div className={clsx('p-5 sm:p-6', contentClassName)}>
                 {children}

@@ -27,13 +27,33 @@ export default function StudentNotifications() {
 
   useEffect(() => {
     if (!api) return;
-    Promise.allSettled([api.get('/assignments/mine'), api.get('/discussions/mine')])
-      .then(([aRes, dRes]) => {
+    Promise.allSettled([api.get('/assignments/mine'), api.get('/discussions/mine'), api.get('/notifications/me')])
+      .then(([aRes, dRes, nRes]) => {
         const assignments = aRes.status === 'fulfilled' ? (aRes.value.data.assignments || []) : [];
         const discussions = dRes.status === 'fulfilled' ? (dRes.value.data.comments || []) : [];
+        const notifs = nRes.status === 'fulfilled' ? (nRes.value.data.notifications || []) : [];
         const now = Date.now();
 
         const items = [];
+        notifs.forEach(n => {
+          const isCourse = n.type === 'new_course';
+          items.push({
+            key: `n-${n._id}`,
+            icon: isCourse ? 'ti-sparkles' : 'ti-bell',
+            color: '#0C628D',
+            bg: '#EBF6FC',
+            title: n.title,
+            text: n.body || '',
+            time: n.createdAt,
+            sortTime: new Date(n.createdAt).getTime(),
+            unread: !n.isRead,
+            onClick: () => {
+              api.post(`/notifications/${n._id}/read`).catch(() => {});
+              window.dispatchEvent(new Event('notifications:changed'));
+              if (n.link) nav(n.link);
+            },
+          });
+        });
         assignments.forEach(a => {
           if (a.status === 'done' || !a.dueDate) return;
           const due = new Date(a.dueDate).getTime();
@@ -91,10 +111,11 @@ export default function StudentNotifications() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, color: '#4B5563', lineHeight: 1.45 }}>
-                  <strong style={{ color: '#111827' }}>{n.title}:</strong> {n.text}
+                  <strong style={{ color: '#111827' }}>{n.title}{n.text ? ':' : ''}</strong> {n.text}
                 </div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{timeAgo(n.time)}</div>
               </div>
+              {n.unread && <span style={{ width: 8, height: 8, borderRadius: 99, background: '#0C628D', flexShrink: 0, marginTop: 6 }} />}
             </div>
           ))}
         </DsCard>
