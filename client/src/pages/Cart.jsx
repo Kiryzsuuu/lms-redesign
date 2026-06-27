@@ -186,7 +186,7 @@ export default function Cart() {
                 <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Keranjang Course</h1>
                 <p className="mt-3 max-w-2xl text-sm text-slate-100/90">Pembayaran course diproses melalui Midtrans dengan metode QRIS dan virtual account.</p>
               </div>
-              <Link to="/courses">
+              <Link to="/dashboard/catalog">
                 <Button variant="outline" className="rounded-2xl border-white/30 bg-white/10 text-white hover:bg-white/20">Tambah course</Button>
               </Link>
             </div>
@@ -218,7 +218,7 @@ export default function Cart() {
             <Card className="p-6">
               <div className="text-sm text-slate-600">Cart masih kosong.</div>
               <div className="mt-4">
-                <Link to="/courses">
+                <Link to="/dashboard/catalog">
                   <Button>Browse course</Button>
                 </Link>
               </div>
