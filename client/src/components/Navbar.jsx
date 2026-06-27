@@ -227,6 +227,7 @@ export function Navbar() {
                           >
                             <DropLink to="/dashboard">Dashboard</DropLink>
                             <DropLink to="/dashboard/profile">Profil Saya</DropLink>
+                            {role === 'student' && <DropLink to="/dashboard/vouchers">Voucher Saya</DropLink>}
                             <div className="border-t border-gray-100 mt-1 pt-1">
                               <button
                                 type="button"

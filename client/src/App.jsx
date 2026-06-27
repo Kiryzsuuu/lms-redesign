@@ -23,6 +23,7 @@ import StudentCatalog from './pages/StudentCatalog';
 import StudentAssignments from './pages/StudentAssignments';
 import StudentDiscussions from './pages/StudentDiscussions';
 import StudentNotifications from './pages/StudentNotifications';
+import StudentVouchers from './pages/StudentVouchers';
 import HeroManager from './pages/dashboard/HeroManager';
 import CourseManager from './pages/dashboard/CourseManager';
 import UserManager from './pages/dashboard/UserManager';
@@ -163,6 +164,14 @@ export default function App() {
           element={
             <RequireAuth roles={['student']}>
               <StudentNotifications />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard/vouchers"
+          element={
+            <RequireAuth roles={['student']}>
+              <StudentVouchers />
             </RequireAuth>
           }
         />

@@ -56,6 +56,28 @@ export default function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [validateCouponLoading, setValidateCouponLoading] = useState(false);
 
+  // Referral & voucher
+  const [refInput, setRefInput] = useState('');
+  const [refMsg, setRefMsg] = useState('');
+  const [refLoading, setRefLoading] = useState(false);
+  const [myVouchers, setMyVouchers] = useState([]);
+  const [voucherCode, setVoucherCode] = useState('');
+
+  async function submitReferral() {
+    setRefMsg('');
+    if (!refInput.trim()) return;
+    setRefLoading(true);
+    try {
+      const r = await api.post('/referral/redeem', { code: refInput.trim() });
+      setRefMsg(r.data?.message || 'Kode referral diterima.');
+      setRefInput('');
+    } catch (e) {
+      setRefMsg(e?.response?.data?.error?.message || 'Kode referral tidak valid');
+    } finally {
+      setRefLoading(false);
+    }
+  }
+
   async function refresh() {
     setLoading(true);
     setError('');
@@ -82,7 +104,12 @@ export default function Cart() {
       .catch(() => {
         setMidtransConfig({ clientKey: '', isProduction: false });
       });
+    api.get('/referral/my-vouchers')
+      .then((r) => setMyVouchers((r.data?.vouchers || []).filter((v) => !v.isUsed)))
+      .catch(() => setMyVouchers([]));
   }, []);
+
+  const voucherDiscount = voucherCode ? Math.round(totalIdr * 0.05) : 0;
 
   async function remove(courseId) {
     setError('');
@@ -95,7 +122,7 @@ export default function Cart() {
     }
   }
 
-  const finalTotalIdr = appliedCoupon ? appliedCoupon.finalAmount : totalIdr;
+  const finalTotalIdr = Math.max(0, (appliedCoupon ? appliedCoupon.finalAmount : totalIdr) - voucherDiscount);
   const canCheckout = useMemo(() => !loading && items.length > 0 && !paying, [loading, items.length, paying]);
 
   async function validateCoupon() {
@@ -142,6 +169,7 @@ export default function Cart() {
       const cfg = midtransConfig || (await api.get('/payments/config')).data;
       const res = await api.post('/payments/checkout', {
         couponCode: appliedCoupon?.coupon.code || undefined,
+        voucherCode: voucherCode || undefined,
       });
 
       if (res.data?.paid) {
@@ -318,6 +346,48 @@ export default function Cart() {
                     <span className="font-semibold">-Rp {formatIdr(appliedCoupon.discountAmount)}</span>
                   </div>
                 )}
+
+                {/* Voucher Saya */}
+                {myVouchers.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Voucher Saya</div>
+                    <select
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value)}
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                    >
+                      <option value="">Tanpa voucher</option>
+                      {myVouchers.map((v) => (
+                        <option key={v._id} value={v.code}>{v.code} — diskon {v.discountPercent}%</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {voucherDiscount > 0 && (
+                  <div className="flex items-center justify-between rounded-2xl bg-teal-50 px-4 py-3 text-teal-900">
+                    <span>Voucher (5%)</span>
+                    <span className="font-semibold">-Rp {formatIdr(voucherDiscount)}</span>
+                  </div>
+                )}
+
+                {/* Kode referral teman */}
+                <div className="rounded-2xl border border-slate-200 px-4 py-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kode Referral Teman (opsional)</div>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Masukkan kode referral"
+                      value={refInput}
+                      onChange={(e) => setRefInput(e.target.value.toUpperCase())}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                    />
+                    <Button variant="outline" onClick={submitReferral} disabled={refLoading || !refInput.trim()} className="min-w-20">
+                      {refLoading ? '...' : 'Kirim'}
+                    </Button>
+                  </div>
+                  {refMsg && <div className="mt-1 text-xs text-emerald-700">{refMsg}</div>}
+                  <div className="mt-1 text-[11px] text-slate-400">Pemilik kode akan mendapat voucher diskon 5% (maks 3×).</div>
+                </div>
 
                 <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-4 text-orange-900">
                   <div className="font-semibold">Informasi Midtrans</div>

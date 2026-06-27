@@ -94,6 +94,7 @@ const STUDENT_NAV = [
     section: 'Akun',
     items: [
       { to: '/dashboard/profile', icon: 'ti-user-circle', label: 'Profil Saya' },
+      { to: '/dashboard/vouchers', icon: 'ti-ticket', label: 'Voucher Saya' },
       { to: '/dashboard/notifications', icon: 'ti-bell', label: 'Notifikasi' },
     ],
   },

@@ -12,6 +12,7 @@ const { sendWelcomeEmail, sendOTP } = require('../utils/emailNotifications');
 const { buildClientUrl } = require('../utils/urls');
 const { OTP } = require('../models/OTP');
 const { generateOTP, getOTPExpiration } = require('../utils/otp');
+const { ensureUniqueReferralCode, ensureUserReferralCode } = require('../utils/referral');
 
 function authRouter({ jwtSecret }) {
   const router = express.Router();
@@ -135,6 +136,7 @@ function authRouter({ jwtSecret }) {
         reason,
         educationLevel,
         referredBy,
+        referralCode: await ensureUniqueReferralCode(), // semua user punya kode referral
       });
 
       const otpResult = await createAndSendOtp(env, { email: normalizedEmail, type: 'register' });
@@ -288,9 +290,10 @@ function authRouter({ jwtSecret }) {
       }
 
       const user = await User.findById(payload.sub).select(
-        'name fullName email role createdAt emailVerified activeCourseId completedCourseIds purchasedCourseIds institution whatsappNumber referralSource reason educationLevel avatarUrl signatureUrl'
+        'name fullName email role createdAt emailVerified activeCourseId completedCourseIds purchasedCourseIds institution whatsappNumber referralSource reason educationLevel avatarUrl signatureUrl referralCode referredBy isFirstPurchaseDone'
       );
       if (!user) throw new HttpError(401, 'Unauthorized');
+      await ensureUserReferralCode(user); // backfill kode referral untuk user lama
 
       res.json({ user });
     })

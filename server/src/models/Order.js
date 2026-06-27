@@ -27,6 +27,8 @@ const orderSchema = new mongoose.Schema(
       finalAmountIdr: { type: Number, min: 0 },
     },
 
+    voucherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Voucher' }, // voucher referral yang dipakai
+
     midtrans: {
       orderId: { type: String },
       snapToken: { type: String },

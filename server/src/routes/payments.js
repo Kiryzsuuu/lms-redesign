@@ -7,6 +7,7 @@ const { Course } = require('../models/Course');
 const { Order } = require('../models/Order');
 const { User } = require('../models/User');
 const { Coupon } = require('../models/Coupon');
+const { Voucher } = require('../models/Voucher');
 const { RoyaltyRecord } = require('../models/RoyaltyRecord');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { HttpError } = require('../utils/errors');
@@ -62,7 +63,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key/client key)');
       }
 
-      const { couponCode } = req.body;
+      const { couponCode, voucherCode } = req.body;
       const cart = await Cart.findOne({ userId: req.user.sub }).lean();
       const ids = (cart?.items || []).map((i) => i.courseId);
       if (!ids.length) throw new HttpError(400, 'Cart kosong');
@@ -161,6 +162,16 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         };
       }
 
+      // Voucher referral milik user (5% dari subtotal)
+      let voucher = null;
+      if (voucherCode) {
+        voucher = await Voucher.findOne({ code: voucherCode.toUpperCase().trim(), userId: req.user.sub, isUsed: false });
+        if (!voucher) throw new HttpError(400, 'Voucher tidak valid atau sudah dipakai');
+        const voucherDiscount = Math.round(amountIdr * ((voucher.discountPercent || 5) / 100));
+        discountAmount += voucherDiscount;
+        finalAmountIdr = Math.max(0, amountIdr - discountAmount);
+      }
+
       // If coupon/referral brings total to 0, grant access directly without Midtrans
       if (finalAmountIdr === 0) {
         await User.updateOne(
@@ -178,6 +189,9 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
               $push: { usageLog: { $each: [{ userId: req.user.sub, usedAt: new Date() }], $slice: -1000 } },
             }
           );
+        }
+        if (voucher) {
+          await Voucher.updateOne({ _id: voucher._id, isUsed: false }, { $set: { isUsed: true, usedAt: new Date() } });
         }
         await Cart.updateOne({ userId: req.user.sub }, { $set: { items: [] } });
         return res.json({ ok: true, paid: true, finalAmountIdr: 0, message: 'Course berhasil diperoleh dengan diskon 100%' });
@@ -197,6 +211,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         amountIdr,
         referralDiscount: hasReferral ? referralDiscountAmount : undefined,
         coupon: couponData || undefined,
+        voucherId: voucher?._id || undefined,
         midtrans: {
           orderId: orderCode,
         },
@@ -357,6 +372,11 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
           const buyer = await User.findById(order.userId).select('referredBy isFirstPurchaseDone royaltyRatio').lean();
           if (buyer?.referredBy && !buyer?.isFirstPurchaseDone) {
             await User.updateOne({ _id: order.userId }, { $set: { isFirstPurchaseDone: true } });
+          }
+
+          // Tandai voucher terpakai bila order ini memakai voucher
+          if (order.voucherId) {
+            await Voucher.updateOne({ _id: order.voucherId, isUsed: false }, { $set: { isUsed: true, usedAt: new Date(), usedOrderId: order._id } });
           }
 
           // Buat RoyaltyRecord untuk setiap course yang terjual
