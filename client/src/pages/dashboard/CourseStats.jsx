@@ -48,7 +48,7 @@ export default function CourseStats() {
           <div className="bg-rose-50 border border-rose-200 rounded p-6 max-w-md mx-auto">
             <h2 className="text-lg font-bold text-rose-900 mb-2">⚠️ Error</h2>
             <p className="text-sm text-rose-700 mb-4">{error || 'Data tidak ditemukan'}</p>
-            <Button variant="outline" onClick={() => nav('/dashboard/courses')}>
+            <Button variant="outline" onClick={() => nav(`/dashboard/courses?course=${courseId}`)}>
               Kembali
             </Button>
           </div>
@@ -70,7 +70,7 @@ export default function CourseStats() {
                 <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Statistik Course</h1>
                 <p className="mt-2 text-sm text-slate-100/90">{stats.courseTitle}</p>
               </div>
-              <Button variant="outline" className="rounded-2xl border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={() => nav('/dashboard/courses')}>
+              <Button variant="outline" className="rounded-2xl border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={() => nav(`/dashboard/courses?course=${courseId}`)}>
                 Kembali
               </Button>
             </div>
