@@ -624,7 +624,7 @@ export default function CourseDetail() {
   const descriptionPlain = toPlainTextFromHtml(course.description);
 
   return (
-    <div style={{ background: '#F7F8FA' }} className="min-h-screen">
+    <div style={{ background: '#F7F8FA' }} className="min-h-screen overflow-x-hidden">
       {/* Teacher preview banner */}
       {isPreview && (role === 'teacher' || role === 'admin') && (
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
@@ -649,7 +649,7 @@ export default function CourseDetail() {
         <Container className="py-12 relative">
           <div className="grid md:grid-cols-[1fr_340px] gap-8 lg:gap-12 items-start">
             {/* LEFT column */}
-            <div>
+            <div className="min-w-0">
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 min-w-0 overflow-hidden">
                 <Link to="/courses" className="hover:text-[#0C628D] transition-colors shrink-0">Courses</Link>
@@ -827,7 +827,7 @@ export default function CourseDetail() {
             </div>
 
             {/* RIGHT column — sticky enrollment card */}
-            <div className="md:sticky md:top-6 space-y-4">
+            <div className="md:sticky md:top-6 space-y-4 min-w-0">
               <div
                 className="bg-white rounded-[20px] border border-gray-200 overflow-hidden"
                 style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)' }}
@@ -1025,7 +1025,7 @@ export default function CourseDetail() {
         <Container>
           <div className="grid md:grid-cols-[1fr_280px] gap-8 items-start">
             {/* MAIN */}
-            <div>
+            <div className="min-w-0">
 
               {/* Reviews */}
               <div>
