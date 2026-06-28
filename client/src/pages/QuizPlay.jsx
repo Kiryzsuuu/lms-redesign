@@ -234,7 +234,7 @@ export default function QuizPlay() {
 
   function goToLesson(lessonId) {
     if (!lessonId || !navInfo.courseId) return;
-    nav(`/courses/${navInfo.courseId}?lesson=${lessonId}`);
+    nav(`/courses/${navInfo.courseId}/lessons/${lessonId}`);
   }
 
   const currentQuestion = questions[currentIdx] || null;
@@ -254,13 +254,24 @@ export default function QuizPlay() {
     const qType = q.type || 'mcq';
     return (
       <Card className="p-5">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="text-sm font-semibold text-slate-500">Soal {idx + 1} / {questions.length}</div>
-          {!result ? (
-            <div className={'inline-flex items-center border px-2 py-1 text-xs font-semibold ' + (isQuestionAnswered(q) ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-700')}>
-              {isQuestionAnswered(q) ? 'TERJAWAB' : 'BELUM'}
-            </div>
-          ) : null}
+          <div className="flex items-center gap-2">
+            {!result ? (
+              <button
+                type="button"
+                onClick={() => setPinnedById((m) => { const n = { ...(m || {}) }; if (n[q._id]) delete n[q._id]; else n[q._id] = true; return n; })}
+                className={'inline-flex items-center gap-1 border px-2 py-1 text-xs font-semibold rounded ' + (pinnedById[q._id] ? 'border-rose-500 bg-rose-500 text-white' : 'border-rose-300 bg-white text-rose-600 hover:bg-rose-50')}
+              >
+                ⚑ {pinnedById[q._id] ? 'Di-flag' : 'Flag'}
+              </button>
+            ) : null}
+            {!result ? (
+              <div className={'inline-flex items-center border px-2 py-1 text-xs font-semibold ' + (isQuestionAnswered(q) ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-700')}>
+                {isQuestionAnswered(q) ? 'TERJAWAB' : 'BELUM'}
+              </div>
+            ) : null}
+          </div>
         </div>
 
         {result && !isPreview && g?.isAutoGradable ? (
@@ -734,9 +745,17 @@ export default function QuizPlay() {
             </Button>
           ) : (
             <>
-              <Link to="/courses">
-                <Button variant="outline" className="w-full sm:w-auto">Kembali</Button>
-              </Link>
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  if (navInfo.courseId && navInfo.lessonId) nav(`/courses/${navInfo.courseId}/lessons/${navInfo.lessonId}`);
+                  else if (navInfo.courseId) nav(`/courses/${navInfo.courseId}`);
+                  else nav('/dashboard/my-courses');
+                }}
+              >
+                Kembali
+              </Button>
               {result ? (
                 <>
                   {navInfo.courseId && navInfo.lessonId ? (
