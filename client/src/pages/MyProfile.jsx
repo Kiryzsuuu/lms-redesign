@@ -305,9 +305,8 @@ export default function MyProfile() {
     );
   }
 
-  const purchasedCourses = courses.filter((c) => user.purchasedCourseIds?.includes(c._id));
-  const completedCourses = courses.filter((c) => user.completedCourseIds?.includes(c._id));
-  const activeCourse = user.activeCourseId ? courses.find((c) => c._id === user.activeCourseId) : null;
+  const completedCourses = courses.filter((c) => (c.progressPercent ?? 0) >= 100);
+  const activeCourse = courses.find((c) => (c.progressPercent ?? 0) > 0 && (c.progressPercent ?? 0) < 100) || null;
 
   return (
     <DsPage
@@ -385,7 +384,7 @@ export default function MyProfile() {
               {/* Signature upload — only for teacher/admin */}
               {(role === 'teacher' || role === 'admin') && (
                 <Card className="p-5 border border-slate-200 shadow-sm">
-                  <h2 className="text-base font-bold text-slate-900 mb-3">Tanda Tangan Instruktur</h2>
+                  <h2 className="text-base font-bold text-slate-900 mb-3">Tanda Tangan Teacher</h2>
                   <p className="text-xs text-slate-500 mb-4">Tanda tangan ini akan muncul di sertifikat course yang Anda ampu.</p>
                   <div className="flex items-center gap-5">
                     <div className="flex-shrink-0">

@@ -736,7 +736,7 @@ export default function CourseDetail() {
                     {instructorInitials}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs text-gray-500">Instruktur</div>
+                    <div className="text-xs text-gray-500">Teacher</div>
                     <div className="text-sm font-semibold text-gray-900">{instructorName}</div>
                     {instructorInstitution && (
                       <div className="text-xs text-gray-500 mt-0.5">{instructorInstitution}</div>

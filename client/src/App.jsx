@@ -162,7 +162,7 @@ export default function App() {
         <Route
           path="/dashboard/notifications"
           element={
-            <RequireAuth roles={['student']}>
+            <RequireAuth roles={['student', 'teacher', 'admin']}>
               <StudentNotifications />
             </RequireAuth>
           }

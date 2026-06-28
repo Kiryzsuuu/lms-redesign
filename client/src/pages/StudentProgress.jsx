@@ -5,8 +5,8 @@ import { DsPage, DsCard, DsEmpty } from '../components/ds';
 import { PageSpinner } from '../components/PageSpinner';
 
 function stats(c) {
-  const total = (c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0);
-  const done = (c.modules || []).reduce((s, m) => s + (m.lessons || []).filter(l => l.completed).length, 0);
+  const total = c.lessonCount ?? (c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0);
+  const done = c.completedLessonCount ?? (c.modules || []).reduce((s, m) => s + (m.lessons || []).filter(l => l.completed).length, 0);
   const pct = c.progressPercent != null ? Math.round(c.progressPercent) : (total ? Math.round((done / total) * 100) : 0);
   return { total, done, pct };
 }

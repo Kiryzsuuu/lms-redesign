@@ -181,7 +181,7 @@ export function DashboardLayout({ children }) {
     ? user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '??';
 
-  const roleLabel = role === 'admin' ? 'Administrator' : role === 'teacher' ? 'Instruktur' : 'Peserta';
+  const roleLabel = role === 'admin' ? 'Administrator' : role === 'teacher' ? 'Teacher' : 'Peserta';
   const roleTagStyle =
     role === 'admin'
       ? { bg: 'rgba(239,68,68,.3)', color: '#FCA5A5' }
@@ -272,15 +272,17 @@ export function DashboardLayout({ children }) {
 
       {/* Bottom */}
       <div style={{ padding: 8, borderTop: '1px solid rgba(255,255,255,.1)', flexShrink: 0 }}>
-        <Link
-          to="/dashboard/profile"
-          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.65)', textDecoration: 'none', marginBottom: 2 }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.1)'; e.currentTarget.style.color = '#fff'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,.65)'; }}
-        >
-          <i className="ti ti-user-circle" style={{ fontSize: 14, width: 16, textAlign: 'center' }} />
-          Profil Saya
-        </Link>
+        {role !== 'student' && (
+          <Link
+            to="/dashboard/profile"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.65)', textDecoration: 'none', marginBottom: 2 }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.1)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,.65)'; }}
+          >
+            <i className="ti ti-user-circle" style={{ fontSize: 14, width: 16, textAlign: 'center' }} />
+            Profil Saya
+          </Link>
+        )}
         <button
           onClick={() => { logout(); navigate('/login'); }}
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,.5)', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}

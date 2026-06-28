@@ -13,19 +13,19 @@ const FOOTER_DEFAULTS = {
   footerNavCols: [
     { title: 'Produk', links: [
       { label: 'Online Courses', href: '/courses' },
-      { label: 'Sertifikasi', href: '/' },
-      { label: 'Program Korporat', href: '/' },
+      { label: 'Sertifikasi', href: null },
+      { label: 'Program Korporat', href: null },
     ]},
     { title: 'Perusahaan', links: [
       { label: 'Tentang Kami', href: '/tentang-kami' },
-      { label: 'Blog', href: '/' },
-      { label: 'Karir', href: '/' },
+      { label: 'Blog', href: '#' },
+      { label: 'Karir', href: '#' },
     ]},
     { title: 'Bantuan', links: [
       { label: 'FAQ', href: '/faq' },
       { label: 'Hubungi Kami', href: 'mailto:support@edulyfe.id' },
       { label: 'Kebijakan Privasi', href: '/kebijakan-privasi' },
-      { label: 'Syarat & Ketentuan', href: '/' },
+      { label: 'Syarat & Ketentuan', href: '#' },
     ]},
   ],
   footerBottomLinks: [
@@ -37,14 +37,20 @@ const FOOTER_DEFAULTS = {
 };
 
 function FooterLink({ href, label }) {
-  const linkStyle = { color: 'rgba(255,255,255,.45)', fontSize: '0.87rem', textDecoration: 'none', transition: 'color .15s' };
+  const baseStyle = { color: 'rgba(255,255,255,.45)', fontSize: '0.87rem', textDecoration: 'none', transition: 'color .15s' };
   const hoverOn = e => { e.currentTarget.style.color = 'rgba(255,255,255,.8)'; };
   const hoverOff = e => { e.currentTarget.style.color = 'rgba(255,255,255,.45)'; };
-  const isExternal = href?.startsWith('http') || href?.startsWith('mailto:');
-  if (isExternal) {
-    return <a href={href} style={linkStyle} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>{label}</a>;
+  if (!href) {
+    return <span style={{ ...baseStyle, cursor: 'default' }}>{label}</span>;
   }
-  return <Link to={href || '/'} style={linkStyle} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>{label}</Link>;
+  const isExternal = href.startsWith('http') || href.startsWith('mailto:');
+  if (isExternal) {
+    return <a href={href} style={baseStyle} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>{label}</a>;
+  }
+  if (href === '#') {
+    return <span style={{ ...baseStyle, cursor: 'default' }}>{label}</span>;
+  }
+  return <Link to={href} style={baseStyle} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>{label}</Link>;
 }
 
 export function Footer() {

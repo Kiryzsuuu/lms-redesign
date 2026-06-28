@@ -1327,15 +1327,6 @@ export default function CourseManager() {
                           </div>
                         </div>
                       )}
-                      <div>
-                        <Toggle
-                          checked={courseForm.isPublished}
-                          onChange={(e) => setCourseForm((f) => ({ ...f, isPublished: e.target.checked }))}
-                          label="Publish"
-                          disabled={role === 'teacher'}
-                        />
-                        {role === 'teacher' && <div className="text-xs text-slate-400 mt-1">Publish dikontrol admin</div>}
-                      </div>
                       <div className="flex gap-2">
                         <Button onClick={() => updateSelectedCourse(courseForm)}>Simpan Perubahan</Button>
                       </div>

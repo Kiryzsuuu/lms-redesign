@@ -18,9 +18,16 @@ function royaltiesRouter({ requireAuth, requireRole }) {
       const { teacherId, status, page = 1, limit = 50 } = req.query;
       const filter = {};
 
-      if (req.user.role === 'teacher') {
+      // Fallback: if role is missing from token (old token), fetch from DB
+      let userRole = req.user.role;
+      if (!userRole && req.user.sub) {
+        const dbUser = await User.findById(req.user.sub).select('role').lean();
+        userRole = dbUser?.role;
+      }
+
+      if (userRole === 'teacher') {
         filter.teacherId = req.user.sub;
-      } else if (req.user.role !== 'admin') {
+      } else if (userRole !== 'admin') {
         throw new HttpError(403, 'Forbidden');
       } else if (teacherId) {
         filter.teacherId = teacherId;
