@@ -604,8 +604,8 @@ export default function CourseDetail() {
           <Card className="p-8">
             <div className="text-sm text-slate-600">Course tidak ditemukan / belum dipublish.</div>
             <div className="mt-4">
-              <Link to="/courses">
-                <Button variant="outline">Kembali</Button>
+              <Link to="/dashboard/my-courses">
+                <Button variant="outline">Kembali ke Kursus Saya</Button>
               </Link>
             </div>
           </Card>

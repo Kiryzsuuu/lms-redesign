@@ -77,7 +77,7 @@ export default function StudentCatalog() {
               pill={priceLabel(c)}
               title={c.title}
               metaLeft={c.categoryId?.name || 'Kursus'}
-              metaRight={`${(c.modules || []).reduce((s, m) => s + (m.lessons || []).length, 0)} materi`}
+              metaRight={`${c.lessonCount ?? 0} materi`}
             />
           ))}
         </div>

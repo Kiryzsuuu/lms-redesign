@@ -105,8 +105,18 @@ function coursesRouter({ requireAuth, requireRole, env }) {
   router.get(
     '/',
     asyncHandler(async (req, res) => {
-      const courses = await Course.find({ isPublished: true }).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug');
-      res.json({ courses });
+      const courses = await Course.find({ isPublished: true }).sort({ order: 1, createdAt: -1 }).populate('categoryId', 'name slug').lean();
+
+      // Hitung jumlah lesson published per course
+      const courseIds = courses.map(c => c._id);
+      const lessonCounts = await Lesson.aggregate([
+        { $match: { courseId: { $in: courseIds }, isPublished: true } },
+        { $group: { _id: '$courseId', count: { $sum: 1 } } },
+      ]);
+      const countMap = new Map(lessonCounts.map(r => [String(r._id), r.count]));
+      const withCounts = courses.map(c => ({ ...c, lessonCount: countMap.get(String(c._id)) || 0 }));
+
+      res.json({ courses: withCounts });
     })
   );
 
