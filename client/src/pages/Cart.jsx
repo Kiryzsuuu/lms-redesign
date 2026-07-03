@@ -205,8 +205,9 @@ export default function Cart() {
   }
 
   return (
-    <section className="px-4 py-8 sm:px-6" style={{ background: '#F7F8FA', height: '100%', overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }}>
-      <Container className="space-y-6 !px-0" style={{ maxWidth: 'none', minWidth: 0 }}>
+    <div style={{ height: '100%', overflowX: 'hidden', minWidth: 0 }}>
+    <section className="px-4 py-8 sm:px-6" style={{ background: '#F7F8FA', minHeight: '100%', overflowY: 'auto' }}>
+      <Container className="space-y-6 !px-0" style={{ maxWidth: 'none', minWidth: 0, width: '100%' }}>
         <Card className="overflow-hidden">
           <div className="px-6 py-8 text-white sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 60%, #0C628D 100%)' }}>
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -430,5 +431,6 @@ export default function Cart() {
         </div>
       </Container>
     </section>
+    </div>
   );
 }
