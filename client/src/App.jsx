@@ -44,6 +44,8 @@ import SiteSettingsManager from './pages/dashboard/SiteSettingsManager';
 import ContractManager from './pages/dashboard/ContractManager';
 import AboutUs from './pages/AboutUs';
 import { InfoPage } from './pages/Info';
+import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
 import { RequireAuth } from './components/RequireAuth';
 import { AuthLoader } from './components/AuthLoader';
 import { useAuth } from './lib/auth';
@@ -83,6 +85,8 @@ export default function App() {
         <Route path="/faq" element={<InfoPage type="faq" />} />
         <Route path="/kebijakan-privasi" element={<InfoPage type="privacy" />} />
         <Route path="/tentang-kami" element={<AboutUs />} />
+        <Route path="/syarat-ketentuan" element={<TermsPage />} />
+        <Route path="/contact-us" element={<ContactPage />} />
 
         {/* Profil kini hidup di dalam dashboard agar seragam dengan halaman lain. */}
         <Route path="/my-profile" element={<Navigate to="/dashboard/profile" replace />} />

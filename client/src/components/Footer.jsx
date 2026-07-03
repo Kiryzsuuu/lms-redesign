@@ -23,9 +23,9 @@ const FOOTER_DEFAULTS = {
     ]},
     { title: 'Bantuan', links: [
       { label: 'FAQ', href: '/faq' },
-      { label: 'Hubungi Kami', href: 'mailto:support@edulyfe.id' },
+      { label: 'Hubungi Kami', href: '/contact-us' },
       { label: 'Kebijakan Privasi', href: '/kebijakan-privasi' },
-      { label: 'Syarat & Ketentuan', href: '#' },
+      { label: 'Syarat & Ketentuan', href: '/syarat-ketentuan' },
     ]},
   ],
   footerBottomLinks: [

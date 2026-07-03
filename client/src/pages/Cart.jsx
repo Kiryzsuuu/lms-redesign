@@ -50,6 +50,7 @@ export default function Cart() {
 
   const [paying, setPaying] = useState(false);
   const [midtransConfig, setMidtransConfig] = useState(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -403,7 +404,22 @@ export default function Cart() {
                 <div className="mt-2 text-3xl font-extrabold">Rp {formatIdr(finalTotalIdr)}</div>
                 <div className="mt-2 text-xs text-slate-300">{items.length} course siap diproses</div>
               </div>
-              <Button disabled={!canCheckout} onClick={checkout} className="mt-6 w-full rounded-2xl py-3 text-base">
+              <label className="mt-5 flex items-start gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 accent-[#0C628D]"
+                />
+                <span className="text-xs text-slate-600 leading-relaxed">
+                  Saya telah membaca dan menyetujui{' '}
+                  <a href="/syarat-ketentuan" target="_blank" rel="noreferrer" className="font-semibold text-[#0C628D] hover:underline">
+                    Syarat &amp; Ketentuan
+                  </a>{' '}
+                  Edulyfe.
+                </span>
+              </label>
+              <Button disabled={!canCheckout || !agreedToTerms} onClick={checkout} className="mt-4 w-full rounded-2xl py-3 text-base">
                 {paying ? 'Memproses...' : 'Checkout & Bayar'}
               </Button>
               <div className="mt-3 text-xs text-slate-500">
