@@ -96,6 +96,7 @@ const STUDENT_NAV = [
       { to: '/dashboard/profile', icon: 'ti-user-circle', label: 'Profil Saya' },
       { to: '/dashboard/vouchers', icon: 'ti-ticket', label: 'Voucher Saya' },
       { to: '/dashboard/notifications', icon: 'ti-bell', label: 'Notifikasi' },
+      { to: '/contact-us', icon: 'ti-headset', label: 'Hubungi Kami' },
     ],
   },
 ];

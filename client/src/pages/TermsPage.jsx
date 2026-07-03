@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 
 const SECTIONS = [
   {
@@ -96,9 +94,7 @@ const SECTIONS = [
 
 export default function TermsPage() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F7F8FA' }}>
-      <Navbar />
-      <main style={{ flex: 1 }}>
+    <>
         {/* Hero */}
         <div style={{ background: '#1B3A5C', padding: '56px 24px 48px' }}>
           <div style={{ maxWidth: 760, margin: '0 auto' }}>
@@ -143,8 +139,6 @@ export default function TermsPage() {
             </Link>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+    </>
   );
 }

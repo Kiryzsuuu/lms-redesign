@@ -1,5 +1,3 @@
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 
 function ContactCard({ icon, title, value, href }) {
   return (
@@ -28,9 +26,7 @@ function ContactCard({ icon, title, value, href }) {
 
 export default function ContactPage() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F7F8FA' }}>
-      <Navbar />
-      <main style={{ flex: 1 }}>
+    <>
         {/* Hero */}
         <div style={{ background: '#1B3A5C', padding: '56px 24px 48px' }}>
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -84,8 +80,6 @@ export default function ContactPage() {
             </p>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+    </>
   );
 }
