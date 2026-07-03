@@ -290,7 +290,7 @@ export default function Cart() {
           </div>
 
           <div>
-            <Card className="rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <Card className="rounded-3xl border border-slate-200 p-4 sm:p-6 shadow-sm overflow-hidden max-w-full">
               <h2 className="text-xl font-bold text-slate-900">Ringkasan pembayaran</h2>
               <div className="mt-5 space-y-4 text-sm text-slate-600">
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
@@ -308,6 +308,7 @@ export default function Cart() {
                         value={couponCode}
                         onChange={(e) => setCouponCode(e.target.value)}
                         className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                        style={{ minWidth: 0 }}
                       />
                       <Button
                         variant="outline"
@@ -382,6 +383,7 @@ export default function Cart() {
                       value={refInput}
                       onChange={(e) => setRefInput(e.target.value.toUpperCase())}
                       className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-primary focus:outline-none"
+                      style={{ minWidth: 0 }}
                     />
                     <Button variant="outline" onClick={submitReferral} disabled={refLoading || !refInput.trim()} className="min-w-20">
                       {refLoading ? '...' : 'Kirim'}
