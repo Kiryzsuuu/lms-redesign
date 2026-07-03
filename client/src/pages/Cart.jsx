@@ -205,8 +205,8 @@ export default function Cart() {
   }
 
   return (
-    <section className="px-4 py-8 sm:px-6" style={{ background: '#F7F8FA', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
-      <Container className="space-y-6 !px-0" style={{ maxWidth: 'none' }}>
+    <section className="px-4 py-8 sm:px-6" style={{ background: '#F7F8FA', height: '100%', overflowY: 'auto', overflowX: 'hidden', minWidth: 0 }}>
+      <Container className="space-y-6 !px-0" style={{ maxWidth: 'none', minWidth: 0 }}>
         <Card className="overflow-hidden">
           <div className="px-6 py-8 text-white sm:px-8" style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #111827 60%, #0C628D 100%)' }}>
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -254,10 +254,10 @@ export default function Cart() {
             </Card>
           ) : (
             items.map((it) => (
-              <Card key={it.course._id} className="rounded-3xl border border-slate-200 p-5 shadow-sm">
-                <div className="flex flex-col gap-4 sm:flex-row">
-                  <div className="w-full sm:w-56">
-                    <div className="aspect-[16/9] overflow-hidden bg-slate-100">
+              <Card key={it.course._id} className="rounded-3xl border border-slate-200 p-4 shadow-sm overflow-hidden">
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  <div className="w-full sm:w-48 flex-shrink-0">
+                    <div className="aspect-[16/9] overflow-hidden rounded-xl bg-slate-100">
                       {it.course.coverImageUrl ? (
                         <img src={it.course.coverImageUrl} alt="" className="h-full w-full object-cover" />
                       ) : (
@@ -268,8 +268,8 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="line-clamp-2 text-lg font-bold leading-snug text-slate-900">{it.course.title}</div>
+                  <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                    <div className="line-clamp-2 text-base font-bold leading-snug text-slate-900 break-words">{it.course.title}</div>
                     <div className="mt-1 text-sm font-semibold text-slate-900">Rp {formatIdr(it.course.priceIdr || 0)}</div>
 
                     <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:items-center sm:justify-between">
