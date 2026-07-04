@@ -176,168 +176,82 @@ export default function CertificateView() {
               ref={certRef}
               style={{
                 width: '100%',
-                aspectRatio: '297/210',
-                background: '#ffffff',
+                aspectRatio: '1600/1131',
                 position: 'relative',
                 overflow: 'hidden',
                 fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                borderRadius: 0,
-                fontSize: 'clamp(8px, 1.65vw, 16px)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+                backgroundImage: 'url(/certificate-template.jpg)',
+                backgroundSize: '100% 100%',
+                backgroundRepeat: 'no-repeat',
+                fontSize: 'clamp(8px, 1.9vw, 18px)',
               }}
             >
-              {/* Left accent bar — no rounded */}
+              {/* No. Sertifikat value */}
               <div style={{
-                position: 'absolute', left: 0, top: 0, bottom: 0, width: 10,
-                background: 'linear-gradient(180deg, #0C628D 0%, #0FADA8 50%, #F3921B 100%)',
-                borderRadius: 0,
-              }} />
-
-              {/* Top strip — no rounded */}
-              <div style={{
-                position: 'absolute', top: 0, left: 10, right: 0, height: 6,
-                background: 'linear-gradient(90deg, #0C628D 0%, #0FADA8 60%, #F3921B 100%)',
-                borderRadius: 0,
-              }} />
-
-              {/* Watermark circles */}
-              <div style={{
-                position: 'absolute', right: -80, top: -80,
-                width: 320, height: 320, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(12,98,141,0.04) 0%, transparent 70%)',
-                border: '2px solid rgba(12,98,141,0.05)',
-              }} />
-              <div style={{
-                position: 'absolute', right: -40, top: -40,
-                width: 200, height: 200, borderRadius: '50%',
-                border: '1.5px solid rgba(243,146,27,0.08)',
-              }} />
-              <div style={{
-                position: 'absolute', left: 30, bottom: -60,
-                width: 180, height: 180, borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(15,173,168,0.04) 0%, transparent 70%)',
-              }} />
-
-              {/* Content area */}
-              <div style={{
-                position: 'absolute', inset: 0, left: 10, top: 6,
-                display: 'flex', flexDirection: 'column',
-                padding: '4.5% 6% 4.5% 5.5%',
+                position: 'absolute', left: '16.6%', top: '45.6%',
+                fontSize: '0.62em', fontWeight: 600, color: '#4B5563', fontFamily: 'monospace',
               }}>
-                {/* Header: logo left, cert number right */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3.5%' }}>
+                {certificate.certificateNumber}
+              </div>
+
+              {/* Nama penerima */}
+              <div style={{
+                position: 'absolute', left: '16.4%', top: '54%', maxWidth: '46%',
+                fontSize: '1.65em', fontWeight: 700, color: '#0d2f52', lineHeight: 1.15,
+                fontFamily: '"Bricolage Grotesque", "Inter", Arial, sans-serif',
+              }}>
+                {user?.fullName || (
+                  <span style={{ color: '#EF4444', fontSize: '0.55em', fontWeight: 600 }}>
+                    ⚠ Nama lengkap belum diisi — cek Profil Anda
+                  </span>
+                )}
+              </div>
+
+              {/* Nama kursus */}
+              <div style={{
+                position: 'absolute', left: '16.6%', top: '63.8%', maxWidth: '70%',
+                fontSize: '0.85em', fontWeight: 700, color: '#0C628D', lineHeight: 1.3,
+              }}>
+                {certificate.metadata?.courseName || 'Nama Kursus'}
+              </div>
+
+              {/* Tanggal penyelesaian */}
+              <div style={{
+                position: 'absolute', left: '16.4%', top: '79.5%',
+                fontSize: '0.75em', fontWeight: 700, color: '#0d2f52',
+              }}>
+                {issueDate}
+              </div>
+
+              {/* Instruktur */}
+              <div style={{
+                position: 'absolute', left: '47%', top: '78.2%', width: '18%', textAlign: 'center',
+              }}>
+                {signatureUrl && (
                   <img
-                    src="/logo-inspira.png"
-                    alt="Edulyfe"
-                    style={{ height: 40, width: 'auto', objectFit: 'contain', display: 'block' }}
+                    src={signatureUrl}
+                    alt="Tanda Tangan"
+                    style={{ height: 32, maxWidth: '100%', objectFit: 'contain', display: 'block', margin: '0 auto 2px' }}
+                    crossOrigin="anonymous"
                   />
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.52em', fontWeight: 700, letterSpacing: '0.15em', color: '#9CA3AF', textTransform: 'uppercase' }}>
-                      No. Sertifikat
-                    </div>
-                    <div style={{ fontSize: '0.58em', fontWeight: 600, color: '#374151', fontFamily: 'monospace', marginTop: 2 }}>
-                      {certificate.certificateNumber}
-                    </div>
-                  </div>
+                )}
+                <div style={{ fontSize: '0.68em', fontWeight: 700, color: '#0d2f52' }}>
+                  {certificate.metadata?.instructorName || 'Edulyfe'}
                 </div>
+              </div>
 
-                {/* Body */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  {/* "Certificate of Completion" label */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '2.5%' }}>
-                    <div style={{ height: 2, width: 28, background: '#F3921B', borderRadius: 0 }} />
-                    <span style={{ fontSize: '0.6em', fontWeight: 700, letterSpacing: '0.2em', color: '#F3921B', textTransform: 'uppercase' }}>
-                      Certificate of Completion
-                    </span>
-                    <div style={{ height: 2, flex: 1, background: 'linear-gradient(90deg, #F3921B, transparent)', borderRadius: 0 }} />
-                  </div>
-
-                  <div style={{ fontSize: '0.72em', color: '#6B7280', marginBottom: '1.2%' }}>
-                    Dengan bangga diberikan kepada
-                  </div>
-
-                  <div style={{
-                    fontSize: '2.1em', fontWeight: 800,
-                    color: '#0A0E1A', letterSpacing: '-0.01em',
-                    lineHeight: 1.15,
-                    marginBottom: '1.8%',
-                    fontFamily: '"Bricolage Grotesque", "Inter", Arial, sans-serif',
-                  }}>
-                    {user?.fullName || (
-                      <span style={{ color: '#EF4444', fontSize: '0.6em', fontWeight: 600 }}>
-                        ⚠ Nama lengkap belum diisi — cek Profil Anda
-                      </span>
-                    )}
-                  </div>
-
-                  <div style={{ fontSize: '0.72em', color: '#6B7280', marginBottom: '0.8%' }}>
-                    atas keberhasilan menyelesaikan kursus
-                  </div>
-
-                  <div style={{
-                    fontSize: '1.05em', fontWeight: 700,
-                    color: '#0C628D',
-                    lineHeight: 1.35,
-                    marginBottom: '3.5%',
-                    maxWidth: '72%',
-                  }}>
-                    {certificate.metadata?.courseName || 'Nama Kursus'}
-                  </div>
-
-                  {/* Footer row */}
-                  <div style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
-                    paddingTop: '2.5%',
-                    borderTop: '1px solid #F3F4F6',
-                  }}>
-                    {/* Date */}
-                    <div>
-                      <div style={{ fontSize: '0.52em', fontWeight: 600, letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: 4 }}>
-                        Tanggal Penyelesaian
-                      </div>
-                      <div style={{ fontSize: '0.7em', fontWeight: 600, color: '#374151' }}>
-                        {issueDate}
-                      </div>
-                      <div style={{ fontSize: '0.52em', color: '#9CA3AF', marginTop: 5 }}>
-                        Platform: Edulyfe
-                      </div>
-                    </div>
-
-                    {/* Instructor signature */}
-                    <div style={{ textAlign: 'center' }}>
-                      {signatureUrl ? (
-                        <img
-                          src={signatureUrl}
-                          alt="Tanda Tangan"
-                          style={{ height: 36, maxWidth: 120, objectFit: 'contain', display: 'block', margin: '0 auto 4px' }}
-                          crossOrigin="anonymous"
-                        />
-                      ) : (
-                        <div style={{ width: 120, height: 1, background: '#D1D5DB', margin: '0 auto 6px' }} />
-                      )}
-                      <div style={{ fontSize: '0.66em', fontWeight: 600, color: '#374151' }}>
-                        {certificate.metadata?.instructorName || 'Edulyfe'}
-                      </div>
-                      <div style={{ fontSize: '0.5em', letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginTop: 2 }}>
-                        Instruktur / Authorized
-                      </div>
-                    </div>
-
-                    {/* QR code */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      {qrDataUrl && (
-                        <img
-                          src={qrDataUrl}
-                          alt="QR Verifikasi"
-                          style={{ width: 64, height: 64, display: 'block' }}
-                        />
-                      )}
-                      <div style={{ fontSize: '0.42em', color: '#9CA3AF', textAlign: 'center' }}>
-                        Scan untuk verifikasi
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* QR code */}
+              <div style={{
+                position: 'absolute', left: '71%', top: '71.5%', width: '9%',
+              }}>
+                {qrDataUrl && (
+                  <img
+                    src={qrDataUrl}
+                    alt="QR Verifikasi"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                )}
               </div>
             </div>
           </div>
