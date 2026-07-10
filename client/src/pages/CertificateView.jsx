@@ -176,29 +176,43 @@ export default function CertificateView() {
               ref={certRef}
               style={{
                 width: '100%',
-                aspectRatio: '1600/1131',
+                aspectRatio: '2000/1414',
                 position: 'relative',
                 overflow: 'hidden',
                 fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
-                backgroundImage: 'url(/certificate-template.jpg)',
+                backgroundImage: 'url(/certificate-template.png)',
                 backgroundSize: '100% 100%',
                 backgroundRepeat: 'no-repeat',
                 fontSize: 'clamp(8px, 1.9vw, 18px)',
               }}
             >
-              {/* No. Sertifikat value */}
+              {/* No. Sertifikat (label + value) */}
               <div style={{
-                position: 'absolute', left: '16.6%', top: '45.6%',
-                fontSize: '0.62em', fontWeight: 600, color: '#4B5563', fontFamily: 'monospace',
+                position: 'absolute', left: '16.25%', top: '42.5%',
+                fontSize: '0.7em', fontWeight: 700, color: '#0d2f52', letterSpacing: '0.02em',
+              }}>
+                NO. SERTIFIKAT
+              </div>
+              <div style={{
+                position: 'absolute', left: '16.25%', top: '46.2%',
+                fontSize: '0.7em', fontWeight: 600, color: '#4B5563', fontFamily: 'monospace',
               }}>
                 {certificate.certificateNumber}
               </div>
 
+              {/* Dengan bangga diberikan kepada */}
+              <div style={{
+                position: 'absolute', left: '16.25%', top: '52%',
+                fontSize: '0.78em', fontWeight: 700, color: '#0d2f52',
+              }}>
+                Dengan bangga diberikan kepada:
+              </div>
+
               {/* Nama penerima */}
               <div style={{
-                position: 'absolute', left: '16.4%', top: '54%', maxWidth: '46%',
-                fontSize: '1.65em', fontWeight: 700, color: '#0d2f52', lineHeight: 1.15,
+                position: 'absolute', left: '16.1%', top: '55.5%', maxWidth: '50%',
+                fontSize: '1.7em', fontWeight: 700, color: '#0d2f52', lineHeight: 1.1,
                 fontFamily: '"Bricolage Grotesque", "Inter", Arial, sans-serif',
               }}>
                 {user?.fullName || (
@@ -208,42 +222,50 @@ export default function CertificateView() {
                 )}
               </div>
 
+              {/* atas keberhasilan menyelesaikan kursus */}
+              <div style={{
+                position: 'absolute', left: '16.25%', top: '64%',
+                fontSize: '0.78em', fontWeight: 600, color: '#0d2f52',
+              }}>
+                atas keberhasilan menyelesaikan kursus
+              </div>
+
               {/* Nama kursus */}
               <div style={{
-                position: 'absolute', left: '16.6%', top: '63.8%', maxWidth: '70%',
-                fontSize: '0.85em', fontWeight: 700, color: '#0C628D', lineHeight: 1.3,
+                position: 'absolute', left: '16.25%', top: '67.5%', maxWidth: '68%',
+                fontSize: '0.9em', fontWeight: 700, color: '#0C628D', lineHeight: 1.3,
               }}>
                 {certificate.metadata?.courseName || 'Nama Kursus'}
               </div>
 
-              {/* Tanggal penyelesaian */}
+              {/* Tanggal penyelesaian (label sudah ada di template, isi nilai di bawahnya) */}
               <div style={{
-                position: 'absolute', left: '16.4%', top: '79.5%',
-                fontSize: '0.75em', fontWeight: 700, color: '#0d2f52',
+                position: 'absolute', left: '16.25%', top: '79.2%',
+                fontSize: '0.8em', fontWeight: 700, color: '#0d2f52',
               }}>
                 {issueDate}
               </div>
 
-              {/* Instruktur */}
+              {/* Instruktur (di atas label INSTRUKTUR/AUTHORIZED) */}
               <div style={{
-                position: 'absolute', left: '47%', top: '78.2%', width: '18%', textAlign: 'center',
+                position: 'absolute', left: '41%', top: '76%', width: '22%', textAlign: 'center',
               }}>
                 {signatureUrl && (
                   <img
                     src={signatureUrl}
                     alt="Tanda Tangan"
-                    style={{ height: 32, maxWidth: '100%', objectFit: 'contain', display: 'block', margin: '0 auto 2px' }}
+                    style={{ height: 34, maxWidth: '100%', objectFit: 'contain', display: 'block', margin: '0 auto 2px' }}
                     crossOrigin="anonymous"
                   />
                 )}
-                <div style={{ fontSize: '0.68em', fontWeight: 700, color: '#0d2f52' }}>
+                <div style={{ fontSize: '0.72em', fontWeight: 700, color: '#0d2f52' }}>
                   {certificate.metadata?.instructorName || 'Edulyfe'}
                 </div>
               </div>
 
-              {/* QR code */}
+              {/* QR code (di atas label Scan untuk verifikasi) */}
               <div style={{
-                position: 'absolute', left: '71%', top: '71.5%', width: '9%',
+                position: 'absolute', left: '85.5%', top: '66%', width: '9%', transform: 'translateX(-50%)',
               }}>
                 {qrDataUrl && (
                   <img
