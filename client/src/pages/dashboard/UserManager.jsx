@@ -265,7 +265,7 @@ export default function UserManager() {
                           {/* Royalty ratio — hanya untuk teacher/admin */}
                           {teacherOrAdmin && (
                             <div>
-                              <Label className="text-xs">Rasio Royalti (%)</Label>
+                              <Label className="text-xs">Rasio Royalti Default (%)</Label>
                               <div className="mt-1 flex items-center gap-2">
                                 <Input
                                   type="number"
@@ -278,6 +278,9 @@ export default function UserManager() {
                                 <span className="text-sm text-slate-500">%</span>
                                 <span className="text-xs text-slate-400">(mis: 30 = 30%)</span>
                               </div>
+                              <p className="mt-1 text-[11px] text-slate-400">
+                                Hanya dipakai sebagai <b>fallback</b> bila course belum punya Kontrak Kerjasama. Jika ada kontrak yang di-<i>accept</i>, rasio dari kontrak itulah yang menentukan royalti per course.
+                              </p>
                             </div>
                           )}
                         </div>

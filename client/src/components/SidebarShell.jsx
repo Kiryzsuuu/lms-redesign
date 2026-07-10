@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from './ui';
 
 const SB_PX = { 'w-64': 256, 'w-72': 288, 'w-80': 320, 'w-96': 384 };
+const SB_MIN = 220;
+const SB_MAX = 560;
 
 export function SidebarShell({
   title,
@@ -14,11 +16,24 @@ export function SidebarShell({
   children,
   sidebarWidth = 'w-72',
   contentClassName = '',
+  resizable = false,
+  resizeKey = 'sidebar-width',
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('sidebar-collapsed') === 'true'; } catch { return false; }
   });
+
+  const defaultPx = SB_PX[sidebarWidth] || 288;
+  const [width, setWidth] = useState(() => {
+    if (!resizable) return defaultPx;
+    try {
+      const saved = parseInt(localStorage.getItem(resizeKey) || '', 10);
+      if (Number.isFinite(saved)) return Math.max(SB_MIN, Math.min(saved, SB_MAX));
+    } catch {}
+    return defaultPx;
+  });
+  const dragRef = useRef(null);
 
   useEffect(() => {
     try { localStorage.setItem('sidebar-collapsed', String(collapsed)); } catch {}
@@ -31,7 +46,38 @@ export function SidebarShell({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const sbPx = SB_PX[sidebarWidth] || 288;
+  // Drag-to-resize (delta-based so it is unaffected by any left offset)
+  useEffect(() => {
+    if (!resizable) return;
+    function onMove(e) {
+      if (!dragRef.current) return;
+      const { startX, startWidth } = dragRef.current;
+      const next = Math.max(SB_MIN, Math.min(startWidth + (e.clientX - startX), SB_MAX));
+      setWidth(next);
+    }
+    function onUp() {
+      if (!dragRef.current) return;
+      dragRef.current = null;
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      try { setWidth((w) => { localStorage.setItem(resizeKey, String(w)); return w; }); } catch {}
+    }
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [resizable, resizeKey]);
+
+  function startResize(e) {
+    e.preventDefault();
+    dragRef.current = { startX: e.clientX, startWidth: width };
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  }
+
+  const sbPx = resizable ? width : defaultPx;
   const hasSidebar = Boolean(renderSidebar || sidebar);
 
   return (
@@ -86,6 +132,22 @@ export function SidebarShell({
               </div>
             </div>
           </aside>
+          )}
+
+          {/* Drag-to-resize handle — only when resizable and expanded */}
+          {hasSidebar && resizable && !collapsed && (
+          <div
+            onMouseDown={startResize}
+            onDoubleClick={() => { setWidth(defaultPx); try { localStorage.setItem(resizeKey, String(defaultPx)); } catch {} }}
+            title="Tarik untuk ubah lebar (klik ganda untuk reset)"
+            className="hidden lg:block"
+            style={{
+              flexShrink: 0, width: 6, cursor: 'col-resize',
+              background: '#F3F4F6', borderRight: '1px solid #E5E7EB',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#D1D5DB'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#F3F4F6'; }}
+          />
           )}
 
           {/* Collapse toggle — only when there is a sidebar to collapse */}

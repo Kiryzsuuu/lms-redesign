@@ -381,12 +381,36 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
 
           // Buat RoyaltyRecord untuk setiap course yang terjual
           const { Course } = require('../models/Course');
+          const { Contract } = require('../models/Contract');
           const royaltyDocs = [];
           for (const item of order.items) {
             const course = await Course.findById(item.courseId).select('ownerId').lean();
             if (!course?.ownerId) continue;
-            const owner = await User.findById(course.ownerId).select('royaltyRatio').lean();
-            const ratio = owner?.royaltyRatio || 0;
+
+            // Sumber kebenaran royalti = Kontrak yang accepted untuk course ini.
+            // Prioritas: kontrak accepted yang masih berlaku (validUntil >= now),
+            // lalu kontrak accepted terbaru, lalu fallback ke User.royaltyRatio.
+            const now = new Date();
+            const contract =
+              (await Contract.findOne({
+                courseId: item.courseId,
+                teacherId: course.ownerId,
+                status: 'accepted',
+                validUntil: { $gte: now },
+              }).sort({ createdAt: -1 }).select('royaltyRatio').lean()) ||
+              (await Contract.findOne({
+                courseId: item.courseId,
+                teacherId: course.ownerId,
+                status: 'accepted',
+              }).sort({ createdAt: -1 }).select('royaltyRatio').lean());
+
+            let ratio;
+            if (contract && typeof contract.royaltyRatio === 'number') {
+              ratio = contract.royaltyRatio;
+            } else {
+              const owner = await User.findById(course.ownerId).select('royaltyRatio').lean();
+              ratio = owner?.royaltyRatio || 0;
+            }
             if (ratio <= 0) continue;
             royaltyDocs.push({
               teacherId: course.ownerId,

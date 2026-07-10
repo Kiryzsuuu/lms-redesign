@@ -1017,6 +1017,8 @@ export default function CourseManager() {
         sidebarTitle="Course Saya"
         renderSidebar={renderSidebar}
         sidebarWidth="w-80"
+        resizable
+        resizeKey="course-sidebar-width"
       >
         {error ? <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
         <div className="flex flex-1 min-h-0 flex-col overflow-auto">
