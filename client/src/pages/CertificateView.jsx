@@ -265,7 +265,7 @@ export default function CertificateView() {
 
               {/* QR code (di atas label Scan untuk verifikasi) */}
               <div style={{
-                position: 'absolute', left: '89%', top: '69%', width: '8%', transform: 'translateX(-50%)',
+                position: 'absolute', left: '76%', top: '64%', width: '8.5%', transform: 'translateX(-50%)',
               }}>
                 {qrDataUrl && (
                   <img
