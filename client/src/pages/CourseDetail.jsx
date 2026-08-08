@@ -34,6 +34,92 @@ function Markdown({ text }) {
   );
 }
 
+function CourseForum({ api, courseId, currentUserId, canModerate }) {
+  const [comments, setComments] = useState([]);
+  const [text, setText] = useState('');
+  const [posting, setPosting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    api.get(`/discussions/course/${courseId}`)
+      .then((r) => { if (!cancelled) setComments(r.data.comments || []); })
+      .catch(() => { if (!cancelled) setComments([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [api, courseId]);
+
+  async function post() {
+    if (!text.trim() || posting) return;
+    setPosting(true);
+    try {
+      const r = await api.post(`/discussions/course/${courseId}`, { content: text.trim() });
+      setComments((prev) => [r.data.comment, ...prev]);
+      setText('');
+    } catch { /* silent */ } finally {
+      setPosting(false);
+    }
+  }
+
+  async function remove(commentId) {
+    try {
+      await api.delete(`/discussions/${commentId}`);
+      setComments((prev) => prev.filter((c) => String(c._id) !== String(commentId)));
+    } catch { /* silent */ }
+  }
+
+  return (
+    <div>
+      <h2 className="font-display font-bold text-lg text-gray-900 mb-4">Forum Diskusi Course</h2>
+      <div className="flex gap-3 mb-6">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Tulis pertanyaan atau diskusi untuk course ini..."
+          rows={3}
+          className="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-[#0C628D] focus:outline-none resize-none"
+        />
+      </div>
+      <div className="flex justify-end -mt-4 mb-6">
+        <Button onClick={post} disabled={posting || !text.trim()}>{posting ? 'Mengirim...' : 'Kirim'}</Button>
+      </div>
+
+      {loading ? (
+        <div className="text-sm text-gray-500">Memuat diskusi...</div>
+      ) : comments.length === 0 ? (
+        <div className="text-sm text-gray-500">Belum ada diskusi. Jadilah yang pertama bertanya.</div>
+      ) : (
+        <div className="space-y-4">
+          {comments.map((c) => {
+            const name = c.userId?.fullName || c.userId?.name || 'Pengguna';
+            const canDelete = canModerate || String(c.userId?._id || c.userId) === String(currentUserId);
+            return (
+              <div key={c._id} className="bg-white rounded-[14px] border border-gray-200 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-[#EBF6FC] text-[#0C628D] flex items-center justify-center font-semibold text-sm flex-shrink-0">
+                      {name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-gray-900">{name}</div>
+                      <div className="text-xs text-gray-400">{new Date(c.createdAt).toLocaleString('id-ID')}</div>
+                      <div className="mt-2 text-sm text-gray-700 whitespace-pre-wrap break-words">{c.content}</div>
+                    </div>
+                  </div>
+                  {canDelete && (
+                    <button onClick={() => remove(c._id)} className="text-xs text-gray-400 hover:text-rose-600 flex-shrink-0">Hapus</button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function cleanHtml(html) {
   let s = String(html || '');
   if (!s) return '';
@@ -41,15 +127,6 @@ function cleanHtml(html) {
   s = s.replace(/<li>\s*<p>\s*<\/p>\s*<\/li>/gi, '');
   s = s.replace(/<li>\s*(?:<br\s*\/?\s*>)\s*<\/li>/gi, '');
   return s;
-}
-
-function toPlainTextFromHtml(html) {
-  try {
-    const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
-    return (doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
-  } catch {
-    return String(html || '').replace(/\s+/g, ' ').trim();
-  }
 }
 
 function toPlainTextFromMarkdown(md) {
@@ -615,13 +692,14 @@ export default function CourseDetail() {
   }
 
   // Default view: course overview (not enrolled / teacher / admin / preview)
-  const instructorName = course.ownerId?.name || '';
+  const instructorName = course.ownerId?.fullName || course.ownerId?.name || '';
+  const instructorAvatarUrl = course.ownerId?.avatarUrl || '';
   const instructorInitials = instructorName
     ? instructorName.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
     : 'IN';
   const instructorSkills      = course.ownerId?.skills      || [];
   const instructorInstitution = course.ownerId?.institution || '';
-  const descriptionPlain = toPlainTextFromHtml(course.description);
+  const descriptionHtml = cleanHtml(course.description);
 
   return (
     <div style={{ background: '#F7F8FA' }} className="min-h-screen overflow-x-hidden">
@@ -698,10 +776,11 @@ export default function CourseDetail() {
               </h1>
 
               {/* Description */}
-              {descriptionPlain && (
-                <p className="mt-4 text-base text-gray-600 leading-relaxed">
-                  {descriptionPlain}
-                </p>
+              {descriptionHtml && (
+                <div
+                  className="mt-4 prose prose-slate max-w-none text-base text-gray-600 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                />
               )}
 
               {/* Rating row */}
@@ -731,10 +810,18 @@ export default function CourseDetail() {
               {/* Instructor block */}
               {instructorName && (
                 <div className="mt-5 flex items-start gap-3 flex-wrap">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shrink-0"
-                    style={{ background: 'linear-gradient(135deg,#0C628D,#0FADA8)', fontSize: '0.9rem' }}>
-                    {instructorInitials}
-                  </div>
+                  {instructorAvatarUrl ? (
+                    <img
+                      src={instructorAvatarUrl}
+                      alt={instructorName}
+                      className="w-10 h-10 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shrink-0"
+                      style={{ background: 'linear-gradient(135deg,#0C628D,#0FADA8)', fontSize: '0.9rem' }}>
+                      {instructorInitials}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <div className="text-xs text-gray-500">Teacher</div>
                     <div className="text-sm font-semibold text-gray-900">{instructorName}</div>
@@ -1026,6 +1113,18 @@ export default function CourseDetail() {
           <div className="grid md:grid-cols-[1fr_280px] gap-8 items-start">
             {/* MAIN */}
             <div className="min-w-0">
+
+              {/* Forum diskusi course */}
+              {isAuthed && (isEnrolled || role === 'admin' || String(course.ownerId?._id || course.ownerId) === String(user?._id)) && (
+                <div className="mb-10">
+                  <CourseForum
+                    api={api}
+                    courseId={id}
+                    currentUserId={user?._id}
+                    canModerate={role === 'admin' || String(course.ownerId?._id || course.ownerId) === String(user?._id)}
+                  />
+                </div>
+              )}
 
               {/* Reviews */}
               <div>

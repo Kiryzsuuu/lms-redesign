@@ -439,8 +439,8 @@ export function RichTextEditor({
           </div>
         )}
 
-        {/* Editor content — grows with content, minHeight draggable */}
-        <div style={{ minHeight: editorHeight, paddingBottom: '2rem' }}>
+        {/* Editor content — fixed height, scrolls internally instead of growing the page */}
+        <div style={{ height: editorHeight, maxHeight: editorHeight, overflowY: 'auto', paddingBottom: '0.5rem' }}>
           <EditorContent editor={editor} />
         </div>
 

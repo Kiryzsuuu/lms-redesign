@@ -181,20 +181,39 @@ export default function Cart() {
       await loadSnapScript({ clientKey: cfg.clientKey, isProduction: cfg.isProduction });
       if (!window.snap) throw new Error('Midtrans Snap tidak tersedia');
 
+      const orderCode = res.data.orderCode;
+
+      async function syncOrderStatus() {
+        try {
+          const sync = await api.post(`/payments/orders/${orderCode}/sync`);
+          if (sync.data?.status === 'paid') {
+            await refreshUser?.();
+            setSuccessMsg('Pembayaran berhasil. Course sudah terbuka.');
+          } else {
+            setSuccessMsg('Pembayaran diterima. Course akan terbuka otomatis setelah status settlement.');
+          }
+        } catch {
+          setSuccessMsg('Pembayaran diterima. Course akan terbuka otomatis setelah status settlement.');
+        } finally {
+          await refresh();
+        }
+      }
+
       window.snap.pay(res.data.snapToken, {
         onSuccess: async () => {
-          await refresh();
           setError('');
-          setSuccessMsg('Pembayaran diterima. Course akan terbuka otomatis setelah status settlement.');
+          await syncOrderStatus();
         },
-        onPending: () => {
+        onPending: async () => {
           setSuccessMsg('Pembayaran pending. Silakan selesaikan pembayaran sesuai instruksi yang muncul.');
+          await syncOrderStatus();
         },
         onError: () => {
           setError('Pembayaran gagal / dibatalkan');
         },
-        onClose: () => {
+        onClose: async () => {
           setSuccessMsg('');
+          await syncOrderStatus();
         },
       });
     } catch (e) {

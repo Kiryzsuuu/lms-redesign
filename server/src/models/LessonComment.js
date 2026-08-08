@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const lessonCommentSchema = new mongoose.Schema(
   {
-    lessonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', required: true, index: true },
+    lessonId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', default: null, index: true },
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true, index: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     content: { type: String, required: true, trim: true, maxlength: 2000 },

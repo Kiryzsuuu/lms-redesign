@@ -285,46 +285,23 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
     })
   );
 
-  // Midtrans payment notification (webhook)
-  router.post(
-    '/midtrans/notification',
-    asyncHandler(async (req, res) => {
-      // Load config dynamically from DB (with env fallback)
+  // Shared handler: applies a Midtrans transaction status to the matching order
+  // (unlocks courses, marks vouchers/coupons used, etc). Used by both the
+  // webhook notification and the client-side status-sync fallback, since the
+  // webhook alone is unreliable if the notification URL isn't reachable/configured.
+  async function applyMidtransStatus({ order, txStatus, paymentType, fraudStatus, rawNotification, settlementTime }) {
       const mtCfg = await getMidtransConfig();
-      if (!mtCfg.serverKey) throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key)');
-
-      const n = req.body || {};
-      const orderId = n.order_id;
-      if (!orderId) throw new HttpError(400, 'Invalid notification');
-
-      const expected = computeMidtransSignature({
-        orderId: String(n.order_id || ''),
-        statusCode: String(n.status_code || ''),
-        grossAmount: String(n.gross_amount || ''),
-        serverKey: mtCfg.serverKey,
-      });
-
-      const signatureOk = String(n.signature_key || '').toLowerCase() === expected.toLowerCase();
-      if (!signatureOk) throw new HttpError(401, 'Invalid signature');
-
-      const order = await Order.findOne({ orderCode: orderId });
-      if (!order) throw new HttpError(404, 'Order not found');
-
-      const txStatus = String(n.transaction_status || '');
-      const paymentType = String(n.payment_type || '');
-      const fraudStatus = String(n.fraud_status || '');
-
       const update = {
         'midtrans.transactionStatus': txStatus,
         'midtrans.paymentType': paymentType,
         'midtrans.fraudStatus': fraudStatus,
-        'midtrans.rawNotification': n,
+        'midtrans.rawNotification': rawNotification,
       };
 
       let newStatus = order.status;
       if (isPaidStatus(txStatus) && fraudStatus !== 'deny') {
         newStatus = 'paid';
-        update['midtrans.settlementTime'] = n.settlement_time ? new Date(n.settlement_time) : new Date();
+        update['midtrans.settlementTime'] = settlementTime ? new Date(settlementTime) : new Date();
 
         // Fee is not provided by Midtrans notification by default.
         // We store an estimated fee (optional) based on DB/env rules.
@@ -459,7 +436,83 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         await Cart.updateOne({ userId: order.userId }, { $set: { items: [] } });
       }
 
+      return newStatus;
+  }
+
+  // Midtrans payment notification (webhook)
+  router.post(
+    '/midtrans/notification',
+    asyncHandler(async (req, res) => {
+      // Load config dynamically from DB (with env fallback)
+      const mtCfg = await getMidtransConfig();
+      if (!mtCfg.serverKey) throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key)');
+
+      const n = req.body || {};
+      const orderId = n.order_id;
+      if (!orderId) throw new HttpError(400, 'Invalid notification');
+
+      const expected = computeMidtransSignature({
+        orderId: String(n.order_id || ''),
+        statusCode: String(n.status_code || ''),
+        grossAmount: String(n.gross_amount || ''),
+        serverKey: mtCfg.serverKey,
+      });
+
+      const signatureOk = String(n.signature_key || '').toLowerCase() === expected.toLowerCase();
+      if (!signatureOk) throw new HttpError(401, 'Invalid signature');
+
+      const order = await Order.findOne({ orderCode: orderId });
+      if (!order) throw new HttpError(404, 'Order not found');
+
+      await applyMidtransStatus({
+        order,
+        txStatus: String(n.transaction_status || ''),
+        paymentType: String(n.payment_type || ''),
+        fraudStatus: String(n.fraud_status || ''),
+        rawNotification: n,
+        settlementTime: n.settlement_time,
+      });
+
       res.json({ ok: true });
+    })
+  );
+
+  // Client-side status sync fallback: called right after Snap onSuccess/redirect,
+  // in case the Midtrans server-to-server webhook hasn't arrived yet (e.g. notification
+  // URL not reachable/configured). Queries Midtrans directly for the real status.
+  router.post(
+    '/orders/:orderCode/sync',
+    requireAuth,
+    requireRole('student'),
+    asyncHandler(async (req, res) => {
+      const mtCfg = await getMidtransConfig();
+      if (!mtCfg.serverKey) throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key)');
+
+      const order = await Order.findOne({ orderCode: req.params.orderCode, userId: req.user.sub });
+      if (!order) throw new HttpError(404, 'Order not found');
+
+      if (order.status === 'paid') {
+        return res.json({ ok: true, status: 'paid' });
+      }
+
+      const core = new midtransClient.CoreApi({
+        isProduction: Boolean(mtCfg.isProduction),
+        serverKey: mtCfg.serverKey,
+        clientKey: mtCfg.clientKey,
+      });
+
+      const status = await core.transaction.status(order.orderCode);
+
+      const newStatus = await applyMidtransStatus({
+        order,
+        txStatus: String(status.transaction_status || ''),
+        paymentType: String(status.payment_type || ''),
+        fraudStatus: String(status.fraud_status || ''),
+        rawNotification: status,
+        settlementTime: status.settlement_time,
+      });
+
+      res.json({ ok: true, status: newStatus });
     })
   );
 

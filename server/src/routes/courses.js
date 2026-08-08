@@ -182,7 +182,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
   router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-      const course = await Course.findById(req.params.id).populate('ownerId', 'name skills institution');
+      const course = await Course.findById(req.params.id).populate('ownerId', 'name fullName avatarUrl skills institution');
       if (!course) throw new HttpError(404, 'Course not found');
       if (!course.isPublished) throw new HttpError(404, 'Course not found');
 
@@ -203,7 +203,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
     requireRole('admin', 'teacher'),
     asyncHandler(async (req, res) => {
       await assertCanEditCourse(req.params.id, req.user);
-      const course = await Course.findById(req.params.id).populate('ownerId', 'name skills institution');
+      const course = await Course.findById(req.params.id).populate('ownerId', 'name fullName avatarUrl skills institution');
 
       const [modules, lessons, quizzes] = await Promise.all([
         Module.find({ courseId: course._id }).sort({ order: 1, createdAt: 1 }),
