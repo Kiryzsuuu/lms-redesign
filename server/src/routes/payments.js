@@ -96,7 +96,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
       if (!payable.length) {
         // Clear cart and return
         await Cart.updateOne({ userId: req.user.sub }, { $set: { items: [] } });
-        return res.json({ ok: true, paid: true, message: 'Semua course di cart sudah gratis / sudah terbeli' });
+        return res.json({ ok: true, paid: true, message: 'Semua course di cart sudah gratis / sudah terbeli', courseIds: courses.map((c) => String(c._id)) });
       }
 
       const orderCode = makeOrderCode();
@@ -194,7 +194,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
           await Voucher.updateOne({ _id: voucher._id, isUsed: false }, { $set: { isUsed: true, usedAt: new Date() } });
         }
         await Cart.updateOne({ userId: req.user.sub }, { $set: { items: [] } });
-        return res.json({ ok: true, paid: true, finalAmountIdr: 0, message: 'Course berhasil diperoleh dengan diskon 100%' });
+        return res.json({ ok: true, paid: true, finalAmountIdr: 0, message: 'Course berhasil diperoleh dengan diskon 100%', courseIds: payable.map((c) => String(c._id)) });
       }
 
       const items = payable.map((c) => ({
@@ -281,6 +281,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         finalAmountIdr,
         snapToken: transaction.token,
         redirectUrl: transaction.redirect_url,
+        courseIds: payable.map((c) => String(c._id)),
       });
     })
   );
@@ -492,7 +493,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
       if (!order) throw new HttpError(404, 'Order not found');
 
       if (order.status === 'paid') {
-        return res.json({ ok: true, status: 'paid' });
+        return res.json({ ok: true, status: 'paid', courseIds: (order.items || []).map((it) => String(it.courseId)) });
       }
 
       const core = new midtransClient.CoreApi({
@@ -512,7 +513,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
         settlementTime: status.settlement_time,
       });
 
-      res.json({ ok: true, status: newStatus });
+      res.json({ ok: true, status: newStatus, courseIds: (order.items || []).map((it) => String(it.courseId)) });
     })
   );
 

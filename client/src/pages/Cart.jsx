@@ -1,6 +1,6 @@
 import { PageSpinner } from '../components/PageSpinner';
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, Container } from '../components/ui';
 import { useAuth } from '../lib/auth';
 
@@ -40,8 +40,15 @@ function loadSnapScript({ clientKey, isProduction }) {
   });
 }
 
+function goAfterPurchase(navigate, courseIds) {
+  const ids = (courseIds || []).filter(Boolean);
+  if (ids.length === 1) navigate(`/courses/${ids[0]}`);
+  else navigate('/dashboard/my-courses');
+}
+
 export default function Cart() {
   const { api, user, refreshUser } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [totalIdr, setTotalIdr] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -175,6 +182,7 @@ export default function Cart() {
 
       if (res.data?.paid) {
         await refresh();
+        goAfterPurchase(navigate, res.data.courseIds);
         return;
       }
 
@@ -182,6 +190,7 @@ export default function Cart() {
       if (!window.snap) throw new Error('Midtrans Snap tidak tersedia');
 
       const orderCode = res.data.orderCode;
+      const purchasedCourseIds = res.data.courseIds || [];
 
       async function syncOrderStatus() {
         try {
@@ -189,14 +198,16 @@ export default function Cart() {
           if (sync.data?.status === 'paid') {
             await refreshUser?.();
             setSuccessMsg('Pembayaran berhasil. Course sudah terbuka.');
+            await refresh();
+            goAfterPurchase(navigate, sync.data.courseIds || purchasedCourseIds);
+            return;
           } else {
             setSuccessMsg('Pembayaran diterima. Course akan terbuka otomatis setelah status settlement.');
           }
         } catch {
           setSuccessMsg('Pembayaran diterima. Course akan terbuka otomatis setelah status settlement.');
-        } finally {
-          await refresh();
         }
+        await refresh();
       }
 
       window.snap.pay(res.data.snapToken, {

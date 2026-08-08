@@ -228,7 +228,7 @@ export default function Courses() {
 
                     <div className="mt-4 pt-3 flex justify-between items-center border-t border-gray-100">
                       <span className="font-extrabold text-[1.05rem]" style={{ color: '#0C628D' }}>
-                        {isFree ? 'Gratis' : `Rp ${formatIdr(c.priceIdr)}`}
+                        {isPurchased ? (isOngoing ? 'Lanjutkan Course' : 'Akses Course') : isFree ? 'Gratis' : `Rp ${formatIdr(c.priceIdr)}`}
                       </span>
                     </div>
 
@@ -251,7 +251,7 @@ export default function Courses() {
                             onMouseEnter={(e) => { e.currentTarget.style.background = '#0A527A'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = '#0C628D'; e.currentTarget.style.transform = 'none'; }}
                           >
-                            Open Course
+                            {isOngoing ? 'Lanjutkan Course' : 'Akses Course'}
                           </button>
                         </Link>
                       ) : (

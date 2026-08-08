@@ -4,7 +4,8 @@ import { useAuth } from '../lib/auth';
 import { DsPage, DsCourseCard, DsEmpty } from '../components/ds';
 import { PageSpinner } from '../components/PageSpinner';
 
-function priceLabel(c) {
+function priceLabel(c, isPurchased) {
+  if (isPurchased) return { text: 'Lanjutkan Course', kind: 'active' };
   if (!c.priceIdr || c.priceIdr === 0) return { text: 'Gratis', kind: 'free' };
   return { text: `Rp ${Number(c.priceIdr).toLocaleString('id-ID')}`, kind: 'paid' };
 }
@@ -12,6 +13,7 @@ function priceLabel(c) {
 export default function StudentCatalog() {
   const { api } = useAuth();
   const [courses, setCourses] = useState([]);
+  const [purchasedCourseIds, setPurchasedCourseIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState('Semua');
   const [searchParams] = useSearchParams();
@@ -28,6 +30,9 @@ export default function StudentCatalog() {
       .then(r => setCourses(r.data.courses || []))
       .catch(() => setCourses([]))
       .finally(() => setLoading(false));
+    api.get('/courses/my-courses')
+      .then(r => setPurchasedCourseIds(new Set((r.data.courses || []).map(c => c._id))))
+      .catch(() => setPurchasedCourseIds(new Set()));
   }, [api]);
 
   const categories = useMemo(() => {
@@ -74,7 +79,7 @@ export default function StudentCatalog() {
               to={`/courses/${c._id}`}
               image={c.coverImageUrl}
               icon="ti-book"
-              pill={priceLabel(c)}
+              pill={priceLabel(c, purchasedCourseIds.has(c._id))}
               title={c.title}
               metaLeft={c.categoryId?.name || 'Kursus'}
               metaRight={`${c.lessonCount ?? 0} materi`}
