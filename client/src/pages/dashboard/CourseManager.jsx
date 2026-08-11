@@ -201,6 +201,82 @@ function CourseChatPanel({ courseId, api, role }) {
   );
 }
 
+function genTempPassword() {
+  return Math.random().toString(36).slice(-8) + 'A1!';
+}
+
+function TeacherPicker({ api, teachers, setTeachers, value, onChange }) {
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', institution: '', password: genTempPassword() });
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function createTeacher(e) {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) return;
+    setSaving(true);
+    setErr('');
+    try {
+      const res = await api.post('/admin/users', {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        institution: form.institution.trim(),
+        password: form.password,
+        role: 'teacher',
+      });
+      const newTeacher = res.data.user;
+      setTeachers((prev) => [...prev, newTeacher]);
+      onChange(newTeacher._id);
+      setAdding(false);
+      setForm({ name: '', email: '', institution: '', password: genTempPassword() });
+    } catch (e2) {
+      setErr(e2?.response?.data?.error?.message || 'Gagal membuat akun teacher');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div>
+      <Label>Teacher <span className="text-slate-400 font-normal">(opsional)</span></Label>
+      <div className="mt-1 flex gap-2">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={teachers.length === 0}
+          className="flex-1 border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D] disabled:bg-slate-50 disabled:text-slate-400"
+        >
+          <option value="">{teachers.length === 0 ? 'Belum ada teacher tersedia' : 'Tanpa teacher (assign ke saya)'}</option>
+          {teachers.map((t) => (
+            <option key={t._id} value={t._id}>{t.name || t.email}</option>
+          ))}
+        </select>
+        <Button type="button" variant="outline" onClick={() => setAdding((v) => !v)}>
+          {adding ? 'Batal' : '+ Teacher Baru'}
+        </Button>
+      </div>
+      {!adding && (
+        <p className="text-xs text-slate-400 mt-1">Tidak ada di daftar? Klik "+ Teacher Baru" untuk buat akun teacher langsung.</p>
+      )}
+      {adding && (
+        <div className="mt-2 border border-slate-200 rounded p-3 space-y-2 bg-slate-50">
+          <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nama teacher" />
+          <Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="Email" />
+          <Input value={form.institution} onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))} placeholder="Institusi (opsional, mis: Telkom University)" />
+          <div>
+            <Input value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Password sementara" />
+            <p className="text-xs text-slate-400 mt-1">Password sementara ini — sampaikan ke teacher agar bisa login, atau teacher bisa reset lewat "Lupa Password".</p>
+          </div>
+          {err && <div className="text-xs text-rose-600">{err}</div>}
+          <Button type="button" onClick={createTeacher} disabled={saving || !form.name.trim() || !form.email.trim()}>
+            {saving ? 'Membuat...' : 'Buat & Pilih Teacher'}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function CourseManager() {
   const { api, role } = useAuth();
 
@@ -1244,22 +1320,13 @@ export default function CourseManager() {
                       )}
                     </div>
                     {role === 'admin' && (
-                      <div>
-                        <Label>Teacher <span className="text-slate-400 font-normal">(opsional)</span></Label>
-                        <div className="mt-1">
-                          <select
-                            value={courseForm.ownerId}
-                            onChange={(e) => setCourseForm((f) => ({ ...f, ownerId: e.target.value }))}
-                            disabled={teachers.length === 0}
-                            className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D] disabled:bg-slate-50 disabled:text-slate-400"
-                          >
-                            <option value="">{teachers.length === 0 ? 'Belum ada teacher tersedia' : 'Tanpa teacher (assign ke saya)'}</option>
-                            {teachers.map((t) => (
-                              <option key={t._id} value={t._id}>{t.name || t.email}</option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
+                      <TeacherPicker
+                        api={api}
+                        teachers={teachers}
+                        setTeachers={setTeachers}
+                        value={courseForm.ownerId}
+                        onChange={(v) => setCourseForm((f) => ({ ...f, ownerId: v }))}
+                      />
                     )}
                     <div>
                       <Label>Fitur / Badge Course</Label>
@@ -1508,21 +1575,13 @@ export default function CourseManager() {
                         </div>
                       )}
                       {role === 'admin' && (
-                        <div>
-                          <Label>Teacher</Label>
-                          <div className="mt-1">
-                            <select
-                              className="w-full rounded-[10px] border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-                              value={courseForm.ownerId}
-                              onChange={(e) => setCourseForm((f) => ({ ...f, ownerId: e.target.value }))}
-                            >
-                              <option value="">-- Tanpa Teacher --</option>
-                              {teachers.map((t) => (
-                                <option key={t._id} value={t._id}>{t.name || t.email}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+                        <TeacherPicker
+                          api={api}
+                          teachers={teachers}
+                          setTeachers={setTeachers}
+                          value={courseForm.ownerId}
+                          onChange={(v) => setCourseForm((f) => ({ ...f, ownerId: v }))}
+                        />
                       )}
                       <div>
                         <Label>Fitur / Badge Course</Label>
