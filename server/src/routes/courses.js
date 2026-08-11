@@ -394,6 +394,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         description: z.string().optional().default(''),
         coverImageUrl: z.string().optional().default(''),
         priceIdr: z.coerce.number().min(0).optional().default(0),
+        originalPriceIdr: z.coerce.number().min(0).optional().default(0),
         isPublished: z.coerce.boolean().optional().default(false),
         tags: z.array(z.string()).optional().default([]),
         templateId: z.string().optional(),
@@ -441,6 +442,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         coverImageUrl: z.string().optional().default(''),
         previewVideoUrl: z.string().optional().default(''),
         priceIdr: z.coerce.number().min(0).optional().default(0),
+        originalPriceIdr: z.coerce.number().min(0).optional().default(0),
         isPublished: z.coerce.boolean().optional().default(false),
         tags: z.array(z.string()).optional().default([]),
         whatYouLearn:   z.array(z.string()).optional().default([]),
@@ -461,6 +463,7 @@ function coursesRouter({ requireAuth, requireRole, env }) {
       if (req.user.role === 'teacher') {
         data.title = course.title;
         data.priceIdr = course.priceIdr;
+        data.originalPriceIdr = course.originalPriceIdr;
         data.coverImageUrl = course.coverImageUrl;
         data.previewVideoUrl = course.previewVideoUrl;
         data.isPublished = course.isPublished;

@@ -288,7 +288,7 @@ export default function CourseManager() {
   const selected = useMemo(() => courses.find((c) => c._id === selectedId) || null, [courses, selectedId]);
   const [activeTab, setActiveTab] = useState('settings');
 
-  const [courseForm, setCourseForm] = useState({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
+  const [courseForm, setCourseForm] = useState({ title: '', description: '', coverImageUrl: '', priceIdr: 0, originalPriceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
   const [categories, setCategories] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [featureInput, setFeatureInput] = useState('');
@@ -300,6 +300,7 @@ export default function CourseManager() {
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverUploadingForSelected, setCoverUploadingForSelected] = useState(false);
   const [selectedCoverDraft, setSelectedCoverDraft] = useState('');
+  const [saveMsg, setSaveMsg] = useState('');
 
   const confirmActionRef = useRef(null);
   const [confirmState, setConfirmState] = useState({
@@ -473,7 +474,7 @@ export default function CourseManager() {
   useEffect(() => {
     // Populate course form when a course is selected
     if (!selected) {
-      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
+      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, originalPriceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
       return;
     }
     setCourseForm({
@@ -481,6 +482,7 @@ export default function CourseManager() {
       description: selected.description || '',
       coverImageUrl: selected.coverImageUrl || '',
       priceIdr: selected.priceIdr || 0,
+      originalPriceIdr: selected.originalPriceIdr || 0,
       isPublished: selected.isPublished || false,
       tags: selected.tags || [],
       categoryId: selected.categoryId?._id || selected.categoryId || '',
@@ -624,7 +626,7 @@ export default function CourseManager() {
       const res = await api.post('/courses', payload);
       await loadCourses();
       setSelectedId(res.data.course._id);
-      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
+      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, originalPriceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
     } catch (e) {
       setError(e?.response?.data?.error?.message || 'Gagal membuat course');
     }
@@ -639,6 +641,7 @@ export default function CourseManager() {
         description: c.description,
         coverImageUrl: c.coverImageUrl,
         priceIdr: c.priceIdr,
+        originalPriceIdr: c.originalPriceIdr ?? 0,
         isPublished: !c.isPublished,
         tags: c.tags ?? [],
       });
@@ -664,6 +667,7 @@ export default function CourseManager() {
         tags: patch.tags ?? selected.tags ?? [],
         categoryId: (patch.categoryId !== undefined ? patch.categoryId : (selected.categoryId?._id || selected.categoryId)) || null,
         features: patch.features ?? selected.features ?? [],
+        originalPriceIdr: patch.originalPriceIdr ?? selected.originalPriceIdr ?? 0,
       };
       if (role === 'admin') {
         payload.ownerId = (patch.ownerId !== undefined ? patch.ownerId : (selected.ownerId?._id || selected.ownerId)) || undefined;
@@ -672,6 +676,8 @@ export default function CourseManager() {
       await api.put(`/courses/${selected._id}`, payload);
       await loadCourses();
       await loadCourseDetails(selected._id);
+      setSaveMsg('Perubahan berhasil disimpan.');
+      setTimeout(() => setSaveMsg(''), 3000);
     } catch (e) {
       setError(e?.response?.data?.error?.message || 'Gagal update course');
     }
@@ -1292,6 +1298,19 @@ export default function CourseManager() {
                       </div>
                     </div>
                     <div>
+                      <Label>Harga Coret <span className="text-slate-400 font-normal">(opsional, harga asli sebelum diskon)</span></Label>
+                      <div className="mt-1">
+                        <Input
+                          type="number"
+                          min="0"
+                          value={courseForm.originalPriceIdr}
+                          onChange={(e) => setCourseForm((f) => ({ ...f, originalPriceIdr: Number(e.target.value) || 0 }))}
+                          placeholder="Kosongkan jika tidak ada diskon"
+                        />
+                        <p className="text-xs text-slate-400 mt-1">Harus lebih besar dari Harga di atas agar tampil dicoret.</p>
+                      </div>
+                    </div>
+                    <div>
                       <Label>Tags / Keahlian</Label>
                       <div className="mt-1 flex gap-2">
                         <Input
@@ -1529,6 +1548,21 @@ export default function CourseManager() {
                           />
                         </div>
                       </div>
+                      {role === 'admin' && (
+                        <div>
+                          <Label>Harga Coret <span className="text-slate-400 font-normal">(opsional, harga asli sebelum diskon)</span></Label>
+                          <div className="mt-1">
+                            <Input
+                              type="number"
+                              min="0"
+                              value={courseForm.originalPriceIdr}
+                              onChange={(e) => setCourseForm((f) => ({ ...f, originalPriceIdr: Number(e.target.value) || 0 }))}
+                              placeholder="Kosongkan jika tidak ada diskon"
+                            />
+                            <p className="text-xs text-slate-400 mt-1">Harus lebih besar dari Harga di atas agar tampil dicoret.</p>
+                          </div>
+                        </div>
+                      )}
                       <div>
                         <Label>Tags / Keahlian</Label>
                         <div className="mt-1 flex gap-2">
@@ -1618,8 +1652,9 @@ export default function CourseManager() {
                           label="Aktifkan chat privat dengan teacher"
                         />
                       )}
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-3">
                         <Button onClick={() => updateSelectedCourse(courseForm)}>Simpan Perubahan</Button>
+                        {saveMsg && <span className="text-sm font-medium text-emerald-600">{saveMsg}</span>}
                       </div>
                     </div>
 

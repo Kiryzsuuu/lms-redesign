@@ -7,6 +7,7 @@ const courseSchema = new mongoose.Schema(
     coverImageUrl: { type: String, default: '' },
     previewVideoUrl: { type: String, default: '' },
     priceIdr: { type: Number, default: 0, min: 0 },
+    originalPriceIdr: { type: Number, default: 0, min: 0 }, // harga coret (sebelum diskon), 0 = tidak ditampilkan
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     contractId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract', default: null }, // course yang dikerjakan teacher via kontrak kerjasama
     isPublished: { type: Boolean, default: false, index: true },

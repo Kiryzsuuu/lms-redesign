@@ -227,8 +227,15 @@ export default function Courses() {
                     </p>
 
                     <div className="mt-4 pt-3 flex justify-between items-center border-t border-gray-100">
-                      <span className="font-extrabold text-[1.05rem]" style={{ color: '#0C628D' }}>
-                        {isPurchased ? (isOngoing ? 'Lanjutkan Course' : 'Akses Course') : isFree ? 'Gratis' : `Rp ${formatIdr(c.priceIdr)}`}
+                      <span className="font-extrabold text-[1.05rem] flex items-baseline gap-1.5 flex-wrap" style={{ color: '#0C628D' }}>
+                        {isPurchased ? (isOngoing ? 'Lanjutkan Course' : 'Akses Course') : isFree ? 'Gratis' : (
+                          <>
+                            {`Rp ${formatIdr(c.priceIdr)}`}
+                            {c.originalPriceIdr > c.priceIdr && (
+                              <span className="text-xs font-medium text-gray-400 line-through">Rp {formatIdr(c.originalPriceIdr)}</span>
+                            )}
+                          </>
+                        )}
                       </span>
                     </div>
 

@@ -421,6 +421,8 @@ export default function CourseDetail() {
 
   const isStudent = role === 'student';
   const priceIdr = course?.priceIdr || 0;
+  const originalPriceIdr = course?.originalPriceIdr || 0;
+  const hasDiscount = originalPriceIdr > priceIdr;
   const hasPurchased = isStudent && (user?.purchasedCourseIds || []).some((x) => String(x) === String(id));
   const hasCompleted = isStudent && (user?.completedCourseIds || []).some((x) => String(x) === String(id));
   const isPaywalled = isStudent && priceIdr > 0 && !hasPurchased;
@@ -1016,7 +1018,12 @@ export default function CourseDetail() {
                     {priceIdr === 0 ? (
                       <span className="font-extrabold text-2xl" style={{ color: '#0FADA8' }}>Gratis</span>
                     ) : (
-                      <span className="font-extrabold text-2xl" style={{ color: '#0A0E1A' }}>Rp {formatIdr(priceIdr)}</span>
+                      <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="font-extrabold text-2xl" style={{ color: '#0A0E1A' }}>Rp {formatIdr(priceIdr)}</span>
+                        {hasDiscount && (
+                          <span className="text-sm text-gray-400 line-through">Rp {formatIdr(originalPriceIdr)}</span>
+                        )}
+                      </div>
                     )}
                   </div>
 
