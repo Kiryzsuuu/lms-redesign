@@ -18,6 +18,11 @@ const courseSchema = new mongoose.Schema(
     targetAudience:[{ type: String, trim: true }],
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null, index: true },
     templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'CourseTemplate' }, // template outline yang dipakai
+    features: {
+      type: [{ type: String, trim: true }],
+      default: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'],
+    }, // badge fitur yang tampil di halaman detail course
+    chatEnabled: { type: Boolean, default: false }, // chat privat student-teacher (opsional per course)
   },
   { timestamps: true }
 );

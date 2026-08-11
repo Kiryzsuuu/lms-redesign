@@ -398,9 +398,12 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         tags: z.array(z.string()).optional().default([]),
         templateId: z.string().optional(),
         categoryId: z.string().optional().nullable(),
+        features: z.array(z.string()).optional(),
+        chatEnabled: z.coerce.boolean().optional().default(false),
       });
       const data = schema.parse(req.body);
       if (!data.categoryId) delete data.categoryId; // hindari cast '' ke ObjectId
+      if (!data.features) delete data.features; // pakai default skema jika tidak dikirim
       const ownerId = req.user.role === 'admin' && req.body.ownerId ? req.body.ownerId : req.user.sub;
       const course = await Course.create({ ...data, ownerId });
 
@@ -445,8 +448,12 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         targetAudience: z.array(z.string()).optional().default([]),
         categoryId: z.string().optional().nullable(),
         templateId: z.string().optional().nullable(),
+        ownerId: z.string().optional(),
+        features: z.array(z.string()).optional(),
+        chatEnabled: z.coerce.boolean().optional(),
       });
       const data = schema.parse(req.body);
+      if (data.features === undefined) delete data.features;
 
       // Teacher kontrak hanya boleh mengubah deskripsi, tags, dan kategori.
       // Judul, harga, cover, preview, dan status publish dikunci ke nilai lama
@@ -457,11 +464,16 @@ function coursesRouter({ requireAuth, requireRole, env }) {
         data.coverImageUrl = course.coverImageUrl;
         data.previewVideoUrl = course.previewVideoUrl;
         data.isPublished = course.isPublished;
+        delete data.ownerId;
+        delete data.chatEnabled;
+      } else if (!data.ownerId) {
+        delete data.ownerId;
       }
+      if (data.chatEnabled === undefined) delete data.chatEnabled;
 
       const before = course.toObject();
       const updated = await Course.findByIdAndUpdate(req.params.id, data, { new: true });
-      await syncTeacherSkills(course.ownerId, data.tags);
+      await syncTeacherSkills(updated.ownerId, data.tags);
       const changed = diffFields(before, data);
       const action = changed.includes('isPublished') ? (data.isPublished ? 'publish' : 'unpublish') : 'update';
       audit({ actor: req.user, action, resource: 'course', resourceId: updated._id, resourceName: updated.title, changedFields: changed, req });

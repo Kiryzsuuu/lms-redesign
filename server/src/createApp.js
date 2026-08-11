@@ -31,6 +31,7 @@ const { testimonialsRouter } = require('./routes/testimonials');
 const { auditLogsRouter } = require('./routes/auditLogs');
 const { settingsRouter } = require('./routes/settings');
 const { discussionsRouter } = require('./routes/discussions');
+const { courseChatRouter } = require('./routes/courseChat');
 const { contractsRouter } = require('./routes/contracts');
 
 let appPromise = null;
@@ -117,6 +118,7 @@ async function createApp() {
   app.use('/api/audit-logs', auditLogsRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
   app.use('/api/settings', settingsRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
   app.use('/api/discussions', discussionsRouter({ requireAuth: requireAuth(env.JWT_SECRET) }));
+  app.use('/api/course-chat', courseChatRouter({ requireAuth: requireAuth(env.JWT_SECRET) }));
   app.use('/api/contracts', contractsRouter({ requireAuth: requireAuth(env.JWT_SECRET), requireRole }));
 
   // Dev: proxy non-API traffic to Vite dev server

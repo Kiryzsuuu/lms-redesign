@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Card, Container, Button, Input } from '../components/ui';
 import { useAuth } from '../lib/auth';
@@ -116,6 +116,73 @@ function CourseForum({ api, courseId, currentUserId, canModerate }) {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function CourseChatWidget({ api, courseId, instructorName }) {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    api.get(`/course-chat/${courseId}/messages`)
+      .then((r) => { if (!cancelled) setMessages(r.data.messages || []); })
+      .catch(() => { if (!cancelled) setMessages([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [api, courseId]);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
+  async function send() {
+    if (!text.trim() || sending) return;
+    setSending(true);
+    try {
+      const r = await api.post(`/course-chat/${courseId}/messages`, { content: text.trim() });
+      setMessages((prev) => [...prev, r.data.message]);
+      setText('');
+    } catch { /* silent */ } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="font-display font-bold text-lg text-gray-900 mb-4">Chat dengan {instructorName || 'Teacher'}</h2>
+      <div className="bg-white rounded-[14px] border border-gray-200 flex flex-col" style={{ height: 360 }}>
+        <div ref={scrollRef} className="flex-1 overflow-auto p-4 space-y-2">
+          {loading ? (
+            <div className="text-sm text-gray-500">Memuat chat...</div>
+          ) : messages.length === 0 ? (
+            <div className="text-sm text-gray-500">Belum ada pesan. Tanyakan sesuatu ke teacher Anda.</div>
+          ) : (
+            messages.map((m) => (
+              <div key={m._id} className={`flex ${m.senderRole === 'student' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`rounded-lg px-3 py-2 text-sm max-w-[75%] whitespace-pre-wrap break-words ${m.senderRole === 'student' ? 'bg-[#0C628D] text-white' : 'bg-gray-100 text-gray-800'}`}>
+                  {m.content}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        <div className="flex gap-2 border-t border-gray-200 p-3">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); send(); } }}
+            placeholder="Tulis pesan..."
+            className="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-[#0C628D] focus:outline-none"
+          />
+          <Button onClick={send} disabled={sending || !text.trim()}>{sending ? 'Mengirim...' : 'Kirim'}</Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -842,7 +909,7 @@ export default function CourseDetail() {
 
               {/* Feature badges */}
               <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                {['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'].map((feat) => (
+                {(course.features && course.features.length ? course.features : ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop']).map((feat) => (
                   <div key={feat} className="flex items-center gap-1.5">
                     <div
                       className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
@@ -1007,14 +1074,12 @@ export default function CourseDetail() {
                           <span>{quizzes.length} quiz</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-2.5 text-sm text-gray-700">
-                        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#0C628D' }} />
-                        <span>Sertifikat digital terverifikasi</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-sm text-gray-700">
-                        <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#0C628D' }} />
-                        <span>Akses seumur hidup</span>
-                      </div>
+                      {(course.features && course.features.length ? course.features : ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop']).map((feat) => (
+                        <div key={feat} className="flex items-center gap-2.5 text-sm text-gray-700">
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#0C628D' }} />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -1113,6 +1178,13 @@ export default function CourseDetail() {
           <div className="grid md:grid-cols-[1fr_280px] gap-8 items-start">
             {/* MAIN */}
             <div className="min-w-0">
+
+              {/* Chat privat dengan teacher (opsional per course, hanya untuk student yang sudah enroll) */}
+              {isAuthed && role === 'student' && isEnrolled && course.chatEnabled && (
+                <div className="mb-10">
+                  <CourseChatWidget api={api} courseId={id} instructorName={instructorName} />
+                </div>
+              )}
 
               {/* Forum diskusi course */}
               {isAuthed && (isEnrolled || role === 'admin' || String(course.ownerId?._id || course.ownerId) === String(user?._id)) && (

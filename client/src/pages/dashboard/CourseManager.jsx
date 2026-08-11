@@ -102,6 +102,105 @@ function LessonDndList({ lessons, onEdit, onToggle, onDelete, onReorder }) {
   );
 }
 
+function CourseChatPanel({ courseId, api, role }) {
+  const [threads, setThreads] = useState([]);
+  const [activeStudentId, setActiveStudentId] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
+
+  async function loadThreads() {
+    setLoading(true);
+    try {
+      const res = await api.get(`/course-chat/${courseId}/threads`);
+      const t = res.data.threads || [];
+      setThreads(t);
+      if (!activeStudentId && t.length > 0) setActiveStudentId(String(t[0].student?._id));
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadMessages(studentId) {
+    if (!studentId) return;
+    try {
+      const res = await api.get(`/course-chat/${courseId}/messages`, { params: { studentId } });
+      setMessages(res.data.messages || []);
+    } catch {
+      // silent
+    }
+  }
+
+  useEffect(() => { loadThreads(); }, [courseId]);
+  useEffect(() => { loadMessages(activeStudentId); }, [activeStudentId]);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
+  async function sendReply(e) {
+    e.preventDefault();
+    if (!text.trim() || !activeStudentId) return;
+    try {
+      await api.post(`/course-chat/${courseId}/messages`, { content: text.trim(), studentId: activeStudentId });
+      setText('');
+      await loadMessages(activeStudentId);
+      await loadThreads();
+    } catch {
+      // silent
+    }
+  }
+
+  return (
+    <div>
+      <div className="font-bold">Chat dengan Student</div>
+      <p className="text-xs text-slate-500 mt-1">
+        {role === 'admin' ? 'Balasan Anda akan tampil sebagai balasan dari Teacher.' : 'Balas pertanyaan student di sini.'}
+      </p>
+      <div className="mt-3 flex gap-4" style={{ minHeight: 360 }}>
+        <div className="w-56 shrink-0 border border-slate-200 rounded overflow-auto">
+          {loading ? <div className="p-3 text-xs text-slate-500">Memuat...</div> : null}
+          {!loading && threads.length === 0 ? <div className="p-3 text-xs text-slate-500">Belum ada chat.</div> : null}
+          {threads.map((t) => {
+            const sid = String(t.student?._id);
+            return (
+              <button
+                key={sid}
+                onClick={() => setActiveStudentId(sid)}
+                className={`w-full text-left px-3 py-2 text-sm border-b border-slate-100 ${activeStudentId === sid ? 'bg-slate-100 font-semibold' : 'hover:bg-slate-50'}`}
+              >
+                <div className="truncate">{t.student?.fullName || t.student?.name || t.student?.email}</div>
+                <div className="text-xs text-slate-500 truncate">{t.lastMessage}</div>
+                {t.unread > 0 && <span className="inline-block mt-1 rounded-full bg-rose-500 text-white text-[10px] px-1.5 py-0.5">{t.unread}</span>}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex-1 flex flex-col border border-slate-200 rounded">
+          <div ref={scrollRef} className="flex-1 overflow-auto p-3 space-y-2" style={{ maxHeight: 320 }}>
+            {messages.map((m) => (
+              <div key={m._id} className={`flex ${m.senderRole === 'teacher' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`rounded-lg px-3 py-2 text-sm max-w-[75%] ${m.senderRole === 'teacher' ? 'bg-primary text-white' : 'bg-slate-100'}`}>
+                  {m.content}
+                </div>
+              </div>
+            ))}
+            {activeStudentId && messages.length === 0 ? <div className="text-xs text-slate-500">Belum ada pesan.</div> : null}
+          </div>
+          {activeStudentId ? (
+            <form onSubmit={sendReply} className="flex gap-2 border-t border-slate-200 p-2">
+              <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Tulis balasan..." />
+              <Button type="submit">Kirim</Button>
+            </form>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CourseManager() {
   const { api, role } = useAuth();
 
@@ -113,10 +212,12 @@ export default function CourseManager() {
   const selected = useMemo(() => courses.find((c) => c._id === selectedId) || null, [courses, selectedId]);
   const [activeTab, setActiveTab] = useState('settings');
 
-  const [courseForm, setCourseForm] = useState({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '' });
+  const [courseForm, setCourseForm] = useState({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
   const [categories, setCategories] = useState([]);
   const [tagInput, setTagInput] = useState('');
+  const [featureInput, setFeatureInput] = useState('');
   const [templates, setTemplates] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [applyTemplateId, setApplyTemplateId] = useState('');
   const [applyingTemplate, setApplyingTemplate] = useState(false);
   const [applyTemplateMsg, setApplyTemplateMsg] = useState('');
@@ -270,6 +371,9 @@ export default function CourseManager() {
     loadCourses();
     api.get('/course-templates').then((r) => setTemplates(r.data.templates || [])).catch(() => {});
     api.get('/categories').then((r) => setCategories(r.data.categories || [])).catch(() => {});
+    if (role === 'admin') {
+      api.get('/admin/users').then((r) => setTeachers((r.data.users || []).filter((u) => u.role === 'teacher'))).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -293,7 +397,7 @@ export default function CourseManager() {
   useEffect(() => {
     // Populate course form when a course is selected
     if (!selected) {
-      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '' });
+      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
       return;
     }
     setCourseForm({
@@ -305,6 +409,9 @@ export default function CourseManager() {
       tags: selected.tags || [],
       categoryId: selected.categoryId?._id || selected.categoryId || '',
       templateId: selected.templateId || '',
+      ownerId: selected.ownerId?._id || selected.ownerId || '',
+      features: selected.features && selected.features.length ? selected.features : ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'],
+      chatEnabled: selected.chatEnabled || false,
     });
   }, [selected]);
 
@@ -437,10 +544,11 @@ export default function CourseManager() {
       const payload = { ...courseForm };
       if (!payload.templateId) delete payload.templateId;
       if (!payload.categoryId) delete payload.categoryId;
+      if (!payload.ownerId) delete payload.ownerId;
       const res = await api.post('/courses', payload);
       await loadCourses();
       setSelectedId(res.data.course._id);
-      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '' });
+      setCourseForm({ title: '', description: '', coverImageUrl: '', priceIdr: 0, isPublished: false, tags: [], categoryId: '', templateId: '', ownerId: '', features: ['Akses seumur hidup', 'Sertifikat terverifikasi', 'Mobile & desktop'], chatEnabled: false });
     } catch (e) {
       setError(e?.response?.data?.error?.message || 'Gagal membuat course');
     }
@@ -479,7 +587,12 @@ export default function CourseManager() {
         isPublished: patch.isPublished ?? selected.isPublished,
         tags: patch.tags ?? selected.tags ?? [],
         categoryId: (patch.categoryId !== undefined ? patch.categoryId : (selected.categoryId?._id || selected.categoryId)) || null,
+        features: patch.features ?? selected.features ?? [],
       };
+      if (role === 'admin') {
+        payload.ownerId = (patch.ownerId !== undefined ? patch.ownerId : (selected.ownerId?._id || selected.ownerId)) || undefined;
+        payload.chatEnabled = patch.chatEnabled ?? selected.chatEnabled ?? false;
+      }
       await api.put(`/courses/${selected._id}`, payload);
       await loadCourses();
       await loadCourseDetails(selected._id);
@@ -1130,6 +1243,59 @@ export default function CourseManager() {
                         </div>
                       )}
                     </div>
+                    {role === 'admin' && (
+                      <div>
+                        <Label>Teacher <span className="text-slate-400 font-normal">(opsional)</span></Label>
+                        <div className="mt-1">
+                          <select
+                            value={courseForm.ownerId}
+                            onChange={(e) => setCourseForm((f) => ({ ...f, ownerId: e.target.value }))}
+                            disabled={teachers.length === 0}
+                            className="w-full border border-slate-200 bg-white px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-[#0C628D] disabled:bg-slate-50 disabled:text-slate-400"
+                          >
+                            <option value="">{teachers.length === 0 ? 'Belum ada teacher tersedia' : 'Tanpa teacher (assign ke saya)'}</option>
+                            {teachers.map((t) => (
+                              <option key={t._id} value={t._id}>{t.name || t.email}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    <div>
+                      <Label>Fitur / Badge Course</Label>
+                      <div className="mt-1 flex gap-2">
+                        <Input
+                          value={featureInput}
+                          onChange={(e) => setFeatureInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && featureInput.trim()) {
+                              e.preventDefault();
+                              const t = featureInput.trim();
+                              if (!courseForm.features.includes(t)) setCourseForm((f) => ({ ...f, features: [...f.features, t] }));
+                              setFeatureInput('');
+                            }
+                          }}
+                          placeholder="Ketik fitur lalu Enter (mis: Akses seumur hidup)"
+                        />
+                      </div>
+                      {courseForm.features.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {courseForm.features.map((t) => (
+                            <span key={t} className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-800">
+                              {t}
+                              <button type="button" onClick={() => setCourseForm((f) => ({ ...f, features: f.features.filter((x) => x !== t) }))} className="hover:text-teal-600">&times;</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {role === 'admin' && (
+                      <Toggle
+                        checked={courseForm.chatEnabled}
+                        onChange={(e) => setCourseForm((f) => ({ ...f, chatEnabled: e.target.checked }))}
+                        label="Aktifkan chat privat dengan teacher"
+                      />
+                    )}
                     <div>
                       <Label>Template Outline <span className="text-slate-400 font-normal">(opsional)</span></Label>
                       <div className="mt-1">
@@ -1234,6 +1400,18 @@ export default function CourseManager() {
                   >
                     Quiz
                   </button>
+                  {selected.chatEnabled && (
+                    <button
+                      onClick={() => setActiveTab('chat')}
+                      className={`px-4 py-2 font-semibold text-sm transition-colors ${
+                        activeTab === 'chat'
+                          ? 'text-primary border-b-2 border-primary'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Chat
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-4 flex-1 min-h-0 overflow-auto pr-1">
@@ -1328,6 +1506,58 @@ export default function CourseManager() {
                             </select>
                           </div>
                         </div>
+                      )}
+                      {role === 'admin' && (
+                        <div>
+                          <Label>Teacher</Label>
+                          <div className="mt-1">
+                            <select
+                              className="w-full rounded-[10px] border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                              value={courseForm.ownerId}
+                              onChange={(e) => setCourseForm((f) => ({ ...f, ownerId: e.target.value }))}
+                            >
+                              <option value="">-- Tanpa Teacher --</option>
+                              {teachers.map((t) => (
+                                <option key={t._id} value={t._id}>{t.name || t.email}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <Label>Fitur / Badge Course</Label>
+                        <div className="mt-1 flex gap-2">
+                          <Input
+                            value={featureInput}
+                            onChange={(e) => setFeatureInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && featureInput.trim()) {
+                                e.preventDefault();
+                                const t = featureInput.trim();
+                                if (!courseForm.features.includes(t)) setCourseForm((f) => ({ ...f, features: [...f.features, t] }));
+                                setFeatureInput('');
+                              }
+                            }}
+                            placeholder="Ketik fitur lalu Enter (mis: Akses seumur hidup)"
+                          />
+                        </div>
+                        {courseForm.features.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {courseForm.features.map((t) => (
+                              <span key={t} className="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-800">
+                                {t}
+                                <button type="button" onClick={() => setCourseForm((f) => ({ ...f, features: f.features.filter((x) => x !== t) }))} className="hover:text-teal-600">&times;</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {role === 'admin' && (
+                        <Toggle
+                          checked={courseForm.chatEnabled}
+                          onChange={(e) => setCourseForm((f) => ({ ...f, chatEnabled: e.target.checked }))}
+                          label="Aktifkan chat privat dengan teacher"
+                        />
                       )}
                       <div className="flex gap-2">
                         <Button onClick={() => updateSelectedCourse(courseForm)}>Simpan Perubahan</Button>
@@ -2199,6 +2429,10 @@ export default function CourseManager() {
                       )}
                     </div>
                     </div>
+                  )}
+
+                  {activeTab === 'chat' && selected.chatEnabled && (
+                    <CourseChatPanel courseId={selected._id} api={api} role={role} />
                   )}
                 </div>
                 </>
