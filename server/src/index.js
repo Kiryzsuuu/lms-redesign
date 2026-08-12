@@ -3,6 +3,7 @@ dotenv.config();
 
 const { getApp } = require('./createApp');
 const { getEnv } = require('./utils/env');
+const { startReconcilePendingOrdersJob } = require('./jobs/reconcilePendingOrders');
 
 getApp()
   .then((app) => {
@@ -11,6 +12,7 @@ getApp()
       // eslint-disable-next-line no-console
       console.log(`API listening on http://localhost:${env.PORT}`);
     });
+    startReconcilePendingOrdersJob();
   })
   .catch((err) => {
     // eslint-disable-next-line no-console

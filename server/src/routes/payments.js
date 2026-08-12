@@ -2,17 +2,17 @@ const express = require('express');
 const crypto = require('crypto');
 const midtransClient = require('midtrans-client');
 const { getMidtransConfig } = require('../utils/midtransConfig');
+const { applyMidtransStatus } = require('../utils/midtransOrderStatus');
 const { Cart } = require('../models/Cart');
 const { Course } = require('../models/Course');
 const { Order } = require('../models/Order');
 const { User } = require('../models/User');
 const { Coupon } = require('../models/Coupon');
 const { Voucher } = require('../models/Voucher');
-const { RoyaltyRecord } = require('../models/RoyaltyRecord');
 const { asyncHandler } = require('../utils/asyncHandler');
 const { HttpError } = require('../utils/errors');
 const { getEnv } = require('../utils/env');
-const { sendPurchaseNotification, sendPurchaseConfirmation } = require('../utils/emailNotifications');
+const { sendPurchaseNotification } = require('../utils/emailNotifications');
 
 function makeOrderCode() {
   const ts = Date.now();
@@ -25,16 +25,6 @@ function computeMidtransSignature({ orderId, statusCode, grossAmount, serverKey 
     .createHash('sha512')
     .update(`${orderId}${statusCode}${grossAmount}${serverKey}`)
     .digest('hex');
-}
-
-function isPaidStatus(transactionStatus) {
-  // Unlock course only when Midtrans confirms settlement.
-  // ("capture" can happen before settlement for certain methods and should not unlock access.)
-  return transactionStatus === 'settlement';
-}
-
-function isTerminalFailedStatus(transactionStatus) {
-  return transactionStatus === 'deny' || transactionStatus === 'cancel' || transactionStatus === 'expire' || transactionStatus === 'failure';
 }
 
 function paymentsRouter({ requireAuth, requireRole, midtrans }) {
@@ -286,160 +276,6 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
     })
   );
 
-  // Shared handler: applies a Midtrans transaction status to the matching order
-  // (unlocks courses, marks vouchers/coupons used, etc). Used by both the
-  // webhook notification and the client-side status-sync fallback, since the
-  // webhook alone is unreliable if the notification URL isn't reachable/configured.
-  async function applyMidtransStatus({ order, txStatus, paymentType, fraudStatus, rawNotification, settlementTime }) {
-      const mtCfg = await getMidtransConfig();
-      const update = {
-        'midtrans.transactionStatus': txStatus,
-        'midtrans.paymentType': paymentType,
-        'midtrans.fraudStatus': fraudStatus,
-        'midtrans.rawNotification': rawNotification,
-      };
-
-      let newStatus = order.status;
-      if (isPaidStatus(txStatus) && fraudStatus !== 'deny') {
-        newStatus = 'paid';
-        update['midtrans.settlementTime'] = settlementTime ? new Date(settlementTime) : new Date();
-
-        // Fee is not provided by Midtrans notification by default.
-        // We store an estimated fee (optional) based on DB/env rules.
-        function safeParseFeeRules(json) {
-          if (!json) return null;
-          try {
-            const parsed = JSON.parse(json);
-            return parsed && typeof parsed === 'object' ? parsed : null;
-          } catch {
-            return null;
-          }
-        }
-
-        function computeFeeIdr({ amountIdr, paymentType: pt }) {
-          const amt = Math.max(0, Number(amountIdr || 0));
-          const rules = safeParseFeeRules(mtCfg.feeRulesJson);
-
-          const rule =
-            (rules && pt && rules[pt]) ||
-            (rules && rules.default) ||
-            null;
-
-          const percent = Math.max(0, Math.min(100, Number(rule?.percent ?? mtCfg.feePercent ?? 0)));
-          const flat = Math.max(0, Math.round(Number(rule?.flat ?? 0)));
-
-          return Math.max(0, Math.round((amt * percent) / 100) + flat);
-        }
-
-        update['midtrans.feeIdr'] = computeFeeIdr({ amountIdr: order.amountIdr, paymentType });
-      } else if (isTerminalFailedStatus(txStatus)) {
-        newStatus = txStatus === 'expire' ? 'expired' : txStatus === 'cancel' ? 'canceled' : 'failed';
-      }
-
-      await Order.updateOne({ _id: order._id }, { $set: { status: newStatus, ...update } });
-
-      if (newStatus === 'paid') {
-        const courseIds = (order.items || []).map((it) => it.courseId);
-        if (courseIds.length) {
-          await User.updateOne(
-            { _id: order.userId },
-            { $addToSet: { purchasedCourseIds: { $each: courseIds } } }
-          );
-
-          // Mark first purchase done (untuk disable diskon referral berikutnya)
-          const buyer = await User.findById(order.userId).select('referredBy isFirstPurchaseDone royaltyRatio').lean();
-          if (buyer?.referredBy && !buyer?.isFirstPurchaseDone) {
-            await User.updateOne({ _id: order.userId }, { $set: { isFirstPurchaseDone: true } });
-          }
-
-          // Tandai voucher terpakai bila order ini memakai voucher
-          if (order.voucherId) {
-            await Voucher.updateOne({ _id: order.voucherId, isUsed: false }, { $set: { isUsed: true, usedAt: new Date(), usedOrderId: order._id } });
-          }
-
-          // Buat RoyaltyRecord untuk setiap course yang terjual
-          const { Course } = require('../models/Course');
-          const { Contract } = require('../models/Contract');
-          const royaltyDocs = [];
-          for (const item of order.items) {
-            const course = await Course.findById(item.courseId).select('ownerId').lean();
-            if (!course?.ownerId) continue;
-
-            // Sumber kebenaran royalti = Kontrak yang accepted untuk course ini.
-            // Prioritas: kontrak accepted yang masih berlaku (validUntil >= now),
-            // lalu kontrak accepted terbaru, lalu fallback ke User.royaltyRatio.
-            const now = new Date();
-            const contract =
-              (await Contract.findOne({
-                courseId: item.courseId,
-                teacherId: course.ownerId,
-                status: 'accepted',
-                validUntil: { $gte: now },
-              }).sort({ createdAt: -1 }).select('royaltyRatio').lean()) ||
-              (await Contract.findOne({
-                courseId: item.courseId,
-                teacherId: course.ownerId,
-                status: 'accepted',
-              }).sort({ createdAt: -1 }).select('royaltyRatio').lean());
-
-            let ratio;
-            if (contract && typeof contract.royaltyRatio === 'number') {
-              ratio = contract.royaltyRatio;
-            } else {
-              const owner = await User.findById(course.ownerId).select('royaltyRatio').lean();
-              ratio = owner?.royaltyRatio || 0;
-            }
-            if (ratio <= 0) continue;
-            royaltyDocs.push({
-              teacherId: course.ownerId,
-              studentId: order.userId,
-              orderId: order._id,
-              courseId: item.courseId,
-              courseTitle: item.title,
-              grossAmountIdr: item.priceIdr || 0,
-              royaltyRatio: ratio,
-              royaltyAmountIdr: Math.round((item.priceIdr || 0) * ratio),
-              status: 'pending',
-            });
-          }
-          if (royaltyDocs.length) {
-            await RoyaltyRecord.insertMany(royaltyDocs);
-          }
-
-          // Send purchase confirmation email
-          const env = getEnv();
-          const user = await User.findById(order.userId).lean();
-          try {
-            for (const item of order.items) {
-              await sendPurchaseConfirmation(env, {
-                userEmail: user.email,
-                userName: user.fullName || user.name,
-                courseName: item.title,
-                purchaseDate: new Date(),
-              });
-            }
-          } catch (emailErr) {
-            console.error('Failed to send purchase confirmation:', emailErr);
-          }
-        }
-
-        // Log coupon usage
-        if (order.coupon?.couponId) {
-          await Coupon.updateOne(
-            { _id: order.coupon.couponId },
-            {
-              $inc: { currentUsageCount: 1 },
-              $push: { usageLog: { $each: [{ userId: order.userId, orderId: order._id, usedAt: new Date() }], $slice: -1000 } },
-            }
-          );
-        }
-
-        await Cart.updateOne({ userId: order.userId }, { $set: { items: [] } });
-      }
-
-      return newStatus;
-  }
-
   // Midtrans payment notification (webhook)
   router.post(
     '/midtrans/notification',
@@ -525,6 +361,46 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
     asyncHandler(async (req, res) => {
       const orders = await Order.find({ userId: req.user.sub }).sort({ createdAt: -1 }).limit(50);
       res.json({ orders });
+    })
+  );
+
+  // Admin: manually re-check an order's real status with Midtrans and apply it.
+  // For when the webhook never arrived (misconfigured/unreachable notification URL)
+  // and the buyer closed the tab before the client-side sync could catch settlement
+  // (common with QRIS/bank transfer, which settle asynchronously outside the Snap popup).
+  router.post(
+    '/admin/orders/:orderCode/sync',
+    requireAuth,
+    requireRole('admin'),
+    asyncHandler(async (req, res) => {
+      const mtCfg = await getMidtransConfig();
+      if (!mtCfg.serverKey) throw new HttpError(500, 'Midtrans belum dikonfigurasi (server key)');
+
+      const order = await Order.findOne({ orderCode: req.params.orderCode });
+      if (!order) throw new HttpError(404, 'Order not found');
+
+      if (order.status === 'paid') {
+        return res.json({ ok: true, status: 'paid', courseIds: (order.items || []).map((it) => String(it.courseId)) });
+      }
+
+      const core = new midtransClient.CoreApi({
+        isProduction: Boolean(mtCfg.isProduction),
+        serverKey: mtCfg.serverKey,
+        clientKey: mtCfg.clientKey,
+      });
+
+      const status = await core.transaction.status(order.orderCode);
+
+      const newStatus = await applyMidtransStatus({
+        order,
+        txStatus: String(status.transaction_status || ''),
+        paymentType: String(status.payment_type || ''),
+        fraudStatus: String(status.fraud_status || ''),
+        rawNotification: status,
+        settlementTime: status.settlement_time,
+      });
+
+      res.json({ ok: true, status: newStatus, courseIds: (order.items || []).map((it) => String(it.courseId)) });
     })
   );
 

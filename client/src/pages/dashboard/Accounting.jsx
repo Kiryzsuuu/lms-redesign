@@ -42,6 +42,8 @@ export default function Accounting() {
   const [loading, setLoading] = useState(true);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [error, setError] = useState('');
+  const [syncingOrderCode, setSyncingOrderCode] = useState('');
+  const [syncMsg, setSyncMsg] = useState('');
 
   const params = useMemo(() => {
     const from = isoDayStart(fromDate);
@@ -67,6 +69,25 @@ export default function Accounting() {
       setOrders([]);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function syncOrder(orderCode) {
+    setSyncingOrderCode(orderCode);
+    setSyncMsg('');
+    try {
+      const res = await api.post(`/payments/admin/orders/${orderCode}/sync`);
+      setSyncMsg(
+        res.data.status === 'paid'
+          ? `Order ${orderCode} terkonfirmasi lunas — course sudah dibuka untuk student.`
+          : `Order ${orderCode} masih berstatus "${res.data.status}" di Midtrans.`
+      );
+      await load();
+    } catch (e) {
+      setSyncMsg(e?.response?.data?.error?.message || `Gagal cek status order ${orderCode}`);
+    } finally {
+      setSyncingOrderCode('');
+      setTimeout(() => setSyncMsg(''), 6000);
     }
   }
 
@@ -345,7 +366,10 @@ export default function Accounting() {
         {tab === 'ledger' && (
           <>
             <Card className="mt-6 p-6 overflow-auto">
-              <div className="text-lg font-bold mb-4">Ledger Transaksi</div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-lg font-bold">Ledger Transaksi</div>
+                {syncMsg && <div className="text-xs font-medium text-slate-700">{syncMsg}</div>}
+              </div>
               <div className="min-w-[1050px]">
                 <div className="grid grid-cols-12 gap-2 border-b border-slate-200 pb-2 text-xs font-bold text-slate-600">
                   <div className="col-span-2">Order</div>
@@ -374,6 +398,16 @@ export default function Accounting() {
                         </div>
                         <div className="col-span-1">
                           <span className="rounded border border-slate-200 px-2 py-0.5 text-xs font-bold">{o.status}</span>
+                          {o.status === 'pending' && (
+                            <button
+                              type="button"
+                              onClick={() => syncOrder(o.orderCode)}
+                              disabled={syncingOrderCode === o.orderCode}
+                              className="mt-1 block text-[11px] font-semibold text-[#0C628D] hover:underline disabled:text-slate-400"
+                            >
+                              {syncingOrderCode === o.orderCode ? 'Mengecek...' : 'Cek status'}
+                            </button>
+                          )}
                         </div>
                         <div className="col-span-2 text-right font-semibold">Rp {formatIdr(o.amountIdr)}</div>
                         <div className="col-span-1 text-right">Rp {formatIdr(o.feeIdr || 0)}</div>
