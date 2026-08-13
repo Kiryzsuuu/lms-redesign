@@ -265,7 +265,7 @@ function TeacherPicker({ api, teachers, setTeachers, value, onChange }) {
           <Input value={form.institution} onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))} placeholder="Institusi (opsional, mis: Telkom University)" />
           <div>
             <Input value={form.password} onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))} placeholder="Password sementara" />
-            <p className="text-xs text-slate-400 mt-1">Password sementara ini — sampaikan ke teacher agar bisa login, atau teacher bisa reset lewat "Lupa Password".</p>
+            <p className="text-xs text-slate-400 mt-1">Password sementara ini - sampaikan ke teacher agar bisa login, atau teacher bisa reset lewat "Lupa Password".</p>
           </div>
           {err && <div className="text-xs text-rose-600">{err}</div>}
           <Button type="button" onClick={createTeacher} disabled={saving || !form.name.trim() || !form.email.trim()}>
@@ -654,7 +654,7 @@ export default function CourseManager() {
 
   async function updateSelectedCourse(patch = {}) {
     if (!selected) return;
-    // Guard: if called directly from onClick, patch is a MouseEvent — ignore it
+    // Guard: if called directly from onClick, patch is a MouseEvent - ignore it
     if (patch && typeof patch.preventDefault === 'function') patch = {};
     setError('');
     try {

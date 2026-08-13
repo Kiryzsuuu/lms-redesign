@@ -217,7 +217,7 @@ export default function CertificateView() {
               }}>
                 {user?.fullName || (
                   <span style={{ color: '#EF4444', fontSize: '0.55em', fontWeight: 600 }}>
-                    ⚠ Nama lengkap belum diisi — cek Profil Anda
+                    ⚠ Nama lengkap belum diisi - cek Profil Anda
                   </span>
                 )}
               </div>

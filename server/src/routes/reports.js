@@ -233,8 +233,8 @@ function reportsRouter({ requireAuth, requireRole }) {
       const courses = await Course.find({ _id: { $in: courseIds } }, { ownerId: 1 }).lean();
       const ownerIds = [...new Set(courses.map((c) => c.ownerId?.toString()).filter(Boolean))];
       const owners = await User.find({ _id: { $in: ownerIds } }, { name: 1, fullName: 1 }).lean();
-      const ownerMap = new Map(owners.map((u) => [u._id.toString(), u.fullName || u.name || '—']));
-      const courseOwnerMap = new Map(courses.map((c) => [c._id.toString(), ownerMap.get(c.ownerId?.toString()) || '—']));
+      const ownerMap = new Map(owners.map((u) => [u._id.toString(), u.fullName || u.name || '-']));
+      const courseOwnerMap = new Map(courses.map((c) => [c._id.toString(), ownerMap.get(c.ownerId?.toString()) || '-']));
 
       // Count students per course
       const studentCounts = await User.aggregate([
@@ -248,7 +248,7 @@ function reportsRouter({ requireAuth, requireRole }) {
       const result = rows.map((r) => ({
         courseId: r._id.toString(),
         title: r.title || '(Dihapus)',
-        creatorName: courseOwnerMap.get(r._id.toString()) || '—',
+        creatorName: courseOwnerMap.get(r._id.toString()) || '-',
         purchaseCount: r.purchaseCount,
         studentCount: studentMap.get(r._id.toString()) || 0,
         totalRevenueIdr: r.totalRevenueIdr,
@@ -285,8 +285,8 @@ function reportsRouter({ requireAuth, requireRole }) {
       const courses = await Course.find({ _id: { $in: courseIds } }, { ownerId: 1 }).lean();
       const ownerIds = [...new Set(courses.map((c) => c.ownerId?.toString()).filter(Boolean))];
       const owners = await User.find({ _id: { $in: ownerIds } }, { name: 1, fullName: 1 }).lean();
-      const ownerMap = new Map(owners.map((u) => [u._id.toString(), u.fullName || u.name || '—']));
-      const courseOwnerMap = new Map(courses.map((c) => [c._id.toString(), ownerMap.get(c.ownerId?.toString()) || '—']));
+      const ownerMap = new Map(owners.map((u) => [u._id.toString(), u.fullName || u.name || '-']));
+      const courseOwnerMap = new Map(courses.map((c) => [c._id.toString(), ownerMap.get(c.ownerId?.toString()) || '-']));
 
       const studentCounts = await User.aggregate([
         { $match: { purchasedCourseIds: { $in: courseIds } } },
@@ -304,7 +304,7 @@ function reportsRouter({ requireAuth, requireRole }) {
       res.write(header.join(',') + '\n');
 
       rows.forEach((r, idx) => {
-        const creatorName = courseOwnerMap.get(r._id.toString()) || '—';
+        const creatorName = courseOwnerMap.get(r._id.toString()) || '-';
         const studentCount = studentMap.get(r._id.toString()) || 0;
         const row = [
           toCsvValue(idx + 1),
@@ -381,7 +381,7 @@ function reportsRouter({ requireAuth, requireRole }) {
         doc
           .fontSize(12)
           .fillColor('#333333')
-          .text(`${idx + 1}. ${l.title}  —  ${done ? `SELESAI${doneAt ? ' (' + doneAt + ')' : ''}` : 'BELUM'}`);
+          .text(`${idx + 1}. ${l.title}  -  ${done ? `SELESAI${doneAt ? ' (' + doneAt + ')' : ''}` : 'BELUM'}`);
       });
 
       doc.moveDown();

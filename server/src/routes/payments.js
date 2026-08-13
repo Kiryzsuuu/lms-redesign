@@ -61,7 +61,7 @@ function paymentsRouter({ requireAuth, requireRole, midtrans }) {
       const courses = await Course.find({ _id: { $in: ids }, isPublished: true }).lean();
       if (!courses.length) throw new HttpError(400, 'Cart kosong');
       if (courses.length !== ids.length) {
-        // Some courses were unpublished or deleted — remove them from cart
+        // Some courses were unpublished or deleted - remove them from cart
         const foundIds = new Set(courses.map((c) => String(c._id)));
         const validItems = (cart.items || []).filter((i) => foundIds.has(String(i.courseId)));
         await Cart.updateOne({ userId: req.user.sub }, { $set: { items: validItems } });

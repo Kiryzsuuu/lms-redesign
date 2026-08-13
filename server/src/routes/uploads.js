@@ -66,7 +66,7 @@ function uploadsRouter({ requireAuth, requireRole }) {
     }
   );
 
-  // Avatar upload — accessible to all authenticated users
+  // Avatar upload - accessible to all authenticated users
   router.post(
     '/avatar',
     requireAuth,
@@ -79,7 +79,7 @@ function uploadsRouter({ requireAuth, requireRole }) {
     }
   );
 
-  // Signature upload — accessible to all authenticated users (teacher/admin use for certificates)
+  // Signature upload - accessible to all authenticated users (teacher/admin use for certificates)
   router.post(
     '/signature',
     requireAuth,

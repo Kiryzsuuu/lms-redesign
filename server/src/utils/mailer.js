@@ -19,7 +19,7 @@ async function getSmtpConfig() {
       };
     }
   } catch {
-    // DB unavailable — fall through to env
+    // DB unavailable - fall through to env
   }
 
   return {

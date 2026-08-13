@@ -393,7 +393,7 @@ export default function LessonPresentation() {
                         onClick={() => { setView('materi'); nav(`/courses/${id}/lessons/${lesson._id}${previewQs}`); }}
                         style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem', padding: '0.58rem 1rem', borderBottom: `1px solid ${C.n100}`, cursor: 'pointer', background: isActive ? C.blueXs : 'transparent', borderLeft: isActive ? `3px solid ${C.blue}` : '3px solid transparent' }}>
                         <div style={{ width: 21, height: 21, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58rem', fontWeight: 800, flexShrink: 0, marginTop: 2, background: done ? C.teal : isActive ? C.blue : C.white, color: done || isActive ? '#fff' : C.n400, border: done || isActive ? 'none' : `1.5px solid ${C.n300}` }}>
-                          {done ? '✓' : isActive ? '▶' : '—'}
+                          {done ? '✓' : isActive ? '▶' : '-'}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '0.79rem', fontWeight: isActive ? 600 : 500, color: isActive ? C.blue : C.n700, lineHeight: 1.4, marginBottom: '0.15rem' }}>{lesson.title}</div>
@@ -458,7 +458,7 @@ export default function LessonPresentation() {
 
           {/* Content area */}
           {view === 'module-overview' && viewingModule ? (
-            /* Module overview — simple scrollable */
+            /* Module overview - simple scrollable */
             <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
             <div className="pl-content" style={{ padding: '1.75rem 2.25rem 2.5rem' }}>
                 <div style={{ background: `linear-gradient(135deg,${C.blueXs},${C.white})`, border: `1px solid ${C.blueS}`, borderRadius: 14, padding: '1.4rem', marginBottom: '1.4rem' }}>
@@ -487,7 +487,7 @@ export default function LessonPresentation() {
                           style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.58rem 0.82rem', borderRadius: 9, background: C.white, border: `1px solid ${C.n300}`, cursor: 'pointer', fontSize: '0.83rem', color: C.n700 }}>
                           <span style={{ ...BS[lType], fontSize: '0.61rem', fontWeight: 700, padding: '0.09rem 0.36rem', borderRadius: 3, textTransform: 'uppercase', letterSpacing: '0.04em', flexShrink: 0 }}>{TM[lType].lbl}</span>
                           {lesson.title}
-                          <span style={{ fontSize: '0.71rem', fontWeight: 700, marginLeft: 'auto', color: done ? C.teal : C.n400 }}>{done ? '✓ Selesai' : '—'}</span>
+                          <span style={{ fontSize: '0.71rem', fontWeight: 700, marginLeft: 'auto', color: done ? C.teal : C.n400 }}>{done ? '✓ Selesai' : '-'}</span>
                         </div>
                       );
                     })}
@@ -505,7 +505,7 @@ export default function LessonPresentation() {
               </div>
             </div>
             ) : !allowed ? (
-            /* Access denied — simple scrollable */
+            /* Access denied - simple scrollable */
             <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
               <div className="pl-content" style={{ padding: '1.75rem 2.25rem' }}>
                 {!isActiveCourse && (
@@ -531,7 +531,7 @@ export default function LessonPresentation() {
               <div style={{ color: C.n500, fontSize: '0.88rem' }}>Materi tidak ditemukan.</div>
             </div>
             ) : (
-              /* Lesson view — sticky header+tabs, scrollable content body */
+              /* Lesson view - sticky header+tabs, scrollable content body */
               (() => {
                 const lType = getLessonType(activeLesson);
                 const tm = TM[lType];

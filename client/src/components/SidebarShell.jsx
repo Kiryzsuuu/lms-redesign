@@ -101,7 +101,7 @@ export function SidebarShell({
 
         {/* Body */}
         <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
-          {/* Desktop sidebar — only when there is sidebar content */}
+          {/* Desktop sidebar - only when there is sidebar content */}
           {hasSidebar && (
           <aside
             style={{
@@ -134,7 +134,7 @@ export function SidebarShell({
           </aside>
           )}
 
-          {/* Drag-to-resize handle — only when resizable and expanded */}
+          {/* Drag-to-resize handle - only when resizable and expanded */}
           {hasSidebar && resizable && !collapsed && (
           <div
             onMouseDown={startResize}
@@ -150,7 +150,7 @@ export function SidebarShell({
           />
           )}
 
-          {/* Collapse toggle — only when there is a sidebar to collapse */}
+          {/* Collapse toggle - only when there is a sidebar to collapse */}
           {hasSidebar && (
           <button
             onClick={() => setCollapsed(c => !c)}
@@ -182,7 +182,7 @@ export function SidebarShell({
 
           {/* Main content */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            {/* Mobile menu toggle — only when there is a sidebar */}
+            {/* Mobile menu toggle - only when there is a sidebar */}
             {hasSidebar && (
             <div className="lg:hidden" style={{ flexShrink: 0, borderBottom: '1px solid #E5E7EB', padding: '0.6rem 1rem' }}>
               <Button variant="outline" className="w-full justify-center" size="sm" onClick={() => setSidebarOpen(true)}>

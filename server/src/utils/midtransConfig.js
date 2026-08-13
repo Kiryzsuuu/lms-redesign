@@ -5,7 +5,7 @@
  *   1. Database (admin-configured via /api/settings/admin/midtrans)
  *   2. Environment variables (.env fallback for legacy deployments)
  *
- * Never throws — always returns an object (with possibly empty keys).
+ * Never throws - always returns an object (with possibly empty keys).
  */
 const { Setting } = require('../models/Setting');
 
@@ -25,7 +25,7 @@ async function getMidtransConfig() {
       };
     }
   } catch {
-    // DB not available yet — fall through to env
+    // DB not available yet - fall through to env
   }
 
   // Env fallback

@@ -79,7 +79,7 @@ export default function Accounting() {
       const res = await api.post(`/payments/admin/orders/${orderCode}/sync`);
       setSyncMsg(
         res.data.status === 'paid'
-          ? `Order ${orderCode} terkonfirmasi lunas — course sudah dibuka untuk student.`
+          ? `Order ${orderCode} terkonfirmasi lunas - course sudah dibuka untuk student.`
           : `Order ${orderCode} masih berstatus "${res.data.status}" di Midtrans.`
       );
       await load();

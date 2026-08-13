@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
     };
   }, [token, api, doLogout]);
 
-  // Watchdog idle + sliding refresh — hanya saat ada token.
+  // Watchdog idle + sliding refresh - hanya saat ada token.
   useEffect(() => {
     if (!token) return;
 

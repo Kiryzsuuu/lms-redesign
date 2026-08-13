@@ -8,7 +8,7 @@ const HOME_DEFAULTS = {
   heroBadgePrefix: 'Platform Belajar #1 Indonesia',
   heroTitle: 'Kuasai Skill\nyang Dibutuhkan',
   heroAccent: 'Industri Sekarang',
-  heroDesc: 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri — bukan teori kosong.',
+  heroDesc: 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri - bukan teori kosong.',
   heroBadge1Title: 'Sertifikat Diterima',
   heroBadge1Sub: 'Gojek · Tokopedia',
   heroBadge2Title: 'Baru bergabung',
@@ -95,7 +95,7 @@ function settingsRouter({ requireAuth, requireRole }) {
       // requireAuth and requireRole are middleware factories, not suitable here inline.
       // Instead, return the route secured via the ADMIN_ONLY path below.
       // This GET is actually handled in the admin-gated block below.
-      // Reaching here means someone tried to bypass — block them.
+      // Reaching here means someone tried to bypass - block them.
       throw new HttpError(401, 'Unauthorized');
     }
 
@@ -109,7 +109,7 @@ function settingsRouter({ requireAuth, requireRole }) {
     res.json({ key, value });
   }));
 
-  // GET /api/settings/admin/:key — admin only, for sensitive settings
+  // GET /api/settings/admin/:key - admin only, for sensitive settings
   router.get(
     '/admin/:key',
     requireAuth,
@@ -157,7 +157,7 @@ function settingsRouter({ requireAuth, requireRole }) {
     })
   );
 
-  // PUT /api/settings/admin/midtrans — admin only
+  // PUT /api/settings/admin/midtrans - admin only
   router.put(
     '/admin/midtrans',
     requireAuth,
@@ -200,7 +200,7 @@ function settingsRouter({ requireAuth, requireRole }) {
     })
   );
 
-  // PUT /api/settings/admin/smtp — admin only
+  // PUT /api/settings/admin/smtp - admin only
   router.put(
     '/admin/smtp',
     requireAuth,
@@ -210,7 +210,7 @@ function settingsRouter({ requireAuth, requireRole }) {
         host: z.string().default(''),
         port: z.coerce.number().default(465),
         user: z.string().default(''),
-        pass: z.string().optional(),   // optional — don't overwrite if not provided
+        pass: z.string().optional(),   // optional - don't overwrite if not provided
         from: z.string().default(''),
       });
 
@@ -237,7 +237,7 @@ function settingsRouter({ requireAuth, requireRole }) {
     })
   );
 
-  // PUT /api/settings/:key — admin only (general, non-sensitive settings)
+  // PUT /api/settings/:key - admin only (general, non-sensitive settings)
   router.put('/:key', requireAuth, requireRole('admin'), asyncHandler(async (req, res) => {
     const { key } = req.params;
     if (!/^[a-zA-Z0-9_-]+$/.test(key)) throw new HttpError(400, 'Invalid settings key');

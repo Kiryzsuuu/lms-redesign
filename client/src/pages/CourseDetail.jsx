@@ -737,7 +737,7 @@ export default function CourseDetail() {
         groups.push({ module: { _id: '__uncat', title: 'Materi Lainnya' }, lessons: uncat, offset: lessonOffset });
       }
     } else {
-      // Flat list — no modules defined; sidebars handle this case directly
+      // Flat list - no modules defined; sidebars handle this case directly
       groups.push({ module: { _id: '__all', title: '' }, lessons, offset: 0 });
     }
     return groups;
@@ -777,7 +777,7 @@ export default function CourseDetail() {
         <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
           <Container>
             <div className="flex items-center justify-between gap-3 text-sm text-amber-800">
-              <span>Mode Preview — tampilan seperti yang dilihat siswa</span>
+              <span>Mode Preview - tampilan seperti yang dilihat siswa</span>
               <button onClick={() => nav(`/dashboard/courses?course=${id}`)} className="text-xs font-semibold hover:underline">Keluar</button>
             </div>
           </Container>
@@ -786,7 +786,7 @@ export default function CourseDetail() {
 
       {/* ── HERO SECTION ── */}
       <div className="bg-white relative">
-        {/* Decorative blobs — clipped in their own layer so overflow-hidden doesn't affect sticky children */}
+        {/* Decorative blobs - clipped in their own layer so overflow-hidden doesn't affect sticky children */}
         <div className="overflow-hidden absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full" style={{ background: 'rgba(12,98,141,0.05)', filter: 'blur(80px)' }} />
           <div className="absolute top-10 right-0 w-80 h-80 rounded-full" style={{ background: 'rgba(15,173,168,0.05)', filter: 'blur(80px)' }} />
@@ -982,7 +982,7 @@ export default function CourseDetail() {
 
             </div>
 
-            {/* RIGHT column — sticky enrollment card */}
+            {/* RIGHT column - sticky enrollment card */}
             <div className="md:sticky md:top-6 space-y-4 min-w-0">
               <div
                 className="bg-white rounded-[20px] border border-gray-200 overflow-hidden"
@@ -1123,7 +1123,7 @@ export default function CourseDetail() {
                 </div>
               </div>
 
-              {/* Edit Media Preview — teacher/admin only, hidden in preview mode */}
+              {/* Edit Media Preview - teacher/admin only, hidden in preview mode */}
               {isAuthed && (role === 'teacher' || role === 'admin') && !isPreview && (
                 <div className="bg-white rounded-[16px] border border-gray-200 p-5">
                   <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Edit Media Preview</div>

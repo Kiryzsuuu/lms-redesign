@@ -39,7 +39,7 @@ function NavCard({ to, icon, label, desc, badge }) {
 }
 
 function fmtDate(d) {
-  if (!d) return '—';
+  if (!d) return '-';
   return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
@@ -201,7 +201,7 @@ function AdminDashboard({ api, user, stats }) {
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827' }}>{r.teacherId?.name || 'Teacher'}</div>
                     <div style={{ fontSize: 10, color: '#9CA3AF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.courseId?.title || 'Kursus'}</div>
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>{r.amount ? `Rp ${r.amount.toLocaleString('id-ID')}` : '—'}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>{r.amount ? `Rp ${r.amount.toLocaleString('id-ID')}` : '-'}</div>
                 </div>
               );
             })}
@@ -369,7 +369,7 @@ function TeacherDashboard({ api, user, stats }) {
                 {[
                   { n: '1', color: '#0C628D', label: 'Admin Buat', desc: 'Admin buat kursus & kontrak dari perusahaan mitra' },
                   { n: '2', color: '#F3921B', label: 'Kamu Terima', desc: 'Notifikasi masuk, baca isi kontrak' },
-                  { n: '3', color: '#B45309', label: 'Setuju', desc: 'Tanda tangan digital — kursus terbuka' },
+                  { n: '3', color: '#B45309', label: 'Setuju', desc: 'Tanda tangan digital - kursus terbuka' },
                   { n: '4', color: '#15803D', label: 'Isi Materi', desc: 'Upload konten, royalti tercatat' },
                 ].map((step, i) => (
                   <div key={step.n} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 0 }}>

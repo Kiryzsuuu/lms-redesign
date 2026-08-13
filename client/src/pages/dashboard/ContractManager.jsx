@@ -6,7 +6,7 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { RichTextEditor } from '../../components/RichTextEditor';
 
 function fmtDate(d) {
-  if (!d) return '—';
+  if (!d) return '-';
   return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
@@ -58,7 +58,7 @@ function ContractModal({ contract, role, onClose, onAccept, onReject }) {
               { label: 'Berlaku Mulai', value: fmtDate(contract.validFrom) },
               { label: 'Berlaku Hingga', value: fmtDate(contract.validUntil) },
               { label: 'Batas Respons', value: fmtDate(contract.responseDeadline) },
-              { label: 'Kursus', value: contract.courseId?.title || '—' },
+              { label: 'Kursus', value: contract.courseId?.title || '-' },
             ].map(item => (
               <div key={item.label} style={{ background: 'var(--gray-50)', borderRadius: 'var(--r-md)', padding: '8px 10px' }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 2 }}>{item.label}</div>
@@ -265,14 +265,14 @@ function CreateContractModal({ onClose, onCreated, api }) {
               <div>
                 <div className="form-label">Kursus <span style={{ color: 'var(--red)' }}>*</span></div>
                 <select className="form-select" value={form.courseId} onChange={e => set('courseId', e.target.value)} required>
-                  <option value="">— Pilih kursus —</option>
+                  <option value="">- Pilih kursus -</option>
                   {courses.map(c => <option key={c._id} value={c._id}>{c.title}</option>)}
                 </select>
               </div>
               <div>
                 <div className="form-label">Assign Teacher <span style={{ color: 'var(--red)' }}>*</span></div>
                 <select className="form-select" value={form.teacherId} onChange={e => set('teacherId', e.target.value)} required>
-                  <option value="">— Pilih teacher —</option>
+                  <option value="">- Pilih teacher -</option>
                   {teachers.map(t => <option key={t._id} value={t._id}>{t.name} ({(t.skills || []).join(', ') || 'no skills'})</option>)}
                 </select>
               </div>
@@ -459,7 +459,7 @@ export default function ContractManager() {
               {[
                 { n: '1', c: 'var(--blue)', label: 'Admin Buat', desc: 'Admin membuat kursus & kontrak atas nama perusahaan mitra' },
                 { n: '2', c: 'var(--orange)', label: 'Kamu Terima', desc: 'Notifikasi masuk, baca isi kontrak dengan teliti' },
-                { n: '3', c: 'var(--amber)', label: 'Setuju', desc: 'Tandatangani digital — kursus terbuka untuk diisi' },
+                { n: '3', c: 'var(--amber)', label: 'Setuju', desc: 'Tandatangani digital - kursus terbuka untuk diisi' },
                 { n: '4', c: 'var(--green)', label: 'Isi Materi', desc: 'Upload konten, admin publish, siswa beli, royalti tercatat' },
               ].map((step, i) => (
                 <div key={step.n} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 0 }}>

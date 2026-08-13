@@ -13,7 +13,7 @@ function stripHtml(html) {
   return div.textContent || div.innerText || '';
 }
 
-/* ── Reveal on scroll — re-observes after async data loads ── */
+/* ── Reveal on scroll - re-observes after async data loads ── */
 function useReveal(deps = []) {
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -35,9 +35,9 @@ const TICKER_ITEMS = [
 
 
 const WHY_ITEMS = [
-  { title: 'Kurikulum dari Industri', desc: 'Dirancang bersama praktisi dari perusahaan terkemuka. Bukan teori — langsung dari kebutuhan kerja nyata.', bg: '#E0F0FA' },
+  { title: 'Kurikulum dari Industri', desc: 'Dirancang bersama praktisi dari perusahaan terkemuka. Bukan teori - langsung dari kebutuhan kerja nyata.', bg: '#E0F0FA' },
   { title: 'Proyek Nyata', desc: 'Setiap kursus punya capstone project yang bisa masuk portfolio kamu. Recruiter mau melihat yang kamu bisa buat.', bg: '#E0F5F5' },
-  { title: 'Live Q&A Mingguan', desc: 'Sesi live setiap Sabtu — tanya langsung, dapat jawaban langsung dari instruktur berpengalaman.', bg: '#EEE9FF' },
+  { title: 'Live Q&A Mingguan', desc: 'Sesi live setiap Sabtu - tanya langsung, dapat jawaban langsung dari instruktur berpengalaman.', bg: '#EEE9FF' },
   { title: 'Sertifikat Terverifikasi', desc: 'Setiap sertifikat punya ID unik yang dapat diverifikasi HRD perusahaan secara langsung.', bg: '#FEF3E2' },
   { title: 'Akses Seumur Hidup', desc: 'Beli sekali, punya selamanya. Saat materi diupdate, kamu dapat akses ke versi baru tanpa bayar lagi.', bg: '#F0FDE4' },
 ];
@@ -139,7 +139,7 @@ export default function Home() {
               </h1>
 
               <p className="mb-8 text-[1.05rem] leading-[1.75] max-w-[480px]" style={{ color: '#6B7280' }}>
-                {S.heroDesc || 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri — bukan teori kosong.'}
+                {S.heroDesc || 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri - bukan teori kosong.'}
               </p>
 
               <div className="flex items-center gap-3 flex-wrap mb-10">
@@ -184,7 +184,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right — course preview card */}
+            {/* Right - course preview card */}
             <div className="relative hidden lg:block">
               {/* Floating badges */}
               <div
@@ -344,7 +344,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== CATEGORIES — hanya tampil jika ada data dari DB ===== */}
+      {/* ===== CATEGORIES - hanya tampil jika ada data dari DB ===== */}
       {categories.length > 0 && <section className="py-24" style={{ background: '#F7F8FA' }}>
         <div className="w-full max-w-[1200px] mx-auto px-6">
           <div className="mb-12">
@@ -380,7 +380,7 @@ export default function Home() {
                   e.currentTarget.querySelector('.cat-accent-bar').style.transform = 'scaleX(0)';
                 }}
               >
-                {/* Cover image — top half */}
+                {/* Cover image - top half */}
                 <div
                   className="w-full h-[130px] flex-shrink-0 overflow-hidden"
                   style={{ background: cat.coverImageUrl ? undefined : cat.iconBg || '#E0F0FA' }}
@@ -528,7 +528,7 @@ export default function Home() {
       <section className="py-24" style={{ background: '#fff' }}>
         <div className="w-full max-w-[1200px] mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Visual — certificate card */}
+            {/* Visual - certificate card */}
             <div className="reveal">
               <div className="rounded-[28px] p-8" style={{ background: '#0A0E1A', boxShadow: '0 25px 50px rgba(0,0,0,.15)' }}>
                 <div className="flex items-center justify-between mb-6">
@@ -734,7 +734,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== CTA — only for guests ===== */}
+      {/* ===== CTA - only for guests ===== */}
       {!isAuthed && <section
         className="py-24 relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #0A0E1A 0%, #1a1f3c 50%, #111827 100%)' }}
@@ -752,10 +752,10 @@ export default function Home() {
                 Satu Keputusan yang<br />Mengubah <span style={{ color: '#F3921B' }}>Karir Kamu</span>
               </h2>
               <p className="text-[1rem] leading-[1.7] mb-8" style={{ color: 'rgba(255,255,255,.5)' }}>
-                Bergabung sekarang dan akses kursus gratis — tanpa kartu kredit, tanpa komitmen.
+                Bergabung sekarang dan akses kursus gratis - tanpa kartu kredit, tanpa komitmen.
               </p>
               <div className="flex flex-col gap-2.5">
-                {['Gratis untuk kursus intro — selamanya', 'Tidak butuh kartu kredit', 'Mulai belajar dalam 2 menit', 'Batalkan kapan saja'].map((item) => (
+                {['Gratis untuk kursus intro - selamanya', 'Tidak butuh kartu kredit', 'Mulai belajar dalam 2 menit', 'Batalkan kapan saja'].map((item) => (
                   <div key={item} className="flex items-center gap-2.5 text-[0.85rem] font-medium" style={{ color: 'rgba(255,255,255,.55)' }}>
                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[0.65rem] flex-shrink-0" style={{ background: 'rgba(15,173,168,.2)', color: '#0FADA8' }}>✓</div>
                     {item}
@@ -798,7 +798,7 @@ export default function Home() {
                     onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(243,146,27,.45)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(243,146,27,.35)'; }}
                   >
-                    Buat Akun Gratis — Mulai Sekarang
+                    Buat Akun Gratis - Mulai Sekarang
                   </button>
                 </form>
                 <p className="text-[0.73rem] text-center mt-3" style={{ color: 'rgba(255,255,255,.3)' }}>

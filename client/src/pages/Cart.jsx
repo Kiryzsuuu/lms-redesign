@@ -391,7 +391,7 @@ export default function Cart() {
                     >
                       <option value="">Tanpa voucher</option>
                       {myVouchers.map((v) => (
-                        <option key={v._id} value={v.code}>{v.code} — diskon {v.discountPercent}%</option>
+                        <option key={v._id} value={v.code}>{v.code} - diskon {v.discountPercent}%</option>
                       ))}
                     </select>
                   </div>

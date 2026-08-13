@@ -1,4 +1,4 @@
-# LMS2 (MERN) — LMS + Quiz Interaktif
+# LMS2 (MERN) - LMS + Quiz Interaktif
 
 Aplikasi LMS sederhana (inspirasi Coursera) dengan fitur quiz interaktif (inspirasi Quizizz/Kahoot).
 

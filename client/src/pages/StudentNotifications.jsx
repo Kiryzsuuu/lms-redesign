@@ -66,7 +66,7 @@ export default function StudentNotifications() {
             color: overdue ? '#A32D2D' : '#F3921B',
             bg: overdue ? '#FCEBEB' : '#FEF3E2',
             title: overdue ? 'Tugas kadaluarsa' : 'Pengingat tugas',
-            text: `${a.title} — ${a.courseTitle}`,
+            text: `${a.title} - ${a.courseTitle}`,
             time: a.dueDate,
             sortTime: due,
             onClick: () => nav(`/assignment/${a._id}`),

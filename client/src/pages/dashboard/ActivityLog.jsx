@@ -70,7 +70,7 @@ export default function ActivityLog() {
   return (
     <SidebarShell
       title="Log Aktivitas"
-      description="Rekam jejak semua perubahan konten — siapa, apa, kapan."
+      description="Rekam jejak semua perubahan konten - siapa, apa, kapan."
     >
       {/* Filters */}
       <div className="flex gap-3 mb-6 flex-wrap">
@@ -131,7 +131,7 @@ export default function ActivityLog() {
                           >
                             {(log.actorName || '?').charAt(0).toUpperCase()}
                           </div>
-                          <span className="text-sm font-semibold text-gray-900">{log.actorName || '—'}</span>
+                          <span className="text-sm font-semibold text-gray-900">{log.actorName || '-'}</span>
                           <span
                             className="text-[0.7rem] font-bold px-2 py-0.5 rounded-full"
                             style={{ background: al.bg, color: al.color }}
@@ -151,7 +151,7 @@ export default function ActivityLog() {
 
                         {/* Resource name */}
                         <div className="mt-1 text-sm text-gray-700 font-medium">
-                          {log.resourceName || '—'}
+                          {log.resourceName || '-'}
                           {log.parentName && (
                             <span className="text-gray-400 font-normal"> · dalam <em>{log.parentName}</em></span>
                           )}

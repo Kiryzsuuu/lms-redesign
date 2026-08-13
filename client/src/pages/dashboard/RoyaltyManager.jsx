@@ -153,7 +153,7 @@ export default function RoyaltyManager() {
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
             <div className="text-lg font-bold mb-3">Tandai Sudah Dibayar</div>
             <div className="mb-3">
-              <Label className="text-xs">Catatan (no. transfer, dll) — opsional</Label>
+              <Label className="text-xs">Catatan (no. transfer, dll) - opsional</Label>
               <textarea
                 className="mt-1 w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                 rows={2}

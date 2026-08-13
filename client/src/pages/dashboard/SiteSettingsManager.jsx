@@ -8,7 +8,7 @@ const DEFAULTS = {
   heroBadgePrefix: 'Platform Belajar #1 Indonesia',
   heroTitle: 'Kuasai Skill\nyang Dibutuhkan',
   heroAccent: 'Industri Sekarang',
-  heroDesc: 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri — bukan teori kosong.',
+  heroDesc: 'Belajar dari praktisi terbaik. Kurikulum dirancang langsung dari kebutuhan industri - bukan teori kosong.',
   heroBadge1Title: 'Sertifikat Diterima',
   heroBadge1Sub: 'Gojek · Tokopedia',
   heroBadge2Title: 'Baru bergabung',
@@ -136,7 +136,7 @@ export default function SiteSettingsManager() {
             isProduction:    Boolean(v.isProduction),
             merchantId:      v.merchantId     || '',
             clientKey:       v.clientKey      || '',
-            serverKey:       '',  // never pre-fill — user must re-enter if they want to change
+            serverKey:       '',  // never pre-fill - user must re-enter if they want to change
             feePercent:      v.feePercent     ?? 0,
             feeRulesJson:    v.feeRulesJson   || '',
             enabledPayments: v.enabledPayments || ['qris', 'bank_transfer'],
@@ -318,7 +318,7 @@ export default function SiteSettingsManager() {
                   </div>
                   <div>
                     <label className="text-xs text-gray-400 block mb-1">
-                      Server Key <span className="text-red-400 font-semibold">(RAHASIA — jangan dibagikan)</span>
+                      Server Key <span className="text-red-400 font-semibold">(RAHASIA - jangan dibagikan)</span>
                       {mtServerKeySet && !mtForm.serverKey && <span className="ml-2 text-teal-600">✓ sudah tersimpan (kosongkan untuk tidak mengubah)</span>}
                     </label>
                     <div className="flex gap-2">

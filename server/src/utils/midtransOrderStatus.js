@@ -37,7 +37,7 @@ function computeFeeIdr({ amountIdr, paymentType, mtCfg }) {
 // Shared handler: applies a Midtrans transaction status to the matching order
 // (unlocks courses, marks vouchers/coupons used, etc). Used by the webhook,
 // the client-side status-sync fallback, the admin manual resync endpoint, and
-// the periodic reconciliation job — since the webhook alone is unreliable if
+// the periodic reconciliation job - since the webhook alone is unreliable if
 // the notification URL isn't reachable/configured, and the client-side sync
 // alone is unreliable for async payment methods (QRIS/bank transfer) where the
 // buyer may close the tab before settlement actually happens.

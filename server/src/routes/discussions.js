@@ -19,7 +19,7 @@ async function assertCourseAccess(req, courseId) {
 function discussionsRouter({ requireAuth }) {
   const router = express.Router();
 
-  // GET /api/discussions/course/:courseId — course-level forum (not tied to a lesson)
+  // GET /api/discussions/course/:courseId - course-level forum (not tied to a lesson)
   router.get(
     '/course/:courseId',
     requireAuth,
@@ -61,7 +61,7 @@ function discussionsRouter({ requireAuth }) {
     })
   );
 
-  // GET /api/discussions/mine — recent discussions across enrolled courses
+  // GET /api/discussions/mine - recent discussions across enrolled courses
   router.get(
     '/mine',
     requireAuth,

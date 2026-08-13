@@ -27,7 +27,7 @@ function assertStaffAccess(req, course) {
 function courseChatRouter({ requireAuth }) {
   const router = express.Router();
 
-  // GET /api/course-chat/:courseId/threads — daftar student yang sudah chat (untuk teacher/admin)
+  // GET /api/course-chat/:courseId/threads - daftar student yang sudah chat (untuk teacher/admin)
   router.get(
     '/:courseId/threads',
     requireAuth,
@@ -60,7 +60,7 @@ function courseChatRouter({ requireAuth }) {
     })
   );
 
-  // GET /api/course-chat/:courseId/messages — student: thread sendiri; teacher/admin: ?studentId=
+  // GET /api/course-chat/:courseId/messages - student: thread sendiri; teacher/admin: ?studentId=
   router.get(
     '/:courseId/messages',
     requireAuth,

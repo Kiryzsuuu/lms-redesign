@@ -3,7 +3,7 @@ const { Order } = require('../models/Order');
 const { getMidtransConfig } = require('../utils/midtransConfig');
 const { applyMidtransStatus } = require('../utils/midtransOrderStatus');
 
-const MIN_AGE_MS = 5 * 60 * 1000; // beri jeda 5 menit — hindari bentrok dengan sync client saat checkout masih berlangsung
+const MIN_AGE_MS = 5 * 60 * 1000; // beri jeda 5 menit - hindari bentrok dengan sync client saat checkout masih berlangsung
 const MAX_AGE_DAYS = 14; // order pending lebih tua dari ini dianggap mati, tidak perlu terus dicek ke Midtrans
 
 // Menutup celah: webhook Midtrans bisa gagal sampai (URL notifikasi salah/tidak
@@ -44,7 +44,7 @@ async function reconcilePendingOrders() {
       if (newStatus !== 'pending') updated++;
     } catch (err) {
       // Midtrans 404 = transaksi belum/tidak pernah dibuat di sisi mereka (mis. Snap
-      // ditutup sebelum sempat generate transaksi) — bukan error, lewati saja.
+      // ditutup sebelum sempat generate transaksi) - bukan error, lewati saja.
       if (err?.httpStatusCode !== '404' && err?.httpStatusCode !== 404) {
         // eslint-disable-next-line no-console
         console.error(`reconcilePendingOrders: gagal cek order ${order.orderCode}`, err?.message || err);

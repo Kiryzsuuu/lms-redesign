@@ -6,7 +6,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16),
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
 
-  // Midtrans — all optional here; admin can configure via /api/settings/admin/midtrans
+  // Midtrans - all optional here; admin can configure via /api/settings/admin/midtrans
   // These env vars serve as a fallback when DB config is not yet set.
   MIDTRANS_SERVER_KEY:    z.string().optional(),
   MIDTRANS_CLIENT_KEY:    z.string().optional(),
@@ -22,14 +22,14 @@ const envSchema = z.object({
   MIDTRANS_FEE_PERCENT: z.coerce.number().min(0).max(100).optional().default(0),
   MIDTRANS_FEE_RULES_JSON: z.string().optional(),
 
-  // SMTP — all optional; admin can configure via /api/settings/admin/smtp
+  // SMTP - all optional; admin can configure via /api/settings/admin/smtp
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_FROM: z.string().optional(),
 
-  // OTP debugging — LOCAL DEV ONLY. Never set in production.
+  // OTP debugging - LOCAL DEV ONLY. Never set in production.
   DEBUG_OTP: z.preprocess(v => String(v || '').toLowerCase() === 'true', z.boolean()).default(false),
 
   NODE_ENV: z.string().optional(),

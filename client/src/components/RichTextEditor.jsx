@@ -219,7 +219,7 @@ export function RichTextEditor({
           const lines = String(rawText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(l => l.trim()).filter(Boolean);
           if (lines.length < 1) return false;
 
-          const bulletRe = /^(?:[•\-–—*]|•)\s*/;
+          const bulletRe = /^(?:[•\-–-*]|•)\s*/;
           const orderedRe = /^\d+(?:\.|[)])\s*/;
           const bulletCount = lines.filter(l => bulletRe.test(l)).length;
           const orderedCount = lines.filter(l => orderedRe.test(l)).length;
@@ -439,7 +439,7 @@ export function RichTextEditor({
           </div>
         )}
 
-        {/* Editor content — fixed height, scrolls internally instead of growing the page */}
+        {/* Editor content - fixed height, scrolls internally instead of growing the page */}
         <div style={{ height: editorHeight, maxHeight: editorHeight, overflowY: 'auto', paddingBottom: '0.5rem' }}>
           <EditorContent editor={editor} />
         </div>

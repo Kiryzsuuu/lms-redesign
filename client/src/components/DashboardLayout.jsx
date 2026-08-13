@@ -192,7 +192,7 @@ export function DashboardLayout({ children }) {
 
   const SidebarContent = () => (
     <>
-      {/* Logo — klik kembali ke beranda */}
+      {/* Logo - klik kembali ke beranda */}
       <Link
         to="/"
         style={{ padding: '12px 14px 10px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: '1px solid rgba(255,255,255,.1)', textDecoration: 'none', flexShrink: 0 }}
@@ -397,7 +397,7 @@ export function DashboardLayout({ children }) {
           </div>
         </header>
 
-        {/* Content — overflow:hidden so SidebarShell pages control their own scroll */}
+        {/* Content - overflow:hidden so SidebarShell pages control their own scroll */}
         <div className="dash-content" style={{ flex: 1, overflow: 'hidden' }}>
           {children}
         </div>

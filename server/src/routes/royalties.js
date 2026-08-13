@@ -141,7 +141,7 @@ function royaltiesRouter({ requireAuth, requireRole }) {
     })
   );
 
-  // Admin: list referral stats — siapa yang mendaftar dengan kode siapa
+  // Admin: list referral stats - siapa yang mendaftar dengan kode siapa
   router.get(
     '/referrals',
     requireRole('admin'),

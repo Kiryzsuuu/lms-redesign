@@ -67,7 +67,7 @@ function certificatesRouter({ requireAuth, requireRole }) {
       if (!certificate) throw new HttpError(404, 'Certificate not found');
 
       // Always sync userName from fullName so stale/incorrect names are corrected.
-      // Only update if fullName is set — never fall back to username/name field.
+      // Only update if fullName is set - never fall back to username/name field.
       const user = await User.findById(req.user.sub).select('fullName');
       if (user?.fullName && user.fullName !== certificate.metadata?.userName) {
         certificate.metadata = { ...certificate.metadata, userName: user.fullName };

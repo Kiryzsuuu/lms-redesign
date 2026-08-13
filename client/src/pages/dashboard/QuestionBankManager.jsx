@@ -723,7 +723,7 @@ export default function QuestionBankManager() {
                   type="text"
                   value={newCollectionName}
                   onChange={(e) => setNewCollectionName(e.target.value)}
-                  placeholder="e.g. Module 1 — Data Basics"
+                  placeholder="e.g. Module 1 - Data Basics"
                   onKeyPress={(e) => e.key === 'Enter' && createCollection()}
                 />
               </div>

@@ -262,7 +262,7 @@ export default function UserManager() {
                             </select>
                           </div>
 
-                          {/* Royalty ratio — hanya untuk teacher/admin */}
+                          {/* Royalty ratio - hanya untuk teacher/admin */}
                           {teacherOrAdmin && (
                             <div>
                               <Label className="text-xs">Rasio Royalti Default (%)</Label>
@@ -285,7 +285,7 @@ export default function UserManager() {
                           )}
                         </div>
 
-                        {/* Skills — hanya untuk teacher/admin */}
+                        {/* Skills - hanya untuk teacher/admin */}
                         {teacherOrAdmin && (
                           <div>
                             <Label className="text-xs">Keahlian / Skills</Label>

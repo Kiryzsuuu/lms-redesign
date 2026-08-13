@@ -76,7 +76,7 @@ export default function ContactPage() {
               Tentang Respons Kami
             </div>
             <p style={{ fontSize: '0.88rem', color: '#374151', lineHeight: 1.7, margin: 0 }}>
-              Kami berupaya membalas setiap pertanyaan dalam waktu 1×24 jam pada hari kerja. Untuk pertanyaan umum, silakan cek halaman <a href="/faq" style={{ color: '#0C628D', fontWeight: 600 }}>FAQ</a> terlebih dahulu — mungkin jawaban Anda sudah ada di sana.
+              Kami berupaya membalas setiap pertanyaan dalam waktu 1×24 jam pada hari kerja. Untuk pertanyaan umum, silakan cek halaman <a href="/faq" style={{ color: '#0C628D', fontWeight: 600 }}>FAQ</a> terlebih dahulu - mungkin jawaban Anda sudah ada di sana.
             </p>
           </div>
         </div>

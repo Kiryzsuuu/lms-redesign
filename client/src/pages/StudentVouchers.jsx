@@ -33,13 +33,13 @@ export default function StudentVouchers() {
       <DsCard style={{ marginBottom: 16, background: 'linear-gradient(135deg,#0C628D,#0a527a)', color: '#fff', border: 'none' }}>
         <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', opacity: .85 }}>Kode Referral Kamu</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-          <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '.12em', fontFamily: 'monospace' }}>{referralCode || '—'}</div>
+          <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '.12em', fontFamily: 'monospace' }}>{referralCode || '-'}</div>
           <button onClick={copyCode} style={{ fontSize: 12, fontWeight: 700, padding: '6px 12px', borderRadius: 8, background: 'rgba(255,255,255,.18)', color: '#fff', border: '1px solid rgba(255,255,255,.3)', cursor: 'pointer' }}>
             {copied ? '✓ Tersalin' : 'Salin'}
           </button>
         </div>
         <div style={{ fontSize: 12.5, opacity: .9, marginTop: 10, lineHeight: 1.6 }}>
-          Ajak temanmu memasukkan kode ini saat checkout. Setiap teman baru yang memakai kodemu memberimu <strong>voucher diskon 5%</strong> — maksimal {maxVouchers} voucher.
+          Ajak temanmu memasukkan kode ini saat checkout. Setiap teman baru yang memakai kodemu memberimu <strong>voucher diskon 5%</strong> - maksimal {maxVouchers} voucher.
         </div>
         <div style={{ fontSize: 12, marginTop: 8, fontWeight: 700 }}>Voucher diperoleh: {earnedCount} / {maxVouchers}</div>
       </DsCard>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python for Data Manipulation — InspiraLearn</title>
+<title>Python for Data Manipulation - InspiraLearn</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -325,7 +325,7 @@ ul{list-style:none}
 
 <script>
 /* ═══════════════════════════════════════════
-   COURSE DATA — edit di sini untuk update konten
+   COURSE DATA - edit di sini untuk update konten
    Struktur: Course > modules[] > materis[]
 ═══════════════════════════════════════════ */
 const COURSE = {
@@ -337,11 +337,11 @@ const COURSE = {
       materis:[
         { id:'m1a', title:'Learning Outcome', type:'video', dur:'5 mnt',
           outcomes:['Memahami tujuan dan struktur 4 modul course ini','Mengetahui tools: Python, Pandas, Jupyter Notebook','Memahami alur belajar yang optimal','Menyiapkan mindset practice over theory'],
-          body:`<p>Selamat datang! Course ini dirancang untuk membantu kamu menguasai manipulasi data menggunakan <strong>Pandas</strong> — library Python paling dicari perusahaan teknologi Indonesia.</p><div class="callout c-b"><span class="ci">💡</span><div>Tonton video ini sampai selesai. Konteks awal sangat membantu proses belajar selanjutnya.</div></div>`,
+          body:`<p>Selamat datang! Course ini dirancang untuk membantu kamu menguasai manipulasi data menggunakan <strong>Pandas</strong> - library Python paling dicari perusahaan teknologi Indonesia.</p><div class="callout c-b"><span class="ci">💡</span><div>Tonton video ini sampai selesai. Konteks awal sangat membantu proses belajar selanjutnya.</div></div>`,
           files:[{ico:'📊',name:'slides-intro.pdf',meta:'PDF · 1.8 MB'},{ico:'🗺️',name:'roadmap-belajar.png',meta:'Gambar · 650 KB'}]
         },
         { id:'m1b', title:'Instalasi Python, Jupyter & Pandas', type:'read', dur:'10 mnt',
-          body:`<h3>1. Install Python 3.10+</h3><p>Download dari <strong>python.org</strong>. Centang "Add Python to PATH" saat instalasi.</p><pre><span class="sc"># Cek versi</span>\npython --version</pre><h3>2. Install Anaconda (Direkomendasikan)</h3><p>Anaconda menyertakan Python, Jupyter, dan seluruh library data science dalam satu installer.</p><div class="callout c-t"><span class="ci">✨</span><div>Setelah Anaconda terinstal, jalankan <code>jupyter notebook</code> — langsung siap tanpa setup tambahan.</div></div><h3>3. Install via pip</h3><pre>pip install pandas numpy matplotlib seaborn</pre><div class="callout c-o"><span class="ci">⚠️</span><div>Jika pakai Anaconda, gunakan <code>conda install pandas</code> agar lebih stabil.</div></div>`,
+          body:`<h3>1. Install Python 3.10+</h3><p>Download dari <strong>python.org</strong>. Centang "Add Python to PATH" saat instalasi.</p><pre><span class="sc"># Cek versi</span>\npython --version</pre><h3>2. Install Anaconda (Direkomendasikan)</h3><p>Anaconda menyertakan Python, Jupyter, dan seluruh library data science dalam satu installer.</p><div class="callout c-t"><span class="ci">✨</span><div>Setelah Anaconda terinstal, jalankan <code>jupyter notebook</code> - langsung siap tanpa setup tambahan.</div></div><h3>3. Install via pip</h3><pre>pip install pandas numpy matplotlib seaborn</pre><div class="callout c-o"><span class="ci">⚠️</span><div>Jika pakai Anaconda, gunakan <code>conda install pandas</code> agar lebih stabil.</div></div>`,
           files:[{ico:'💻',name:'setup-guide.pdf',meta:'PDF · 3.2 MB'}]
         }
       ]
@@ -375,12 +375,12 @@ const COURSE = {
       materis:[
         { id:'m3a', title:'GroupBy, Aggregasi & Pivot Table', type:'video', dur:'24 mnt',
           outcomes:['Menggunakan .groupby() untuk mengelompokkan data','Menerapkan fungsi aggregasi: sum, mean, count, max','Membuat pivot table dengan .pivot_table()','Menginterpretasi hasil untuk insight bisnis'],
-          body:`<p>GroupBy adalah operasi paling powerful di Pandas — mengelompokkan data dan menghitung statistik per grup dalam satu baris kode.</p><pre><span class="sc"># Total penjualan per kategori</span>\nresult = df.<span class="sf">groupby</span>(<span class="ss">'kategori'</span>)[<span class="ss">'penjualan'</span>].<span class="sf">sum</span>()\n\n<span class="sc"># Multiple agregasi</span>\nresult = df.<span class="sf">groupby</span>(<span class="ss">'kota'</span>).<span class="sf">agg</span>({\n    <span class="ss">'penjualan'</span>: [<span class="ss">'sum'</span>, <span class="ss">'mean'</span>],\n    <span class="ss">'order_id'</span>: <span class="ss">'count'</span>\n})</pre>`,
+          body:`<p>GroupBy adalah operasi paling powerful di Pandas - mengelompokkan data dan menghitung statistik per grup dalam satu baris kode.</p><pre><span class="sc"># Total penjualan per kategori</span>\nresult = df.<span class="sf">groupby</span>(<span class="ss">'kategori'</span>)[<span class="ss">'penjualan'</span>].<span class="sf">sum</span>()\n\n<span class="sc"># Multiple agregasi</span>\nresult = df.<span class="sf">groupby</span>(<span class="ss">'kota'</span>).<span class="sf">agg</span>({\n    <span class="ss">'penjualan'</span>: [<span class="ss">'sum'</span>, <span class="ss">'mean'</span>],\n    <span class="ss">'order_id'</span>: <span class="ss">'count'</span>\n})</pre>`,
           files:[{ico:'💻',name:'groupby-practice.ipynb',meta:'Notebook · 31 KB'}]
         },
         { id:'m3b', title:'Merge & Join DataFrame', type:'video', dur:'22 mnt',
           outcomes:['Memahami perbedaan inner, left, right, outer join','Menggabungkan DataFrame dengan pd.merge()','Menangani key duplikat saat merge','Menggunakan .concat() untuk gabung vertikal'],
-          body:`<p>Merge memungkinkan menggabungkan dua DataFrame berdasarkan kolom kunci — mirip JOIN di SQL.</p><pre><span class="sc"># Inner join (default)</span>\nresult = pd.<span class="sf">merge</span>(df_orders, df_customers, on=<span class="ss">'customer_id'</span>)\n\n<span class="sc"># Left join</span>\nresult = pd.<span class="sf">merge</span>(df_orders, df_products,\n                   on=<span class="ss">'product_id'</span>, how=<span class="ss">'left'</span>)</pre>`,
+          body:`<p>Merge memungkinkan menggabungkan dua DataFrame berdasarkan kolom kunci - mirip JOIN di SQL.</p><pre><span class="sc"># Inner join (default)</span>\nresult = pd.<span class="sf">merge</span>(df_orders, df_customers, on=<span class="ss">'customer_id'</span>)\n\n<span class="sc"># Left join</span>\nresult = pd.<span class="sf">merge</span>(df_orders, df_products,\n                   on=<span class="ss">'product_id'</span>, how=<span class="ss">'left'</span>)</pre>`,
           files:[]
         },
         { id:'m3c', title:'Cheat Sheet: Pandas Operasi Lengkap', type:'read', dur:'5 mnt',
@@ -400,7 +400,7 @@ const COURSE = {
       materis:[
         { id:'m4a', title:'Matplotlib & Seaborn: Visualisasi Profesional', type:'video', dur:'20 mnt',
           outcomes:['Membuat chart: line, bar, scatter, histogram, heatmap','Mengkustomisasi tampilan chart secara profesional','Menggunakan Seaborn untuk visualisasi statistik','Menyimpan chart dalam format PNG/SVG berkualitas tinggi'],
-          body:`<p>Visualisasi yang baik mengubah data mentah menjadi insight yang mudah dipahami stakeholder — bahkan yang tidak punya background teknis.</p><pre><span class="sk">import</span> matplotlib.pyplot <span class="sk">as</span> plt\n<span class="sk">import</span> seaborn <span class="sk">as</span> sns\n\nplt.<span class="sf">figure</span>(figsize=(10, 6))\nsns.<span class="sf">barplot</span>(data=df, x=<span class="ss">'kategori'</span>, y=<span class="ss">'penjualan'</span>)\nplt.<span class="sf">title</span>(<span class="ss">'Penjualan per Kategori'</span>)\nplt.<span class="sf">show</span>()</pre>`,
+          body:`<p>Visualisasi yang baik mengubah data mentah menjadi insight yang mudah dipahami stakeholder - bahkan yang tidak punya background teknis.</p><pre><span class="sk">import</span> matplotlib.pyplot <span class="sk">as</span> plt\n<span class="sk">import</span> seaborn <span class="sk">as</span> sns\n\nplt.<span class="sf">figure</span>(figsize=(10, 6))\nsns.<span class="sf">barplot</span>(data=df, x=<span class="ss">'kategori'</span>, y=<span class="ss">'penjualan'</span>)\nplt.<span class="sf">title</span>(<span class="ss">'Penjualan per Kategori'</span>)\nplt.<span class="sf">show</span>()</pre>`,
           files:[{ico:'💻',name:'visualisasi-practice.ipynb',meta:'Notebook · 45 KB'}]
         },
         { id:'m4b', title:'EDA Workflow End-to-End', type:'video', dur:'26 mnt',
@@ -461,7 +461,7 @@ function renderSb(){
       const isActive=mi===S.modIdx&&li===S.matIdx&&S.view==='materi';
       const isDone=S.done.has(mat.id);
       const dc=isDone?'d-done':isActive?'d-active':'d-todo';
-      const di=isDone?'✓':isActive?'▶':'—';
+      const di=isDone?'✓':isActive?'▶':'-';
       h+=`<div class="mi ${isActive?'active':''}" onclick="loadMat(${mi},${li})">
         <div class="mi-dot ${dc}">${di}</div>
         <div class="mi-info"><div class="mi-title">${mat.title}</div>
@@ -510,7 +510,7 @@ function showMod(mi){
     items+=`<div class="mov-item" onclick="loadMat(${mi},${li})">
       <span class="mi-badge ${BTC[mat.type]}">${BTL[mat.type]}</span>
       ${mat.title}
-      <span class="mov-status ${isDone?'ms-done':'ms-todo'}">${isDone?'✓ Selesai':'—'}</span>
+      <span class="mov-status ${isDone?'ms-done':'ms-todo'}">${isDone?'✓ Selesai':'-'}</span>
     </div>`;
   });
   document.getElementById('content').innerHTML=`
@@ -661,7 +661,7 @@ function submitQ(){
     if(selIdx===q.ans) ok++;
   });
   const p=Math.round(ok/qs.length*100),pass=p>=70;
-  setTimeout(()=>alert(`${pass?'🎉':'😅'} Skor: ${ok}/${qs.length} (${p}%) — ${pass?'Lulus!':'Coba lagi ya!'}`),100);
+  setTimeout(()=>alert(`${pass?'🎉':'😅'} Skor: ${ok}/${qs.length} (${p}%) - ${pass?'Lulus!':'Coba lagi ya!'}`),100);
   if(pass){S.done.add(curId());renderSb();renderBnav();}
 }
 function toggleDone(){

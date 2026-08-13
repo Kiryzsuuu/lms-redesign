@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   course-detail.css — InspiraLearn
+   course-detail.css - InspiraLearn
    Light · Colorful · Elegant · Professional
    ═══════════════════════════════════════════ */
 
@@ -84,7 +84,7 @@ ul{list-style:none}
 .nbtn-primary:hover{background:var(--blue-m);transform:translateY(-1px);box-shadow:0 4px 12px rgba(12,98,141,.3)}
 
 /* ══════════════════════════════════════════
-   HERO — WHITE + COLORFUL ACCENTS
+   HERO - WHITE + COLORFUL ACCENTS
 ══════════════════════════════════════════ */
 .hero{background:var(--white);border-bottom:1px solid var(--n300);position:relative;overflow:hidden}
 
@@ -168,7 +168,7 @@ ul{list-style:none}
   font-size:.65rem;font-weight:800;flex-shrink:0;
 }
 
-/* RIGHT — ENROLL CARD */
+/* RIGHT - ENROLL CARD */
 .hero-sticky{position:sticky;top:calc(var(--nav-h) + 1rem)}
 .enroll-card{
   background:var(--white);border:1px solid var(--n300);

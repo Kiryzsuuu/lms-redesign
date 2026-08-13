@@ -92,6 +92,6 @@ pm2 restart lms-api
 
 ## Catatan penting
 - **Upload file persisten**: tersimpan di `server/uploads/` pada disk VPS (tidak hilang seperti di Vercel). Sertakan folder ini di backup berkala.
-- `vercel.json` & `api/index.js` tidak dipakai di VPS — boleh dibiarkan.
+- `vercel.json` & `api/index.js` tidak dipakai di VPS - boleh dibiarkan.
 - Firewall NEO: pastikan port **80** & **443** terbuka di panel Biznet.
 - Cek error backend: `pm2 logs lms-api`. Cek Nginx: `sudo tail -f /var/log/nginx/error.log`.

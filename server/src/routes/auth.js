@@ -198,7 +198,7 @@ function authRouter({ jwtSecret }) {
   );
 
   // Langkah 1: verifikasi email+password, lalu kirim OTP login ke email.
-  // Token TIDAK diberikan di sini — wajib verifikasi OTP dulu.
+  // Token TIDAK diberikan di sini - wajib verifikasi OTP dulu.
   router.post(
     '/login',
     asyncHandler(async (req, res) => {

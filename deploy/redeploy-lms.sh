@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: redeploy-lms
-# Jalankan dari mana saja — script otomatis masuk ke folder yang benar.
+# Jalankan dari mana saja - script otomatis masuk ke folder yang benar.
 
 set -e
 APP_DIR="/var/www/lms-redesign"

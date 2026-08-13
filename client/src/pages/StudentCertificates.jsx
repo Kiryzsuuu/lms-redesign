@@ -5,7 +5,7 @@ import { DsPage, DsCard, DsEmpty } from '../components/ds';
 import { PageSpinner } from '../components/PageSpinner';
 
 function fmtDate(d) {
-  if (!d) return '—';
+  if (!d) return '-';
   return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 

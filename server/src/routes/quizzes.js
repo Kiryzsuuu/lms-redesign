@@ -436,7 +436,7 @@ function quizzesRouter({ requireAuth, requireRole }) {
         await attempt.save();
       }
 
-      // Start new attempt if none — shuffle only at this point so order is locked in
+      // Start new attempt if none - shuffle only at this point so order is locked in
       if (!attempt) {
         const orderedForNew = quiz.randomizeQuestions ? shuffleCopy(questionsRaw) : questionsRaw;
         attempt = await Attempt.create({

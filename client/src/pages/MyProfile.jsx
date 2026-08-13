@@ -381,7 +381,7 @@ export default function MyProfile() {
                 </div>
               </Card>
 
-              {/* Signature upload — only for teacher/admin */}
+              {/* Signature upload - only for teacher/admin */}
               {(role === 'teacher' || role === 'admin') && (
                 <Card className="p-5 border border-slate-200 shadow-sm">
                   <h2 className="text-base font-bold text-slate-900 mb-3">Tanda Tangan Teacher</h2>
@@ -784,7 +784,7 @@ export default function MyProfile() {
                 </div>
               )}
 
-              {/* Form — only show if no pending/approved testimonial */}
+              {/* Form - only show if no pending/approved testimonial */}
               {testimonialLoaded && !myTestimonial && (
                 <form onSubmit={submitTestimonial} className="space-y-4">
                   <div>
